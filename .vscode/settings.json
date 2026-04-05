@@ -1,0 +1,4 @@
+{
+    "tailwindCSS.experimental.configFile": "../tailwind.config.js",
+    "aws.telemetry": false
+}

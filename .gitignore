@@ -1,0 +1,11 @@
+node_modules/
+.next/
+tailwind4css.exe
+out/
+build/
+.env
+.env*.local
+.DS_Store
+.terraform/
+*.tfstate
+*.tfstate.backup
