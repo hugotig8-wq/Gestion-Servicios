@@ -7,7 +7,7 @@ Potenciado por Gemini
 'use client'; // Indica que este componente tiene interacción (botones, inputs)
 
 import { useState } from 'react';
-import '../styles.css';
+
 
 export default function RegisterPage() {
     // 1. Estado: Aquí guardamos lo que el usuario escribe
