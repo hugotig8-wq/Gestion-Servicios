@@ -10,7 +10,6 @@ export default function LoginPage() {
   const [error, setError] = useState('');
 
   const handleLogin = async (e) => {
-   try{
     e.preventDefault();
     setError('');
 
@@ -19,14 +18,11 @@ export default function LoginPage() {
       password,
       redirect: false, // Manejamos la redirección manualmente
     });
-    if (res?.error) {
-
+    if (res?.ok) {
+        window.location.href = '/dashboard'; 
     } else {
-      window.location.href = '/dashboard';
-
-   } catch (error) {
-       setError(res.error + " / " res.status + " / " + error.message);// Fuerza recarga completa para que la sesión esté disponible
-    }
+        setError(res.error.message);
+    }    
   };
 
   return (
