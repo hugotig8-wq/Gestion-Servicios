@@ -1,6 +1,6 @@
 /*
 Una visión de Humberto Gonzalez Tigreros
-Potenciado por Gemini
+Potenciado por Gemini, Cloude y Amazon Q.
 Construye un Endpoint de API
 Preferible a usar una lambda externa desde el navegador. Credenciales seguras en AWS, nunca van al navegador.
 v1: FrontEnd y BackEnd bajo el mismo techo
