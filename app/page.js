@@ -19,10 +19,10 @@ export default function LoginPage() {
       redirect: false, // Manejamos la redirección manualmente
     });
 
-    if (res?.ok) {
-      window.location.href = '/dashboard'; // Fuerza recarga completa para que la sesión esté disponible
+    if (res?.error) {
+       setError(res.error + " / " res.status);// Fuerza recarga completa para que la sesión esté disponible
     } else {
-      setError('Email o contraseña incorrectos');
+      window.location.href = '/dashboard';
     }
   };
 
