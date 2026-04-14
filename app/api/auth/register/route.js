@@ -50,6 +50,6 @@ export async function POST(request) {
       return NextResponse.json({ message: "El correo ya está registrado" }, { status: 409 });
     }
 
-    return NextResponse.json({ message: "Error interno del servidor" }, { status: 500 });
+    return NextResponse.json({ message:error.message }, { status: 500 });
   }
 }
