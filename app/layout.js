@@ -1,5 +1,6 @@
 // app/layout.js
-import '../dist/output.css'; // Importamos tus estilos globales aquí
+import './api/distCSS/output.css'; // Importamos tus estilos globales aquí
+import AuthProvider from './components/AuthProvider';
 
 export const metadata = {
   title: 'GestSeguros V1',
@@ -10,7 +11,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="es">
       <head>
-        <meta charset="UTF-8"></meta>
+        <meta charSet="UTF-8"></meta>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
         
         {/*<link rel="stylesheet" href="../dist/output.css"></link>*/}
@@ -18,7 +19,7 @@ export default function RootLayout({ children }) {
       </head>  
       <body>
         {/* Aquí es donde Next.js inyectará tus páginas (Login, Dashboard, etc.) */}
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

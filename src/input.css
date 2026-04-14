@@ -1,5 +1,5 @@
 @charset "UTF-8";
-/*@import "tailwindcss";*/
+@import "tailwindcss";
 @config "../tailwind.config.js";
 
 @tailwind base;
@@ -256,8 +256,29 @@ p {
   align-items: start;
 }
 
-.table {
+table {
   align-items: center;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+}
+
+table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+tbody {
+  border: 2px solid blue;
+}
+
+tbody td{
+  padding: 15px;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #ccc;
+  width: 50%;
+  margin: 20px auto;
 }
 
 .seleccionable {

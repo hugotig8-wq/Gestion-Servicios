@@ -1,6 +1,6 @@
 node_modules/
 .next/
-tailwind4css.exe
+tailwindcss4.exe
 out/
 build/
 .env

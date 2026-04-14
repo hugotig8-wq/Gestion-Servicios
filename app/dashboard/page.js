@@ -1,39 +1,53 @@
 'use client';
 import { useState, useEffect } from 'react';
-//import './styles.css';
+//import { cookies } from 'next/headers';
+import { useSession } from 'next-auth/react'; // Cambiado de cookies manuales
 
 export default function Dashboard() {
+  const { data: session, status } = useSession();
   const [servicios, setServicios] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [filterText, setFilterText] = useState('');
   const [inStockOnly, setInStockOnly] = useState(false);
-  
-
+  //const [userId, setUserId] = useState(null);
+  //const userId = cookies().get('userId')?.value //No se puede en un use-cient
+  //const sessionId = cookies().get('session-id')?.value
   // El "Vigilante" que trae los datos
   useEffect(() => {
-    const fetchServicios = async () => {
-      try {
-        // En una app real, el ID vendría de la sesión (cookie)
-        const res = await fetch('/api/servicios?userId=1'); 
-        const data = await res.json();
-        setServicios(data);
-      } catch (err) {
-        console.error("Error cargando datos");
-      } finally {
-        setCargando(false);
-      }
-    };
-    fetchServicios();
-  }, []); //Probar con vacío vacío, "", null, undefiined, 0.  
+    if (status=="authenticated"){
+      const fetchServicios = async () => {
+        try {
+          // En una app real, el ID vendría de la sesión (cookie)
+          /*if (sessionId) {await fetch('/api/servicios', {method: POST, headers: {'Content-Type':'application/json', 'X-Session-ID': sessionId} body: JSON.stringify({key: 'value'}) });}*/
+          //const value = document.cookie.split('; ').find(row => row.startsWith('userId='))?.split('=')[1]; //NextAuth se encarga de enviar la cookie de sesión en cada fetch
+          const res = await fetch('/api/servicios'); // Next enviará la cookie automáticamente
+          const json = await res.json();
+          if (res.ok) setServicios(json.data || []);
+          /*setUserId(value);
+          const response = await fetch("/api/servicios", { // Ruta interna de Next.js
+                  method: 'GET',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(formData)
+              });
+          const data = await response.json();
+          setServicios(data);*/
+        } catch (err) {
+          console.error("Error cargando datos");
+        } finally {
+          setCargando(false);
+        }
+      };
+      fetchServicios();
+    }
+  }, [status]); //Se dispara cuando el estado de la sesion cambia //Probar con vacío vacío, "", null, undefiined, 0.  
 
-  //const divCargando = document.getElementById('loading-overlay');
-
-  if (cargando) {
-    //divCargando.classList.remove('hidden'); Todavia es null
-    console.log("Cargando servicios del cliente.")
-    return "Cargando inicial";
+  if (status === "loading" || (status === "authenticated" && cargando)) {
+    return <p>Cargando sesión y servicios...</p>;
   }
   
+  if (status === "unauthenticated") {
+    return <p>Acceso denegado. Por favor inicia sesión.</p>;
+  }
 
   return (
   <div>
@@ -47,7 +61,12 @@ export default function Dashboard() {
       </div>
     </div>
     <div>
-      <FilterableProductTable products={RIESGOS} />
+      <div className="p-4 bg-gray-100 flex justify-left">
+        <p>Usuario: <strong>{session?.user?.email}</strong></p> 
+        <button onClick={() => signOut()}>Cerrar Sesión</button>
+      </div>
+      
+      <FilterableProductTable products={{ rows: servicios }} />
     </div>
   </div>
   );
@@ -58,7 +77,7 @@ function FilterableProductTable({ products }) {
   const [inStockOnly, setInStockOnly] = useState(false);
   
   // Tu lógica de empresas única
-  const empresas = [...new Set(products.map(i => i.Empresa))];
+  const empresas = [...new Set(products.rows.map(i => i.empresa))];
   const [seleccionEmpresas, setSeleccionEmpresas] = useState([...empresas].map(() => true));
 
   const [razonamiento, setRazonamiento] = useState('Da click sobre el nombre del seguro a analizar...');
@@ -104,7 +123,7 @@ function FilterableProductTable({ products }) {
 
       {/* DIV 3: Tercer div vacío (Reservado para futuro Analizar/Crawler) */}
       <div className="div-analisis">
-        <h2>Análisis de Ollama:</h2>
+        <h2>Análisis de Cloude haiku 4-5:</h2>
             <p>{razonamiento}</p>
       </div>
     </div>
@@ -136,13 +155,19 @@ function ProductTable({ products, filterText, inStockOnly, seleccionEmpresas, em
   const rows = [];
   let lastCategory = null;
 
-  products.forEach((product) => {
+  products.rows.forEach((product) => {
    if ((
-      product.descripcion.toLowerCase().indexOf(
+      product.descripcion1.toLowerCase().indexOf(
         filterText.toLowerCase()
-      ) === -1) && (product.Category.toLowerCase().indexOf(
+      ) === -1) && (product.descripcion2.toLowerCase().indexOf(
         filterText.toLowerCase()
-      ) === -1) && (product.Empresa.toLowerCase().indexOf(
+      ) === -1) && (product.descripcion3.toLowerCase().indexOf(
+        filterText.toLowerCase()
+      ) === -1) && (product.categoria.toLowerCase().indexOf(
+        filterText.toLowerCase()
+      ) === -1) && (product.empresa.toLowerCase().indexOf(
+        filterText.toLowerCase()
+      ) === -1) && (product.precio.toLowerCase().indexOf(
         filterText.toLowerCase()
       ) === -1)
     ) {
@@ -151,18 +176,18 @@ function ProductTable({ products, filterText, inStockOnly, seleccionEmpresas, em
     // 2. Lógica de filtro por novedad
     if (inStockOnly && !product.novedad) return;
     // 3. Lógica de filtro por empresa (tu lógica original)
-    const empIndex = empresas.indexOf(product.Empresa);
+    const empIndex = empresas.indexOf(product.empresa);
     if (!seleccionEmpresas[empIndex]) return;
 
-    if (product.Category !== lastCategory) {
+    if (product.nombre !== lastCategory) {
       rows.push(
-        <ProductCategoryRow category={product.Category} key={product.Category} />
+        <ProductCategoryRow category={product.categoria} key={product.categoria} />
       );
     }
     rows.push(
-      <ProductRow product={product} key={product.descripcion} setRazonamiento={setRazonamiento} />
+      <ProductRow product={product} key={product.descripcion3} setRazonamiento={setRazonamiento} />
     );
-    lastCategory = product.Category;
+    lastCategory = product.nombre;
   });
 
   return (
@@ -175,6 +200,7 @@ function ProductTable({ products, filterText, inStockOnly, seleccionEmpresas, em
         </tr>
       </thead>
       <tbody>{rows}</tbody>
+
     </table>
   );
 }
@@ -188,9 +214,9 @@ function ProductCategoryRow({ category }) {
 }
 
 function ProductRow({ product, setRazonamiento }) {
-  const descrip = !product.novedad ? product.descripcion :
+  const descrip = !product.novedad ? (<span>{product.descripcion1} {product.descripcion2} {product.descripcion3}</span>) :
     <span style={{ color: 'red' }}>
-      {product.descripcion}
+      {product.descripcion1}-{product.descripcion2}-{product.descripcion3}
     </span>;
 
   return (
@@ -199,7 +225,7 @@ function ProductRow({ product, setRazonamiento }) {
         {/*<u><span style="cursor:pointer;">{descrip}</span></u>*/}
         {descrip}
       </td>
-      <td>({product.Empresa}): </td>
+      <td>({product.empresa}): </td>
       <td>{product.precio}</td>
     </tr>
   );
@@ -213,7 +239,7 @@ const manejarClickSeguro = async (producto, loader) => {
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:JSON.stringify({"model": "mi-experto-seguros3", "prompt": "Un dato sobre: "+ producto.Empresa, "stream": false})
+        body:JSON.stringify({"model": "Cloude", "prompt": "Un dato sobre: "+ producto.empresa, "stream": false})
       }
     );
 
@@ -224,12 +250,13 @@ const manejarClickSeguro = async (producto, loader) => {
     return data.response;
   } catch (error) {
     console.error("Error en Dashboard:", error);
-    return error.message + "Error: La IA local está tardando demasiado. Revisa la terminal de Ollama.";
+    return error.message + "Error: La IA de Bedrock está tardando demasiado. Revisa AWS";
   } finally {
     loader.classList.add('hidden');
   }
 };
 
+/*
 const RIESGOS = [
   {Empresa: "Mapfre", Category:"Coche", precio: "$123", novedad: true, nroPoliza: "123", descripcion: "Mazda3", fechaVencimiento:"20/3/2026"},
   {Empresa: "Mapfre", Category:"Coche", precio: "$1432", novedad: false, nroPoliza: "123", descripcion: "Mazda2", fechaVencimiento:"20/3/2026"},
@@ -238,4 +265,4 @@ const RIESGOS = [
   {Empresa: "Mapfre", Category:"Hogar", precio: "$1234", novedad: true, nroPoliza: "123", descripcion: "Calle maria 3", fechaVencimiento:"20/3/2026"},
   {Empresa: "Verti", Category:"Hogar", precio: "$1234", novedad: false, nroPoliza: "123", descripcion: "plaza sotelo 1", fechaVencimiento:"20/3/2026"},
   {Empresa: "Mutua", Category:"Hogar", precio: "$1234", novedad: true, nroPoliza: "123", descripcion: "ronda latina 5", fechaVencimiento:"20/3/2026"},
-]
+]*/
