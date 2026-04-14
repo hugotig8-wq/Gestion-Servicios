@@ -45,7 +45,7 @@ export default function RegisterPage() {
             setMensaje({ texto: data.message, tipo: response.ok ? 'success' : 'error' });
             if (response.ok) setTimeout(() => router.push('/'), 3000);
         } catch (error) {
-            setMensaje({ texto:qerror.message, tipo: 'error' });
+            setMensaje({ texto:error.message, tipo: 'error' });
         } finally {
             setEnviando(false);
         }
@@ -86,7 +86,7 @@ export default function RegisterPage() {
                 <button type="submit" className="btn-primary" disabled={enviando}>
                     {enviando ? 'Cargando...' : 'Registrarse'}
                 </button>
-                <p>{mensaje.texto}</p>
+                <p>{mensaje.texto} {mensaje.tipo}</p>
             </form>
         </div>
     );
