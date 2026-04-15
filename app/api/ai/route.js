@@ -26,13 +26,13 @@ export async function POST(request) {
     }*/
 
     const result = JSON.parse(new TextDecoder().decode(res.body)); 
-
+    setTimeout(5000);
     //const data = await res.json();
     return NextResponse.json({ response: result.content[0].text });
 }catch(error){
     console.log("DETALLE ERROR 500: ",error);
-    return NextResponse.json({ error: "Fallo de conexión con AWS" }, { status: 500 });
+    return NextResponse.json({ error:error.message }, { status: 500 });
 }
 }
 /*https://geoportal.minetur.gob.es/VCTEL/vcne.do debe ser checkeada junto con dirección del cliente y lugares de interés
-y rutas de google maps usando su api.
+y rutas de google maps usando su api.*/
