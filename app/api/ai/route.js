@@ -34,3 +34,5 @@ export async function POST(request) {
     return NextResponse.json({ error: "Fallo de conexión con AWS" }, { status: 500 });
 }
 }
+/*https://geoportal.minetur.gob.es/VCTEL/vcne.do debe ser checkeada junto con dirección del cliente y lugares de interés
+y rutas de google maps usando su api.
