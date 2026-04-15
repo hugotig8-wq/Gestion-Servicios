@@ -61,7 +61,7 @@ export default function Dashboard() {
       </div>
     </div>
     <div>
-      <div className="p-4 bg-gray-100 flex justify-left">
+      <div className="bg-corporativo rounded-extra p-4 bg-gray-100 flex justify-left">
         <p>Usuario: <strong>{session?.user?.email}</strong></p> 
         <button onClick={() => signOut()}>Cerrar Sesión</button>
       </div>
