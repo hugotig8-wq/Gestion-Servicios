@@ -11,7 +11,7 @@ export default function LoginPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(' ');
+    setError('');
 
     const res = await signIn('credentials', {
       email,
