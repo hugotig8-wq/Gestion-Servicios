@@ -1,7 +1,7 @@
 import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
 import { NextResponse } from 'next/server';
 
-export const maxDuration = 3000
+export const maxDuration = 60000;
 
 export async function POST(request) {
   try{
