@@ -243,7 +243,7 @@ const manejarClickSeguro = async (producto, loader) => {
       }
     );
 
-    if (!respuesta.ok) throw new Error('El servidor tardó mucho en responder.');
+    /*if (!respuesta.ok) throw new Error('El servidor tardó mucho en responder.');*/
 
     const data = await respuesta.json();
     console.log("Datos recibidos.");
