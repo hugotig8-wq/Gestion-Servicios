@@ -19,14 +19,14 @@ export async function POST(request) {
         }) 
     })); 
 
-    /*if(!res.ok) {
+    if(!res.ok) {
             const errorData = await res.text();
             console.error("Error de Bedrock:", errorData);
             return NextResponse.json({ error: "Bedrock tardó demasiado o falló" }, { status: res.status });
-    }*/
+    }
 
     const result = JSON.parse(new TextDecoder().decode(res.body)); 
-    setTimeout(5000);
+    setTimeout(10000);
     //const data = await res.json();
     return NextResponse.json({ response: result.content[0].text });
 }catch(error){
