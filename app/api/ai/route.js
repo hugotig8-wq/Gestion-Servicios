@@ -80,7 +80,7 @@ export async function POST(request) {
     
     const res = await client.send(new InvokeModelCommand({ 
     
-        modelId:"amazon.nova-2-lite-v1:0", 
+        modelId:"amazon.nova-lite-v1:0", 
         body: JSON.stringify(payload),
         contentType: "application/json",
         accept: "application/json",
