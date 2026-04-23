@@ -1,13 +1,14 @@
 
 import { NextResponse } from 'next/server';
 import { BedrockAgentRuntimeClient, RetrieveAndGenerateCommand } from "@aws-sdk/client-bedrock-agent-runtime";
+import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
 
 
 export const maxDuration = 10000;
 
 async function preguntarAlDocumento(prompt, knowledgeBaseId) {
   
-  const client = new BedrockAgentRuntimeClient({ region: "us-east-1" });
+  const client = new BedrockAgentRuntimeClient(new BedrockRuntimeClient({ region: "us-east-1" }));
   const command = new RetrieveAndGenerateCommand({
     input: {
       text: prompt,
