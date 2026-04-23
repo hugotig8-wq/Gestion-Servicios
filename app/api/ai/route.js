@@ -94,7 +94,7 @@ export async function POST(request) {
 
     const responseBody = JSON.parse(new TextDecoder().decode(res.body));
     console.log(responseBody.output.message.content[0].text);
-    return NextResponse.json({
+    return Response.json({
       success: true,
       answer: responseBody.output.message.content[0].text,
       usage: responseBody.usage
