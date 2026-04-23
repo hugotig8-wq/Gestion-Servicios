@@ -57,13 +57,25 @@ export async function POST(request) {
     const res = await client.send(new InvokeModelCommand({ 
     
         modelId:"amazon.nova-2-lite-v1:0", 
-        body: JSON.stringify({ 
-            max_tokens: 1024, 
-            messages: [{ 
-                role: "user", 
-                content: prompt
-            }] 
-        }) 
+        body:{
+            system: [
+                { text: "Eres un asistente experto en coberturas, ofertas y reclamaciones por zona la empresa que tengo contratada, convenceme de renovar o cambiarme de compañía." }
+            ],
+
+            messages: [
+                {
+                  role: "user",
+                  content: [
+                    { text: prompt}
+                  ]
+                }
+            ],
+            inferenceConfig: {
+               maxTokens: 1024,
+               temperature: 0.7,
+               topP: 0.9
+            }     
+        }
     })); 
 
    /* if(!res.ok) {
