@@ -21,7 +21,9 @@ async function preguntarAlDocumento(prompt, knowledgeBaseId) {
   try {
       const response = await client.send(command);
       console.log("Respuesta:", response.output.text);
-      return response.output.text;
+      setTimeout(10000);
+      //const data = await res.json();
+      return NextResponse.json({ response: response.output.text });
     } catch (error) {
       console.error("Error al consultar Bedrock:", error);
     }
@@ -30,14 +32,17 @@ async function preguntarAlDocumento(prompt, knowledgeBaseId) {
 export async function POST(request) {
   try{
     const client = new BedrockAgentRuntimeClient({ region: "us-east-1" }); 
-    const {prompt1, model, stream} = await request.json();
+    const {prompt, model, stream} = await request.json();
 
     
 
   // Ejemplo de uso
-  const KB_ID = "EMNEPM6FNC"; 
-  qpreguntarAlDocumento("Saber si no pagaron la retroactividad de los primeros meses de 2024.", KB_ID);
-
+    const KB_ID = "EMNEPM6FNC"; 
+    qpreguntarAlDocumento("Saber si no pagaron la retroactividad de los primeros meses de 2024.", KB_ID);
+  }catch(error){
+    console.log("DETALLE ERROR 500: ",error);
+    return NextResponse.json({ error:error.message }, { status: 500 });
+  }
 
 
     
