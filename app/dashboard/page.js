@@ -239,7 +239,7 @@ const manejarClickSeguro = async (producto, loader) => {
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:JSON.stringify({"model": "Cloude", "prompt": "Un dato sobre: "+ producto.empresa, "stream": false})
+        body:JSON.stringify({"model": "Amazon.nova-lit-2-v1:0", "prompt": "Convenceme de renovar con: "+ producto.empresa +" u ofreceme una alternativa lógica.", "stream": false})
       }
     );
 
