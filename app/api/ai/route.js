@@ -23,7 +23,7 @@ async function preguntarAlDocumento(prompt, knowledgeBaseId) {
         type: "KNOWLEDGE_BASE",
         knowledgeBaseConfiguration: {
           knowledgeBaseId: knowledgeBaseId, // ID de tu Base de Conocimiento
-          modelArn: "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0", // O el modelo que prefieras
+          modelArn:"arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-text-lite-v1:0",
         },
       },
      });
