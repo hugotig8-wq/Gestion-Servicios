@@ -34,7 +34,8 @@ async function preguntarAlDocumento(prompt, knowledgeBaseId) {
 
 export async function POST(request) {
   try{
-     
+    const credentials = await client.config.credentials();
+    console.log('Credentials loaded:', !!credentials.accessKeyId);
     const {prompt, model, stream} = await request.json();
 
   // Ejemplo de uso
