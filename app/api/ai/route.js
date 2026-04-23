@@ -81,7 +81,7 @@ export async function POST(request) {
     const res = await client.send(new InvokeModelCommand({ 
     
         modelId:"amazon.nova-2-lite-v1:0", 
-        body: JSON.stringify(payload), // ✅ Convertir a JSON string
+        body: JSON.stringify(payload),
         contentType: "application/json",
         accept: "application/json",
     })); 
@@ -91,9 +91,14 @@ export async function POST(request) {
             console.error("Error de Bedrock:", errorData);
             return NextResponse.json({ error: "Bedrock tardó demasiado o falló" }, { status: res.status });
     }*/
-    console.log("Respuesta:", res.output.text);
-      
-    return NextResponse.json({ response: res.output.text });
+
+    const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+    console.log(responseBody.output.message.content[0].text);
+    return NextResponse.json({
+      success: true,
+      answer: responseBody.output.message.content[0].text,
+      usage: responseBody.usage
+    });
 
 }catch(error){
     console.log("DETALLE ERROR 500: ",error);
