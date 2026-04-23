@@ -21,8 +21,7 @@ async function preguntarAlDocumento(prompt, knowledgeBaseId) {
   try {
       const response = await client.send(command);
       console.log("Respuesta:", response.output.text);
-      setTimeout(10000);
-      //const data = await res.json();
+      
       return NextResponse.json({ response: response.output.text });
     } catch (error) {
       console.error("Error al consultar Bedrock:", error);
@@ -31,11 +30,9 @@ async function preguntarAlDocumento(prompt, knowledgeBaseId) {
 
 export async function POST(request) {
   try{
-    setTimeout(5000);
+    
     const client = new BedrockAgentRuntimeClient({ region: "us-east-1" }); 
     const {prompt, model, stream} = await request.json();
-
-    
 
   // Ejemplo de uso
     const KB_ID = "EMNEPM6FNC"; 
