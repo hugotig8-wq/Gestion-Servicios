@@ -9,6 +9,7 @@ export default function Dashboard() {
   const [cargando, setCargando] = useState(true);
   const [filterText, setFilterText] = useState('');
   const [inStockOnly, setInStockOnly] = useState(false);
+  const [razonamiento, setRazonamiento] = useState('Selecciona el servicio a analizar');
   //const [userId, setUserId] = useState(null);
   //const userId = cookies().get('userId')?.value //No se puede en un use-cient
   //const sessionId = cookies().get('session-id')?.value
@@ -123,7 +124,7 @@ function FilterableProductTable({ products }) {
 
       {/* DIV 3: Tercer div vacío (Reservado para futuro Analizar/Crawler) */}
       <div className="div-analisis">
-        <h2>Análisis de Cloude haiku 4-5:</h2>
+        <h2>Análisis de Nova:</h2>
             <p>{razonamiento}</p>
       </div>
     </div>
@@ -221,7 +222,7 @@ function ProductRow({ product, setRazonamiento }) {
 
   return (
     <tr>
-      <td  className="seleccionable" onClick={ () => setRazonamiento( manejarClickSeguro(product, document.getElementById('loading-overlay')) )}>
+      <td  className="seleccionable" onClick={setRazonamiento(manejarClickSeguro(product, document.getElementById('loading-overlay')) )}>
         {/*<u><span style="cursor:pointer;">{descrip}</span></u>*/}
         {descrip}
       </td>
