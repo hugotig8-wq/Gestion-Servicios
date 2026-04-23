@@ -247,7 +247,7 @@ const manejarClickSeguro = async (producto, loader) => {
 
     const data = await respuesta.json();
     console.log("Datos recibidos.");
-    return data.response.answer;
+    return data.answer;
   } catch (error) {
     console.error("Error en Dashboard:", error);
     return error.message + "Error: La IA de Bedrock está tardando demasiado. Revisa AWS";
