@@ -40,6 +40,7 @@ export const maxDuration = 60000;
 
 export async function POST(request) {
   try{
+    const {prompt, model, stream} = await request.json();
     const payload = {
             system: [
                 { text: "Eres un asistente experto en coberturas, ofertas y reclamaciones por zona la empresa que tengo contratada, convenceme de renovar o cambiarme de compañía." }
@@ -60,7 +61,7 @@ export async function POST(request) {
             },   
     };
     
-    const {prompt, model, stream} = await request.json();
+    
     const client = new BedrockRuntimeClient(
       {region: "us-east-1", credentials: {
          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
