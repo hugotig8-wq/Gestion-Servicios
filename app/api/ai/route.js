@@ -31,6 +31,7 @@ async function preguntarAlDocumento(prompt, knowledgeBaseId) {
 
 export async function POST(request) {
   try{
+    setTimeout(5000);
     const client = new BedrockAgentRuntimeClient({ region: "us-east-1" }); 
     const {prompt, model, stream} = await request.json();
 
