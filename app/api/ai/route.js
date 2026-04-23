@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
 
 
-export const maxDuration = 10000;
+export const maxDuration = 60000;
 
 /*async function preguntarAlDocumento(prompt, knowledgeBaseId) {
   try {
