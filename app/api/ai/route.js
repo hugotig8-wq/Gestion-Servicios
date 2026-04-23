@@ -38,7 +38,7 @@ export async function POST(request) {
 
   // Ejemplo de uso
     const KB_ID = "EMNEPM6FNC"; 
-    qpreguntarAlDocumento("Saber si no pagaron la retroactividad de los primeros meses de 2024.", KB_ID);
+    preguntarAlDocumento("Saber si no pagaron la retroactividad de los primeros meses de 2024.", KB_ID);
   }catch(error){
     console.log("DETALLE ERROR 500: ",error);
     return NextResponse.json({ error:error.message }, { status: 500 });
