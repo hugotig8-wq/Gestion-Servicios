@@ -9,6 +9,8 @@ export const maxDuration = 10000;
 async function preguntarAlDocumento(prompt, knowledgeBaseId) {
   try {
     const client = new BedrockAgentRuntimeClient({ region: "us-east-1" });
+    const credentials = await client.config.credentials();
+    console.log('Credentials loaded:', !!credentials.accessKeyId);
     const command = new RetrieveAndGenerateCommand({
       input: {
         text: prompt,
@@ -33,8 +35,6 @@ async function preguntarAlDocumento(prompt, knowledgeBaseId) {
 
 export async function POST(request) {
   try{
-    const credentials = await client.config.credentials();
-    console.log('Credentials loaded:', !!credentials.accessKeyId);
     const {prompt, model, stream} = await request.json();
 
   // Ejemplo de uso
