@@ -8,7 +8,11 @@ export const maxDuration = 10000;
 
 async function preguntarAlDocumento(prompt, knowledgeBaseId) {
   try {
-    const client = new BedrockAgentRuntimeClient({ region: "us-east-1" });
+    const client = new BedrockAgentRuntimeClient(
+      {region: "us-east-1", credentials: {
+         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    },});
     const credentials = await client.config.credentials();
     console.log('Credentials loaded:', !!credentials.accessKeyId);
     const command = new RetrieveAndGenerateCommand({
