@@ -1,13 +1,47 @@
 import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
 import { NextResponse } from 'next/server';
+import { BedrockAgentRuntimeClient, RetrieveAndGenerateCommand } from "@aws-sdk/client-bedrock-agent-runtime";
+
 
 export const maxDuration = 10000;
 
+async function preguntarAlDocumento(prompt, knowledgeBaseId) {
+  const command = new RetrieveAndGenerateCommand({
+    input: {
+      text: prompt,
+    },
+    retrieveAndGenerateConfiguration: {
+      type: "KNOWLEDGE_BASE",
+      knowledgeBaseConfiguration: {
+        knowledgeBaseId: knowledgeBaseId, // ID de tu Base de Conocimiento
+        modelArn: "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0", // O el modelo que prefieras
+      },
+    },
+  });
+  try {
+      const response = await client.send(command);
+      console.log("Respuesta:", response.output.text);
+      return response.output.text;
+    } catch (error) {
+      console.error("Error al consultar Bedrock:", error);
+    }
+}
+
 export async function POST(request) {
   try{
-    const client = new BedrockRuntimeClient({ region: "us-east-1" }); 
-    const {prompt, model, stream} = await request.json();
-    const res = await client.send(new InvokeModelCommand({ 
+    const client = new BedrockAgentRuntimeClient({ region: "us-east-1" }); 
+    const {prompt1, model, stream} = await request.json();
+
+    
+
+  // Ejemplo de uso
+  const KB_ID = "EMNEPM6FNC"; 
+  qpreguntarAlDocumento("Saber si no pagaron la retroactividad de los primeros meses de 2024.", KB_ID);
+
+
+
+    
+   /* const res = await client.send(new InvokeModelCommand({ 
         modelId: "us.anthropic.claude-haiku-4-5-20251001-v1:0", 
         body: JSON.stringify({ 
             anthropic_version: "bedrock-2023-05-31", 
@@ -32,7 +66,7 @@ export async function POST(request) {
 }catch(error){
     console.log("DETALLE ERROR 500: ",error);
     return NextResponse.json({ error:error.message }, { status: 500 });
-}
+}*/
 }
 /*https://geoportal.minetur.gob.es/VCTEL/vcne.do debe ser checkeada junto con dirección del cliente y lugares de interés
 y rutas de google maps usando su api.*/
