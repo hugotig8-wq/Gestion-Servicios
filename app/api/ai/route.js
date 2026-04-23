@@ -6,6 +6,8 @@ import { BedrockAgentRuntimeClient, RetrieveAndGenerateCommand } from "@aws-sdk/
 export const maxDuration = 10000;
 
 async function preguntarAlDocumento(prompt, knowledgeBaseId) {
+  
+  const client = new BedrockAgentRuntimeClient({ region: "us-east-1" });
   const command = new RetrieveAndGenerateCommand({
     input: {
       text: prompt,
@@ -25,13 +27,13 @@ async function preguntarAlDocumento(prompt, knowledgeBaseId) {
       return NextResponse.json({ response: response.output.text });
     } catch (error) {
       console.error("Error al consultar Bedrock:", error);
-    }
+      return NextResponse.json({ error:error.message }, { status: 500 });
+   }
 }
 
 export async function POST(request) {
   try{
-    
-    const client = new BedrockAgentRuntimeClient({ region: "us-east-1" }); 
+     
     const {prompt, model, stream} = await request.json();
 
   // Ejemplo de uso
