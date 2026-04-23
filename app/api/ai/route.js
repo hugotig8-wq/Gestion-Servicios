@@ -36,7 +36,11 @@ export const maxDuration = 10000;
       return NextResponse.json({ error:error.message }, { status: 500 });
    }
 }*/
-const payload = {
+
+
+export async function POST(request) {
+  try{
+    const payload = {
             system: [
                 { text: "Eres un asistente experto en coberturas, ofertas y reclamaciones por zona la empresa que tengo contratada, convenceme de renovar o cambiarme de compañía." }
             ],
@@ -54,10 +58,8 @@ const payload = {
                temperature: 0.7,
                topP: 0.9
             },   
-};
-
-export async function POST(request) {
-  try{
+    };
+    
     const {prompt, model, stream} = await request.json();
     const client = new BedrockRuntimeClient(
       {region: "us-east-1", credentials: {
@@ -80,7 +82,7 @@ export async function POST(request) {
         modelId:"amazon.nova-2-lite-v1:0", 
         body: JSON.stringify(payload), // ✅ Convertir a JSON string
         contentType: "application/json",
-        accept: "application/json"
+        accept: "application/json",
     })); 
 
    /* if(!res.ok) {
@@ -88,9 +90,9 @@ export async function POST(request) {
             console.error("Error de Bedrock:", errorData);
             return NextResponse.json({ error: "Bedrock tardó demasiado o falló" }, { status: res.status });
     }*/
-    console.log("Respuesta:", response.output.text);
+    console.log("Respuesta:", res.output.text);
       
-    return NextResponse.json({ response: response.output.text });
+    return NextResponse.json({ response: res.output.text });
 
 }catch(error){
     console.log("DETALLE ERROR 500: ",error);
