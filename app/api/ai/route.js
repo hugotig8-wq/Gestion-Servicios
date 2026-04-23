@@ -58,7 +58,6 @@ export async function POST(request) {
     
         modelId:"amazon.nova-2-lite-v1:0", 
         body: JSON.stringify({ 
-            amazon_version: "bedrock-2025-12-02", 
             max_tokens: 1024, 
             messages: [{ 
                 role: "user", 
