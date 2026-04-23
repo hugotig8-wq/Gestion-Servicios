@@ -7,21 +7,20 @@ import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedroc
 export const maxDuration = 10000;
 
 async function preguntarAlDocumento(prompt, knowledgeBaseId) {
-  
-  const client = new BedrockAgentRuntimeClient({ region: "us-east-1" });
-  const command = new RetrieveAndGenerateCommand({
-    input: {
-      text: prompt,
-    },
-    retrieveAndGenerateConfiguration: {
-      type: "KNOWLEDGE_BASE",
-      knowledgeBaseConfiguration: {
-        knowledgeBaseId: knowledgeBaseId, // ID de tu Base de Conocimiento
-        modelArn: "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0", // O el modelo que prefieras
-      },
-    },
-  });
   try {
+    const client = new BedrockAgentRuntimeClient({ region: "us-east-1" });
+    const command = new RetrieveAndGenerateCommand({
+      input: {
+        text: prompt,
+      },
+      retrieveAndGenerateConfiguration: {
+        type: "KNOWLEDGE_BASE",
+        knowledgeBaseConfiguration: {
+          knowledgeBaseId: knowledgeBaseId, // ID de tu Base de Conocimiento
+          modelArn: "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0", // O el modelo que prefieras
+        },
+      },
+     });
       const response = await client.send(command);
       console.log("Respuesta:", response.output.text);
       
