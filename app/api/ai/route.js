@@ -40,9 +40,7 @@ async function preguntarAlDocumento(prompt, knowledgeBaseId) {
 export async function POST(request) {
   try{
     const {prompt, model, stream} = await request.json();
-
-  // Ejemplo de uso
-    const KB_ID = "EMNEPM6FNC"; 
+    
     return preguntarAlDocumento("Saber si no pagaron la retroactividad de los primeros meses de 2024.", process.env.BEDROCK_KNOWLEDGE_BASE_ID);
   }catch(error){
     console.log("DETALLE ERROR 500: ",error);
