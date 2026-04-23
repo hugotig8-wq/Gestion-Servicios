@@ -36,6 +36,25 @@ export const maxDuration = 10000;
       return NextResponse.json({ error:error.message }, { status: 500 });
    }
 }*/
+const payload = {
+            system: [
+                { text: "Eres un asistente experto en coberturas, ofertas y reclamaciones por zona la empresa que tengo contratada, convenceme de renovar o cambiarme de compañía." }
+            ],
+
+            messages: [
+                {
+                  role: "user",
+                  content: [
+                    { text: prompt}
+                  ]
+                }
+            ],
+            inferenceConfig: {
+               maxTokens: 1024,
+               temperature: 0.7,
+               topP: 0.9
+            },   
+};
 
 export async function POST(request) {
   try{
@@ -54,28 +73,14 @@ export async function POST(request) {
     console.log("DETALLE ERROR 500: ",error);
     return NextResponse.json({ error:error.message }, { status: 500 });
   }*/
+
+    
     const res = await client.send(new InvokeModelCommand({ 
     
         modelId:"amazon.nova-2-lite-v1:0", 
-        body:{
-            system: [
-                { text: "Eres un asistente experto en coberturas, ofertas y reclamaciones por zona la empresa que tengo contratada, convenceme de renovar o cambiarme de compañía." }
-            ],
-
-            messages: [
-                {
-                  role: "user",
-                  content: [
-                    { text: prompt}
-                  ]
-                }
-            ],
-            inferenceConfig: {
-               maxTokens: 1024,
-               temperature: 0.7,
-               topP: 0.9
-            }     
-        }
+        body: JSON.stringify(payload), // ✅ Convertir a JSON string
+        contentType: "application/json",
+        accept: "application/json"
     })); 
 
    /* if(!res.ok) {
