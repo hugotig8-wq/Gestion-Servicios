@@ -7,9 +7,9 @@ export default function Dashboard() {
   const { data: session, status } = useSession();
   const [servicios, setServicios] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [filterText, setFilterText] = useState('');
-  const [inStockOnly, setInStockOnly] = useState(false);
-  const [razonamiento, setRazonamiento] = useState('Selecciona el servicio a analizar');
+  //const [filterText, setFilterText] = useState('');
+  //const [inStockOnly, setInStockOnly] = useState(false);
+  //const [razonamiento, setRazonamiento] = useState('Selecciona el servicio a analizar');
   //const [userId, setUserId] = useState(null);
   //const userId = cookies().get('userId')?.value //No se puede en un use-cient
   //const sessionId = cookies().get('session-id')?.value
