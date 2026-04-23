@@ -23,7 +23,7 @@ async function preguntarAlDocumento(prompt, knowledgeBaseId) {
         type: "KNOWLEDGE_BASE",
         knowledgeBaseConfiguration: {
           knowledgeBaseId: knowledgeBaseId, // ID de tu Base de Conocimiento
-          modelArn:"arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-text-express-v1",
+          modelArn:process.env.BEDROCK_MODEL_ARN,
         },
       },
      });
