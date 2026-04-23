@@ -92,7 +92,7 @@ export async function POST(request) {
             return NextResponse.json({ error: "Bedrock tardó demasiado o falló" }, { status: res.status });
     }*/
 
-    const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+    const responseBody = JSON.parse(new TextDecoder().decode(res.body));
     console.log(responseBody.output.message.content[0].text);
     return NextResponse.json({
       success: true,
