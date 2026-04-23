@@ -67,7 +67,7 @@ export default function Dashboard() {
         <button onClick={() => signOut()}>Cerrar Sesión</button>
       </div>
       
-      <FilterableProductTable products={{ rows: servicios }} />
+      <FilterableProductTable products={{ rows: RIESGOS }} />
     </div>
   </div>
   );
@@ -257,7 +257,7 @@ const manejarClickSeguro = async (producto, loader) => {
   }
 };
 
-/*
+
 const RIESGOS = [
   {Empresa: "Mapfre", Category:"Coche", precio: "$123", novedad: true, nroPoliza: "123", descripcion: "Mazda3", fechaVencimiento:"20/3/2026"},
   {Empresa: "Mapfre", Category:"Coche", precio: "$1432", novedad: false, nroPoliza: "123", descripcion: "Mazda2", fechaVencimiento:"20/3/2026"},
@@ -266,4 +266,4 @@ const RIESGOS = [
   {Empresa: "Mapfre", Category:"Hogar", precio: "$1234", novedad: true, nroPoliza: "123", descripcion: "Calle maria 3", fechaVencimiento:"20/3/2026"},
   {Empresa: "Verti", Category:"Hogar", precio: "$1234", novedad: false, nroPoliza: "123", descripcion: "plaza sotelo 1", fechaVencimiento:"20/3/2026"},
   {Empresa: "Mutua", Category:"Hogar", precio: "$1234", novedad: true, nroPoliza: "123", descripcion: "ronda latina 5", fechaVencimiento:"20/3/2026"},
-]*/
+]
