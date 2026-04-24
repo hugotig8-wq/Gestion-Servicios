@@ -1,0 +1,23 @@
+name: Sync Branches
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Merge main into children
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          for branch in aws-infra gcp-infra style-bootstrap style-tailwind; do
+            git checkout $branch
+            git merge main -m "Internal: Sync with main [skip ci]"
+            git push origin $branch
+          done
+          
