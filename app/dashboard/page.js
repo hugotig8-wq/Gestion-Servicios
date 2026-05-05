@@ -6,10 +6,6 @@ import { useSession } from 'next-auth/react'; // Cambiado de cookies manuales
 export default function Dashboard() {
   const { data: session, status } = useSession();
   const [servicios, setServicios] = useState([]);
-  const [cargando, setCargando] = useState(true);
-  //const [filterText, setFilterText] = useState('');
-  //const [inStockOnly, setInStockOnly] = useState(false);
-  //const [razonamiento, setRazonamiento] = useState('Selecciona el servicio a analizar');
   //const [userId, setUserId] = useState(null);
   //const userId = cookies().get('userId')?.value //No se puede en un use-cient
   //const sessionId = cookies().get('session-id')?.value
@@ -34,9 +30,9 @@ export default function Dashboard() {
           setServicios(data);*/
         } catch (err) {
           console.error("Error cargando datos");
-        } finally {
-          setCargando(false);
-        }
+        } /*finally {
+
+        }*/
       };
       fetchServicios();
     }
@@ -67,7 +63,7 @@ export default function Dashboard() {
         <button onClick={() => signOut()}>Cerrar Sesión</button>
       </div>
       
-      <FilterableProductTable products={{ rows: RIESGOS }} />
+      <FilterableProductTable products={{ rows: servicios }} />
     </div>
   </div>
   );
@@ -257,7 +253,7 @@ const manejarClickSeguro = async (producto, loader) => {
   }
 };
 
-
+/*
 const RIESGOS = [
   {Empresa: "Mapfre", Category:"Coche", precio: "$123", novedad: true, nroPoliza: "123", descripcion: "Mazda3", fechaVencimiento:"20/3/2026"},
   {Empresa: "Mapfre", Category:"Coche", precio: "$1432", novedad: false, nroPoliza: "123", descripcion: "Mazda2", fechaVencimiento:"20/3/2026"},
@@ -267,3 +263,4 @@ const RIESGOS = [
   {Empresa: "Verti", Category:"Hogar", precio: "$1234", novedad: false, nroPoliza: "123", descripcion: "plaza sotelo 1", fechaVencimiento:"20/3/2026"},
   {Empresa: "Mutua", Category:"Hogar", precio: "$1234", novedad: true, nroPoliza: "123", descripcion: "ronda latina 5", fechaVencimiento:"20/3/2026"},
 ]
+*/
