@@ -6,10 +6,6 @@ import { useSession } from 'next-auth/react'; // Cambiado de cookies manuales
 export default function Dashboard() {
   const { data: session, status } = useSession();
   const [servicios, setServicios] = useState([]);
-  const [cargando, setCargando] = useState(true);
-  //const [filterText, setFilterText] = useState('');
-  //const [inStockOnly, setInStockOnly] = useState(false);
-  //const [razonamiento, setRazonamiento] = useState('Selecciona el servicio a analizar');
   //const [userId, setUserId] = useState(null);
   //const userId = cookies().get('userId')?.value //No se puede en un use-cient
   //const sessionId = cookies().get('session-id')?.value
@@ -23,7 +19,7 @@ export default function Dashboard() {
           //const value = document.cookie.split('; ').find(row => row.startsWith('userId='))?.split('=')[1]; //NextAuth se encarga de enviar la cookie de sesión en cada fetch
           const res = await fetch('/api/servicios'); // Next enviará la cookie automáticamente
           const json = await res.json();
-          if (res.ok) setServicios(json.data || []);
+          if (res.ok) setServicios(json.data || []);*/
           /*setUserId(value);
           const response = await fetch("/api/servicios", { // Ruta interna de Next.js
                   method: 'GET',
@@ -34,9 +30,9 @@ export default function Dashboard() {
           setServicios(data);*/
         } catch (err) {
           console.error("Error cargando datos");
-        } finally {
-          setCargando(false);
-        }
+        } /*finally {
+    
+        }*/
       };
       fetchServicios();
     }
@@ -266,4 +262,5 @@ const RIESGOS = [
   {Empresa: "Mapfre", Category:"Hogar", precio: "$1234", novedad: true, nroPoliza: "123", descripcion: "Calle maria 3", fechaVencimiento:"20/3/2026"},
   {Empresa: "Verti", Category:"Hogar", precio: "$1234", novedad: false, nroPoliza: "123", descripcion: "plaza sotelo 1", fechaVencimiento:"20/3/2026"},
   {Empresa: "Mutua", Category:"Hogar", precio: "$1234", novedad: true, nroPoliza: "123", descripcion: "ronda latina 5", fechaVencimiento:"20/3/2026"},
-]*/
+]
+*/
