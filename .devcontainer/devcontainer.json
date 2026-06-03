@@ -3,13 +3,8 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-
-  "features": {
-    "ghcr.io/devcontainers/features/common-utils:2": {},
-    "ghcr.io/devcontainers/features/node:1": {}
-  },
-
   "forwardPorts": [5432],
-
-  "postCreateCommand": "echo 'PostgreSQL ready!'"
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {}
+  }
 }
