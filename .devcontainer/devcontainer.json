@@ -1,21 +1,14 @@
 {
-  "name": "Node + PostgreSQL (Dockerless Codespaces)",
-
+  "name": "Node + PostgreSQL Manual Install",
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
 
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
       "version": "20"
-    },
-    "ghcr.io/devcontainers/features/postgres:1": {
-      "version": "16",
-      "postgresqlUser": "postgres",
-      "postgresqlPassword": "postgres",
-      "postgresqlDatabase": "appdb"
     }
   },
 
-  "forwardPorts": [5432],
+  "postCreateCommand": "bash .devcontainer/setup-postgres.sh",
 
-  "postCreateCommand": "npm install"
+  "forwardPorts": [5432]
 }
