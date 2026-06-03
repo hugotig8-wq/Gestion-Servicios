@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   app:
-    image: mcr.microsoft.com/devcontainers/base:ubuntu-22.04
+    image: ubuntu-22.04
     volumes:
       - ..:/workspaces:cached
     command: sleep infinity
