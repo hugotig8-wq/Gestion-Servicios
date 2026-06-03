@@ -1,0 +1,22 @@
+{
+  "name": "Codespace + PostgreSQL",
+  "image": "://microsoft.com",
+  "features": {
+    "ghcr.io/devcontainers/features/postgres:1": {
+      "version": "16",
+      "password": "postgres",
+      "database": "appdb"
+    }
+  },
+  "forwardPorts": [5432],
+  "remoteEnv": {
+    "DATABASE_URL": "postgresql://postgres:postgres@localhost:5432/appdb"
+  },
+  "portsAttributes": {
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent",
+      "requireLocalPort": true
+    }
+  }
+}
