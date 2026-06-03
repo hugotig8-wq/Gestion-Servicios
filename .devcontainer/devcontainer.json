@@ -9,9 +9,9 @@
     },
     "ghcr.io/devcontainers/features/postgres:1": {
       "version": "16",
-      "postgresqlUser": "dev",
-      "postgresqlPassword": "dev",
-      "postgresqlDatabase": "devdb"
+      "postgresqlUser": "postgres",
+      "postgresqlPassword": "postgres",
+      "postgresqlDatabase": "appdb"
     }
   },
 
