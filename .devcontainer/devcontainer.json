@@ -1,5 +1,19 @@
 {
-  "name": "Configuracion de Rescate",
-  "image": "mcr.microsoft.com/devcontainers/base:ubuntu"
+  "name": "Codespace con Docker",
+  "image": "://microsoft.com",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:1": {
+      "version": "latest",
+      "moby": true
+    }
+  },
+  "forwardPorts": [5432],
+  "portsAttributes": {
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    }
+  }
 }
+
 
