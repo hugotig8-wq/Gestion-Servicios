@@ -3,8 +3,5 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-  "forwardPorts": [5432],
-  "features": {
-    "ghcr.io/devcontainers/features/common-utils:2": {}
-  }
+  "forwardPorts": [5432]
 }
