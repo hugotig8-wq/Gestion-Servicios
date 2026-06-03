@@ -1,7 +1,21 @@
 {
-  "name": "Codespace with PostgreSQL",
-  "dockerComposeFile": "docker-compose.yml",
-  "service": "app",
-  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-  "forwardPorts": [5432]
+  "name": "Node + PostgreSQL (Dockerless Codespaces)",
+
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/postgres:1": {
+      "version": "16",
+      "postgresqlUser": "dev",
+      "postgresqlPassword": "dev",
+      "postgresqlDatabase": "devdb"
+    }
+  },
+
+  "forwardPorts": [5432],
+
+  "postCreateCommand": "npm install"
 }
