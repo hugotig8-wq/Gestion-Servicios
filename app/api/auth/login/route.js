@@ -24,17 +24,10 @@ export async function GET() {
 export async function POST(request) {
   try {
     const { query } = await import("@/lib/db.js");
-    //const { email, password } = await request.json();
+    const { email, password } = await request.json();
 
     // getServerSession valida la cookie 'next-auth.session-token' automáticamente
-    const session = await getServerSession(authOptions);
-
-    if (!session) {
-    return NextResponse.json({ message: "No autorizado POST" }, { status: 401 });
-    }
-    const userId = session.user.id; // El ID del usuario autenticado
-    const email = session.user.email; // El email del usuario autenticado
-    const password = session.user.password; // El password del usuario autenticado (en texto plano por ahora, no recomendado para producción)
+    //const session = await getServerSession(authOptions);
 
     // 1. Validación de entrada
     if (!email || !password) {
@@ -60,8 +53,13 @@ export async function POST(request) {
       return NextResponse.json({ message: "Contraseña incorrecta" }, { status: 401 });
     }
 
-    const result3 = await query(`SELECT * FROM servicios WHERE user_id = $1;`, [userId]);
-    return NextResponse.json({ data: result3.rows });
+    return NextResponse.json({ 
+      message: "Credenciales válidas",
+      user: { id: user.id, nombre: user.nombre, email: user.email }
+    }
+
+    /*const result3 = await query(`SELECT * FROM servicios WHERE user_id = $1;`, [userId]);
+    return NextResponse.json({ data: result3.rows });*/
 
   } catch (error) {
     console.error("LOGIN_ERROR:", error);
