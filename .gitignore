@@ -9,3 +9,5 @@ build/
 .terraform/
 *.tfstate
 *.tfstate.backup
+pg/
+**/pg/data/
