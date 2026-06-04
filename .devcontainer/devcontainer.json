@@ -8,7 +8,7 @@
     }
   },
 
-  "postCreateCommand": "bash .devcontainer/setup-postgres.sh",
+  "postCreateCommand": "",
 
   "forwardPorts": [5432]
 }
