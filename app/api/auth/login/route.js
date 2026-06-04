@@ -43,11 +43,11 @@ export async function POST(request) {
 
     // 2. Buscamos al usuario en la base de datos
     // Nota: Traemos el password_hash para comparar
-    const sql = `'SELECT id, nombre, email, password_hash FROM usuarios WHERE email = $1;'`;
+    const sql = `SELECT id, nombre, email, password_hash FROM usuarios WHERE email = $1;`;
     const result2 = await query(sql, [email]);
 
     // 3. ¿Existe el usuario?
-    if (result.rows.length === 0) {
+    if (result2.rows.length === 0) {
       return NextResponse.json({ message: "Usuario no encontrado" }, { status: 401 });
     }
 
@@ -60,7 +60,7 @@ export async function POST(request) {
       return NextResponse.json({ message: "Contraseña incorrecta" }, { status: 401 });
     }
 
-    const result3 = await query(`'SELECT * FROM servicios WHERE user_id = $1;'`, [userId]);
+    const result3 = await query(`SELECT * FROM servicios WHERE user_id = $1;`, [userId]);
     return NextResponse.json({ data: result3.rows });
 
   } catch (error) {
