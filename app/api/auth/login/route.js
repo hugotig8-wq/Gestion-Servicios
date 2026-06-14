@@ -56,7 +56,7 @@ export async function POST(request) {
     return NextResponse.json({ 
       message: "Credenciales válidas",
       user: { id: user.id, nombre: user.nombre, email: user.email }
-    }
+    });
 
     /*const result3 = await query(`SELECT * FROM servicios WHERE user_id = $1;`, [userId]);
     return NextResponse.json({ data: result3.rows });*/
