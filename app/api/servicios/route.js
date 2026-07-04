@@ -1,13 +1,7 @@
 import { getServerSession } from "next-auth/next";
 import { NextResponse } from 'next/server';
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-//import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-//import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
-//import { v4 as uuidv4 } from 'uuid'; // Para generar IDs únicos
 
-// 1. Configuración de DynamoDB
-//const client = new DynamoDBClient({ region: "us-east-1" });
-//const docClient = DynamoDBDocumentClient.from(client);
 //import { cookies } from 'next/headers';
 
 export async function GET() {
