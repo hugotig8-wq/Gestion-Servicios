@@ -16,5 +16,6 @@ postgres/
 **/pg/data/
 *.tar.gz
 .runtime/
+postgresql-16.3/
 
 **/pg/data/
