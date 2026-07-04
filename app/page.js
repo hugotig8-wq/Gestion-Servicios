@@ -21,7 +21,7 @@ export default function LoginPage() {
     if (res?.ok) {
         window.location.href = '/dashboard'; 
     } else {
-        setError(res.error.message);
+        setError(res?.error || 'No se pudo iniciar sesión');
     }    
   };
 
