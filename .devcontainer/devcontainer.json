@@ -10,7 +10,7 @@
 
   "postCreateCommand": "",
   
-  "postStartCommand": "/workspaces/gestion-servicios/.runtime/pg/bin/pg_ctl -D /workspaces/gestion-servicios/.runtime/pg/data -l /workspaces/gestion-servicios/postgres.log start",
+  "postStartCommand": "/workspaces/Gestion-Servicios/.runtime/pg/bin/pg_ctl -D /workspaces/Gestion-Servicios/.runtime/pg/data -l /workspaces/Gestion-Servicios/postgres.log start", 
 
   "forwardPorts": [5432]
 }
