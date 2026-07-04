@@ -1,6 +1,6 @@
 /*
 Una visión de Humberto Gonzalez Tigreros
-Potenciado por Gemini
+Potenciado por Git y Copilot.
 */
 
 
@@ -25,8 +25,13 @@ export default function RegisterPage() {
 
     // 2. Función de manejo de cambios (Meticulosa y limpia)
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        const { etiqueta, valor } = e.target;
+        setFormData(prev => ({ ...prev, [etiqueta]: valor }));
+    };
+
+    const handleChangeNameOrId= (e) => {
+        const { etiqueta, valor } = e.target;
+        setFormData(prev => ({ ...prev, [etiqueta]: valor.toLowerCase() }));
     };
 
     // 3. El envío al servidor (Conectividad)
@@ -59,21 +64,21 @@ export default function RegisterPage() {
                     name="identificacion" //Al usar name="identificacion", la función handleChange sabe exactamente qué parte del "Estado" actualizar.
                     type="text" 
                     placeholder="DNI, NIE o Pasaporte" 
-                    onChange={handleChange} 
+                    onChange={handleChangeNameOrId} 
                     className="auth-input"
                 />
                 <input 
-                    name="nombre" //Al usar name="nombre", la función handleChange sabe exactamente qué parte del "Estado" actualizar.
+                    name="nombre" //la función handleChange sabe exactamente qué parte del "Estado" actualizar.
                     type="text" 
                     placeholder="Nombre completo" 
-                    onChange={handleChange} 
+                    onChange={handleChangeNameOrId} 
                     className="auth-input"
                 />
                 <input 
-                    name="email" //Al usar name="email", la función handleChange sabe exactamente qué parte del "Estado" actualizar.
+                    name="email" //la handleChange sabe exactamente qué parte del "Estado" actualizar.
                     type="email" 
                     placeholder="Email" 
-                    onChange={handleChange} 
+                    onChange={handleChangeNameOrId} 
                     className="auth-input"
                 />
                 <input 
