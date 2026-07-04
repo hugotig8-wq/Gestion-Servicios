@@ -10,9 +10,11 @@ build/
 *.tfstate
 *.tfstate.backup
 pg/
+
 data/
 postgres/
 **/pg/data/
 *.tar.gz
 .runtime/
 
+**/pg/data/
