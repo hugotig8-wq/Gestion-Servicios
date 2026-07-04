@@ -17,7 +17,7 @@ export async function GET() {
   // El ID viene del JWT que configuramos en los callbacks de NextAuth
   const userId = session.user.id;
 
-  const result = await query(`'SELECT * FROM servicios WHERE user_id = $1;'`, [userId]);
+  const result = await query('SELECT * FROM servicios WHERE user_id = $1;', [userId]);
   return NextResponse.json({ data: result.rows });
 }
 
