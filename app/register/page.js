@@ -33,7 +33,9 @@ export default function RegisterPage() {
         const { etiqueta, valor } = e.target;
         setFormData(prev => ({ ...prev, [etiqueta]: valor.toLowerCase() }));
     };
-
+    
+    //2 validaciones de regExp para password, una particionada que hizo la curva y la otra condensada pero bastante nutriente.
+    
     // 3. El envío al servidor (Conectividad)
     const handleSubmit = async (e) => {
         e.preventDefault(); // Evita que la página se recargue (comportamiento por defecto del DOM)
@@ -88,8 +90,9 @@ export default function RegisterPage() {
                     onChange={handleChange} 
                     className="auth-input"
                 />
+                //input de confirmPasword      
                 <button type="submit" className="btn-primary" disabled={enviando}>
-                    {enviando ? 'Cargando...' : 'Registrarse'}
+                    {enviando ? 'Cargando...' : validaRegExpPassword() ?  ''}
                 </button>
                 <p>{mensaje.texto} {mensaje.tipo}</p>
             </form>
