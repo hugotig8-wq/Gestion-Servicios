@@ -17,7 +17,7 @@ export default function RegisterPage() {
         nombre:'',
         email: '',
         password: '',
-        confirmPassword: ''
+        confPassword: ''
     });
     const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
     const [enviando, setEnviando] = useState(false);
@@ -29,12 +29,18 @@ export default function RegisterPage() {
         setFormData(prev => ({ ...prev, [etiqueta]: valor }));
     };
 
-    const handleChangeNameOrId= (e) => {
+    const handleChangeNameOrId = (e) => {
         const { etiqueta, valor } = e.target;
         setFormData(prev => ({ ...prev, [etiqueta]: valor.toLowerCase() }));
     };
     
     //2 validaciones de regExp para password, una particionada que hizo la curva y la otra condensada pero bastante nutriente.
+    const ValidaRegExpPassword = () => {
+       const regExpIni = /^[A-Za-z0-9]/
+       regExpIni.test(password) ? return true : false;
+           
+           
+    }
     
     // 3. El envío al servidor (Conectividad)
     const handleSubmit = async (e) => {
@@ -90,9 +96,15 @@ export default function RegisterPage() {
                     onChange={handleChange} 
                     className="auth-input"
                 />
-                //input de confirmPasword      
+                <input 
+                    name="confPassword" 
+                    type="password" 
+                    placeholder="Confirmar Contraseña" 
+                    onChange={handleChange} 
+                    className="auth-input"
+                />    
                 <button type="submit" className="btn-primary" disabled={enviando}>
-                    {enviando ? 'Cargando...' : validaRegExpPassword() ?  ''}
+                    {enviando ? 'Cargando...' : validaRegExpPassword() ?  'Enviar' : 'Error de validacion'}
                 </button>
                 <p>{mensaje.texto} {mensaje.tipo}</p>
             </form>
