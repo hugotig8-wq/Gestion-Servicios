@@ -42,7 +42,7 @@ export default function RegisterPage() {
        const regExpMay = /[A-Z]/;
        const regExpTamano = /.*{8,15}/;
        const regExpCorreo = /(?=[A-Z0-9a-z]+)[@]/; //Falta pulirlo
-       //validar nombre.
+       //validar nombre, minimo 2 palabras sin caracteres especiales ni letras especiales.
        
        if (!regExpIni.test(formData.password)){setMensaje{texto:'Debe iniciar con mayúscula no especial', tipo:'validationError'}; return false;}
        if (!regExpEsp.test(formData.password)){setMensaje{texto:'Debe tener 1 caracter especial, no letra especial', tipo:'validationError'}; return false;}
