@@ -36,11 +36,23 @@ export default function RegisterPage() {
     
     //2 validaciones de regExp para password, una particionada que hizo la curva y la otra condensada pero bastante nutriente.
     const ValidaRegExpPassword = () => {
-       const regExpIni = /^[A-Za-z0-9]/
-       regExpIni.test(password) ? return true : false;
-           
-           
-    }
+       const regExpIni = /^[A-Z]/;
+       const regExpEsp = /[~`|•√π÷×§∆£¢€¥^°={}\\%[\]<>@#$_&-+()/*"':;!?,.]/;
+       const regExpMin = /[a-z]/;
+       const regExpMay = /[A-Z]/;
+       const regExpTamano = /.*{8,15}/;
+       const regExpCorreo = /(?=[A-Z0-9a-z]+)[@]/; //Falta pulirlo
+       
+       if (!regExpIni.test(formData.password)){setMensaje{texto:'Debe iniciar con mayúscula no especial', tipo:'validationError'}; return false;}
+       if (!regExpEsp.test(formData.password)){setMensaje{texto:'Debe tener 1 caracter especial, no letra especial', tipo:'validationError'}; return false;}
+       if (!regExpMin.test(formData.password)){setMensaje{texto:'Debe tener 1 minuscula', tipo:'validationError'}; return false;}
+       if (!regExpMay.test(formData.password)){setMensaje{texto:'Debe tener 1 mayuscula', tipo:'validationError'}; return false;}
+       if (!regExpTamano.test(formData.password)){setMensaje{texto:'Debe tener de 8 a 15 caracteres', tipo:'validationError'}; return false;}
+       if (formData.password!==formData.confPassword){setMensaje{texto:'Debe ser igual la confirmacion del password.', tipo:'validationError'}; return false;}
+       if (regExpCorreo.test(formData.correo){
+        
+       return true;
+    };
     
     // 3. El envío al servidor (Conectividad)
     const handleSubmit = async (e) => {
@@ -104,7 +116,7 @@ export default function RegisterPage() {
                     className="auth-input"
                 />    
                 <button type="submit" className="btn-primary" disabled={enviando}>
-                    {enviando ? 'Cargando...' : validaRegExpPassword() ?  'Enviar' : 'Error de validacion'}
+                    {enviando ? 'Cargando...' : validaRegExpPassword() ?  'Enviar' : 'Error validacion'}
                 </button>
                 <p>{mensaje.texto} {mensaje.tipo}</p>
             </form>
