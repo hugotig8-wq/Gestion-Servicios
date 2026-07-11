@@ -69,7 +69,7 @@ export default function RegisterPage() {
         setFormData(nuevoFormData);
         let esValido = true;
 
-        switch(campo){
+        switch(name){
             case 'nombre': esValido = validaRegExpNombre(nuevoFormData.nombre); setMensaje({texto:'Nombres debe ser en letras no especiales y separados por sólo 1 espacio.', tipo: 'validationError'});
             break;
             case 'apellidos': esValido = validaRegExpApellidos(nuevoFormData.apellidos); setMensaje({texto:'Apellidos debe ser en letras no especiales y separados por sólo 1 espacio.', tipo: 'validationError'});
