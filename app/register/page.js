@@ -28,6 +28,7 @@ export default function RegisterPage() {
     // 2. Función de manejo de cambios (Meticulosa y limpia)
     const handleChange = (e) => {
         const { name, value } = e.target;
+        setValidado(true);
         if (name==='identificacion') {setFormData(prev => ({ ...prev, [name]: value.toLowerCase() }));validaRegExpId()}
         if (name==='nombre'){setFormData(prev => ({ ...prev, [name]: value.toLowerCase() }));validaRegExpNombre();}
         if (name==='apellidos'){setFormData(prev => ({ ...prev, [name]: value.toLowerCase() }));validaRegExpApellidos();}
@@ -57,7 +58,7 @@ export default function RegisterPage() {
 
     const validaRegExpPassword = () => {
        const regExpPassword = /^(?=[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~])[A-Za-z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]{8,15}$/;
-       if (regExpPassword.test(formData.password){setMensaje({texto:'Debe tener al menos 1 caracter especial, no letras especiales y de 8 a 15 caracteres.', tipo: 'validationError'}); return false;}
+       if (regExpPassword.test(formData.password){setMensaje({texto:'Debe tener al menos 1 caracter especial, no letras especiales y de 8 a 15 caracteres.', tipo: 'validationError'}); setValidado(false);}
     }
 
     const validaRegExpConfPassword = () => {
@@ -71,27 +72,27 @@ export default function RegisterPage() {
 
     const validaRegExpApellidos = () => {
         const regExpApellidos = /^[A-Za-zÑñ]+(?:\s[A-Za-zñÑ]+)*$/;
-        if (regExpNombre.test(formData.nombre)){setMensaje({texto:'Nombres debe ser en letras no especiales y separados por sólo 1 espacio.', tipo: 'validationError'}); return false;}    
+        if (regExpNombre.test(formData.nombre)){setMensaje({texto:'Nombres debe ser en letras no especiales y separados por sólo 1 espacio.', tipo: 'validationError'}); setValidado(false);}    
     }
 
     const validaRegExpCorreo = () => {
         const regExpCorreo = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\.[A-Za-z]{2,}$/;
-        if (regExpCorreo.test(formData.email)){setMensaje({texto:'Correo debe tener formato xxx@yyy.zz sin espacios.', tipo: 'validationError'}); return false;}    
+        if (regExpCorreo.test(formData.email)){setMensaje({texto:'Correo debe tener formato xxx@yyy.zz sin espacios.', tipo: 'validationError'}); setValidado(false);}    
     }
 
     const validaRegExpNie = () => {
         const regExpNie = /^[A-Za-z]([0-9]{7})[A-Za-z]$/;
-        if (regExpNombre.test(formData.identificacion)){setMensaje({texto:'Nie es 1 letra seguido de 7 números y finaliza en 1 letra sin espacios.', tipo: 'validationError'}); return false;}    
+        if (regExpNombre.test(formData.identificacion)){setMensaje({texto:'Nie es 1 letra seguido de 7 números y finaliza en 1 letra sin espacios.', tipo: 'validationError'}); setValidado(false);}    
     }
 
     const validaRegExpDni = () => {
         const regExpDni = /^[0-9]{8}[A-Za-z]$/;
-        if (regExpDni.test(formData.identificacion)){setMensaje({texto:'Dni debe tener 8 números y finalizar en 1 letra sin espacios', tipo: 'validationError'}); return false;}    
+        if (regExpDni.test(formData.identificacion)){setMensaje({texto:'Dni debe tener 8 números y finalizar en 1 letra sin espacios', tipo: 'validationError'}); setValidado(false);}    
     }
 
     const validaRegExpPasaporte = () => {
         const regExpPasaporte = /^[A-Za-z](?:[A-Za-z0-9])+$/;
-        if (regExpPasaporte.test(formData.identificacion)){setMensaje({texto:'Pasaporte inicia en letra y tiene al menos 1 número después sin espacios', tipo: 'validationError'}); return false;}    
+        if (regExpPasaporte.test(formData.identificacion)){setMensaje({texto:'Pasaporte inicia en letra y tiene al menos 1 número después sin espacios', tipo: 'validationError'}); setValidado(false);}    
     }
 
     const validaRegExpId = () => {
@@ -154,6 +155,13 @@ export default function RegisterPage() {
                     className="auth-input"
                 />
                 <input 
+                    name="apellidos" //la función handleChange sabe exactamente qué parte del "Estado" actualizar.
+                    type="text" 
+                    placeholder="Apellidos" 
+                    onChange={handleChange} 
+                    className="auth-input"
+                />
+                <input 
                     name="email" //la handleChange sabe exactamente qué parte del "Estado" actualizar.
                     type="email" 
                     placeholder="Email" 
@@ -174,7 +182,7 @@ export default function RegisterPage() {
                     onChange={handleChange} 
                     className="auth-input"
                 />    
-                <button id="btn-submit-register" type="submit" className="btn-primary" disabled={enviando}>
+                <button id="btn-submit-register" type="submit" className="btn-primary" disabled={enviando||validado}>
                     {enviando ? 'Cargando...' : validado ? 'Enviar': 'ValidError'}
                 </button>
                 <p>{mensaje.texto} {mensaje.tipo}</p>
