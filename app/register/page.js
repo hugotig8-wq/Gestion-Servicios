@@ -35,30 +35,32 @@ export default function RegisterPage() {
     };
     
     //2 validaciones de regExp para password, una particionada que hizo la curva y la otra condensada pero bastante nutriente.
-    const ValidaRegExpPassword = () => {
-       const regExpIni = /^[A-Z]/;
-       const regExpEsp = /[~`|•√π÷×§∆£¢€¥^°={}\\%[\]<>@#$_&-+()/*"':;!?,.]/;
-       const regExpMin = /[a-z]/;
-       const regExpMay = /[A-Z]/;
-       const regExpTamano = /.*{8,15}/;
-       const regExpCorreo = /(?=[A-Z0-9a-z]+)[@]/; //Falta pulirlo
+    const ValidaRegExpPasswordPrecisa = () => {
+       const regExpIni = /^(?=.*[A-Za-z])/;
+       const regExpEsp = /(?=.*[~`|•√π÷×§∆£¢€¥^°={}\\%[\]<>@#$_&-+()/*"':;!?,.])/;
+       const regExpMin = /(?=.*[a-z])/;
+       const regExpMay = /(?=.*[A-Z])/;
+       const regExpTamano = /.*{8,15}$/;
+       const regExpCorreo = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\.[A-Za-z]{2,}$/;
        
        
-       if (!regExpIni.test(formData.password)){setMensaje({texto:'Contraseña debe iniciar con mayúscula no especial', tipo:'validationError'}; return false;}
+       if (!regExpIni.test(formData.password)){setMensaje({texto:'Contraseña debe iniciar con letra no especial', tipo:'validationError'}; return false;}
        if (!regExpEsp.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 caracter especial, no letra especial', tipo:'validationError'}; return false;}
        if (!regExpMin.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 minúscula', tipo:'validationError'}; return false;}
        if (!regExpMay.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 mayúscula', tipo:'validationError'}; return false;}
        if (!regExpTamano.test(formData.password)){setMensaje({texto:'Contraseña debe tener de 8 a 15 caracteres', tipo:'validationError'}; return false;}
        if (formData.password!==formData.confPassword){setMensaje({texto:'Debe ser igual la confirmacion del password.', tipo:'validationError'}); return false;}
-       if (regExpCorreo.test(formData.correo){setMensaje({texto:'Correo debe tener formato de correo', tipo:'validationError'}; return false;}
+       if (regExpCorreo.test(formData.correo){setMensaje({texto:'Correo debe tener formato de correo', tipo:'validationError'}); return false;}
         
        return true;
     };
 
     const validaRegExpPassword = () => {
        const regExpPassword = /^(?=[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~])[A-Za-z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]{8,15}$/;
-       if (regExpPassword.test(formData.password){setMensaje(
-       
+       if (regExpPassword.test(formData.password){setMensaje({texto:'Debe tener al menos 1 caracter especial, no letras especiales y de 8 a 15 caracteres.', tipo: 'validationError'}); return false;}
+       if (regExpCorreo.test(formData.correo){setMensaje({texto:'Correo debe tener formato de correo', tipo:'validationError'}); return false;}
+      
+       return true;
     }
     
     // 3. El envío al servidor (Conectividad)
