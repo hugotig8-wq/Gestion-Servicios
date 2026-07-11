@@ -49,11 +49,11 @@ export default function RegisterPage() {
     
     //2 validaciones de regExp para password, una particionada que hizo la curva y la otra condensada pero bastante nutriente.
     const ValidaRegExpPasswordPrecisa = () => {
-       const regExpIni = /^(?=.*[A-Za-z])/;
+       const regExpIni = /^(?=[A-Za-z])/;
        const regExpEsp = /(?=.*[~`|•√π÷×§∆£¢€¥^°={}\\%[\]<>@#$_&-+()/*"':;!?,.])/;
        const regExpMin = /(?=.*[a-z])/;
        const regExpMay = /(?=.*[A-Z])/;
-       const regExpTamano = /.*{8,15}$/;
+       const regExpTamano = /^.{8,15}$/;// o /.{8,15}/
        
        if (!regExpIni.test(formData.password)){setMensaje({texto:'Contraseña debe iniciar con letra no especial', tipo:'validationError'}; setValidForm(prev => ({...prev, [password]: false}));}
        if (!regExpEsp.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 caracter especial, no letra especial', tipo:'validationError'}; setValidForm(prev => ({...prev, [password]: false}));}
@@ -64,7 +64,7 @@ export default function RegisterPage() {
     };
 
     const validaRegExpPassword = () => {
-       const regExpPassword = /^(?=[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~])[A-Za-z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]{8,15}$/;
+       const regExpPassword = /^(?=[A-Za-z])(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~])[A-Za-z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]{8,15}$/;
        if (!regExpPassword.test(formData.password){setMensaje({texto:'Debe tener al menos 1 caracter especial, no letras especiales y de 8 a 15 caracteres.', tipo: 'validationError'}); setValidForm(prev => ({...prev, [password]: false}));}
     }
 
@@ -88,7 +88,7 @@ export default function RegisterPage() {
     }
 
     const validaRegExpNie = () => {
-        const regExpNie = /^[A-Za-z]([0-9]{7})[A-Za-z]$/;
+        const regExpNie = /^[XYZxyz][0-9]{7}[A-Za-z]$/;
         if (!regExpNombre.test(formData.identificacion)){setMensaje({texto:'Nie es 1 letra seguido de 7 números y finaliza en 1 letra sin espacios.', tipo: 'validationError'}); setValidForm(prev => ({...prev, [identificacion]: false}));}    
     }
 
@@ -98,7 +98,7 @@ export default function RegisterPage() {
     }
 
     const validaRegExpPasaporte = () => {
-        const regExpPasaporte = /^[A-Za-z](?:[A-Za-z0-9])+$/;
+        const regExpPasaporte = /^[A-Za-z](?=.*\d)[A-Za-z0-9]{6,20}$/;
         if (!regExpPasaporte.test(formData.identificacion)){setMensaje({texto:'Pasaporte inicia en letra y tiene al menos 1 número después sin espacios', tipo: 'validationError'}); setValidForm(prev => ({...prev, [identificacion]: false}));}    
     }
 
