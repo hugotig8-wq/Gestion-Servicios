@@ -42,7 +42,7 @@ export default function RegisterPage() {
 
     const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
     const [enviando, setEnviando] = useState(false);
-    const [formValidado,setFormValidado] = useState(false);
+    let formValidado = Object.values(validForm).every(Boolean);
     
     // 2. Función de manejo de cambios (Meticulosa y limpia)
     const handleChange1 = (e) => {
@@ -54,7 +54,7 @@ export default function RegisterPage() {
         else if (name==='email') {setFormData(prev => ({ ...prev, [name]: value.toLowerCase() }));validaRegExpCorreo1();}
         else if (name==='password') {setFormData(prev => ({ ...prev, [name]: value }));validaRegExpPassword1();}
         else if (name==='confPassword') {setFormData(prev => ({ ...prev, [name]: value }));validaRegExpConfPassword1();}
-       
+        
         if (validForm['tipoId']&& validForm['identificacion']&&validForm['nombre']&& validForm['apellidos']&& validForm['email']&& validForm['password']&& validForm['confPassword']){setFormValidado(true);}
     };
 
@@ -89,8 +89,8 @@ export default function RegisterPage() {
             break;
         }
         setValidForm(prev => ({...prev, [name]:esValido}));
-        
-        if (validForm['tipoId']&& validForm['identificacion']&&validForm['nombre']&& validForm['apellidos']&& validForm['email']&& validForm['password']&& validForm['confPassword']){setFormValidado(true);}
+        formValidado = Object.values(validForm).every(Boolean);
+    
     };
     
     //2 validaciones de regExp para password, una particionada que hizo la curva y la otra condensada pero bastante nutriente.
