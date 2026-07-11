@@ -38,15 +38,15 @@ export default function RegisterPage() {
     // 2. Función de manejo de cambios (Meticulosa y limpia)
     const handleChange = (e) => {
         const { name, value } = e.target;
-        if (name==='identificacion') {setFormData(prev => ({ ...prev, [name]: value.toLowerCase() }));validaRegExpId()}
-        if (name==='nombre'){setFormData(prev => ({ ...prev, [name]: value.toLowerCase() }));validaRegExpNombre();}
-        if (name==='apellidos'){setFormData(prev => ({ ...prev, [name]: value.toLowerCase() }));validaRegExpApellidos();}
-        if (name==='email') {setFormData(prev => ({ ...prev, [name]: value.toLowerCase() }));validaRegExpCorreo();}
         if (name==='tipoId') {setFormData(prev => ({ ...prev, [name]: value.toLowerCase() }));}
-        if (name==='password') {setFormData(prev => ({ ...prev, [name]: value }));validaRegExpPassword();}
-        if (name==='confPassword') {setFormData(prev => ({ ...prev, [name]: value }));validaRegExpConfPassword();}
+        else if (name==='identificacion') {setFormData(prev => ({ ...prev, [name]: value.toLowerCase() }));validaRegExpId(name)}
+        else if (name==='nombre'){setFormData(prev => ({ ...prev, [name]: value.toLowerCase() }));validaRegExpNombre(name);}
+        else if (name==='apellidos'){setFormData(prev => ({ ...prev, [name]: value.toLowerCase() }));validaRegExpApellidos(name);}
+        else if (name==='email') {setFormData(prev => ({ ...prev, [name]: value.toLowerCase() }));validaRegExpCorreo(name);}
+        else if (name==='password') {setFormData(prev => ({ ...prev, [name]: value }));validaRegExpPassword(name);}
+        else if (name==='confPassword') {setFormData(prev => ({ ...prev, [name]: value }));validaRegExpConfPassword(name);}
        
-       if (validForm['tipoId']&& validForm['identificacion']&&validForm['nombre']&& validForm['apellidos']&& validForm['email']&& validForm['password']&& validForm['confPassword']){setFormValidado(true);}
+        if (validForm['tipoId']&& validForm['identificacion']&&validForm['nombre']&& validForm['apellidos']&& validForm['email']&& validForm['password']&& validForm['confPassword']){setFormValidado(true);}
     };
     
     //2 validaciones de regExp para password, una particionada que hizo la curva y la otra condensada pero bastante nutriente.
@@ -57,10 +57,10 @@ export default function RegisterPage() {
        const regExpMay = /(?=.*[A-Z])/;
        const regExpTamano = /^.{8,15}$/;// o /.{8,15}/
        
-       if (!regExpIni.test(formData.password)){setMensaje({texto:'Contraseña debe iniciar con letra no especial', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));} else {setValidForm(prev => ({...prev, ['password']:true}));}
-       if (!regExpEsp.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 caracter especial, no letra especial', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));} else {setValidForm(prev => ({...prev, ['password']:true}));}
-       if (!regExpMin.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 minúscula', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));} else {setValidForm(prev => ({...prev, ['password']:true}));}
-       if (!regExpMay.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 mayúscula', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));} else {setValidForm(prev => ({...prev, ['password']:true}));}
+       if (!regExpIni.test(formData.password)){setMensaje({texto:'Contraseña debe iniciar con letra no especial', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));}
+       if (!regExpMin.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 minúscula', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));}
+       if (!regExpMay.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 mayúscula', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));}
+       if (!regExpEsp.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 caracter especial, no letra especial', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));}
        if (!regExpTamano.test(formData.password)){setMensaje({texto:'Contraseña debe tener de 8 a 15 caracteres', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));} else {setValidForm(prev => ({...prev, ['password']:true}));}
        if (formData.password!==formData.confPassword){setMensaje({texto:'Debe ser igual la confirmacion del password.', tipo:'validationError'}); setValidForm(prev => ({...prev, ['confPassword']: false}));} else {setValidForm(prev => ({...prev, ['confPassword']:true}));}
         
@@ -71,18 +71,38 @@ export default function RegisterPage() {
        if (!regExpPassword.test(formData.password){setMensaje({texto:'Debe tener al menos 1 caracter especial, no letras especiales y de 8 a 15 caracteres.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['password']: false}));} else {setValidForm(prev => ({...prev, ['password']:true}));}
     }
 
+    const validaRegExpPassword = (passw) => {
+        const regExpPassword = /^(?=[A-Za-z])(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~])[A-Za-z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]{8,15}$/;
+        return regExpPassword.test(passw);
+    }
+
     const validaRegExpConfPassword = () => {
        if (formData.password!==formData.confPassword){setMensaje({texto:'Confirmar contraseña debe ser igual contraseña.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['confPassword']: false}));} else {setValidForm(prev => ({...prev, ['confPassword']:true}));}
     }
+
+    const validaRegExpConfPassword = () => {
+       if (formData.password!==formData.confPassword){setMensaje({texto:'Confirmar contraseña debe ser igual contraseña.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['confPassword']: false})); return false} else {setValidForm(prev => ({...prev, ['confPassword']:true}));return true}
+    }
+       
 
     const validaRegExpNombre = () => {
         const regExpNombre = /^(?=.{1,20}$)[A-Za-zÑñ]+(?:\s[A-Za-zñÑ]+)*$/;
         if (!regExpNombre.test(formData.nombre)){setMensaje({texto:'Nombres debe ser en letras no especiales y separados por sólo 1 espacio.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['nombre']: false}));} else {setValidForm(prev => ({...prev, ['nombre']:true}));}
     }
 
+    const validaRegExpNombre = (nombre) => {
+        const regExpNombre = /^(?=.{1,20}$)[A-Za-zÑñ]+(?:\s[A-Za-zñÑ]+)*$/;
+        return regExpNombre.test(nombre);
+    }
+
     const validaRegExpApellidos = () => {
         const regExpApellidos = /^(?=.{1,40}$)[A-Za-zÑñ]+(?:\s[A-Za-zñÑ]+)*$/;
-        if (!regExpApellidos.test(formData.nombre)){setMensaje({texto:'Nombres debe ser en letras no especiales y separados por sólo 1 espacio.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['apellidos']: false}));} else {setValidForm(prev => ({...prev, ['apellidos']:true}));}  
+        if (!regExpApellidos.test(formData.apellidos)){setMensaje({texto:'Nombres debe ser en letras no especiales y separados por sólo 1 espacio.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['apellidos']: false}));} else {setValidForm(prev => ({...prev, ['apellidos']:true}));}  
+    }
+
+    const validaRegExpApellidos = (ap) => {
+        const regExpApellidos = /^(?=.{1,40}$)[A-Za-zÑñ]+(?:\s[A-Za-zñÑ]+)*$/;
+        return regExpApellidos.test(ap);
     }
 
     const validaRegExpCorreo = () => {
@@ -90,9 +110,19 @@ export default function RegisterPage() {
         if (!regExpCorreo.test(formData.email)){setMensaje({texto:'Correo debe tener formato xxx@yyy.zz sin espacios, subdominios o dominios deben iniciar y terminar en letra o numero pero pueden contener -', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['email']: false}));} else {setValidForm(prev => ({...prev, ['email']:true}));}  
     }
 
+    const validaRegExpCorreo = (email) => {
+        const regExpCorreo = /^(?=.{3,254}$)(?=[^@]{1,64}@)[a-zA-A0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+        return regExpCorreo.test(email);
+    }
+
     const validaRegExpNie = () => {
         const regExpNie = /^[XYZxyz][0-9]{7}[A-Za-z]$/;
-        if (!regExpNombre.test(formData.identificacion)){setMensaje({texto:'Nie es 1 letra seguido de 7 números y finaliza en 1 letra sin espacios.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['identificacion']: false}));} else {setValidForm(prev => ({...prev, ['identificacion']:true}));}  
+        if (!regExpNie.test(formData.identificacion)){setMensaje({texto:'Nie es 1 letra seguido de 7 números y finaliza en 1 letra sin espacios.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['identificacion']: false}));} else {setValidForm(prev => ({...prev, ['identificacion']:true}));}  
+    }
+
+    const validaRegExpNie = (nie) => {
+        const regExpNie = /^[XYZxyz][0-9]{7}[A-Za-z]$/;
+        return regExpNie.test(nie);
     }
 
     const validaRegExpDni = () => {
@@ -100,15 +130,25 @@ export default function RegisterPage() {
         if (!regExpDni.test(formData.identificacion)){setMensaje({texto:'Dni debe tener 8 números y finalizar en 1 letra sin espacios', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['identificacion']: false}));} else {setValidForm(prev => ({...prev, ['identificacion']:true}));}    
     }
 
+    const validaRegExpDni = (dni) => {
+        const regExpDni = /^[0-9]{8}[A-Za-z]$/;
+        return regExpDni.test(nombre);
+    }
+
     const validaRegExpPasaporte = () => {
         const regExpPasaporte = /^[A-Za-z](?=.*\d)[A-Za-z0-9]{6,20}$/;
         if (!regExpPasaporte.test(formData.identificacion)){setMensaje({texto:'Pasaporte inicia en letra y tiene al menos 1 número después sin espacios', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['identificacion']: false}));} else {setValidForm(prev => ({...prev, ['identificacion']:true}));}  
     }
 
+    const validaRegExpPasaporte = (pas) => {
+        const regExpPasaporte = /^[A-Za-z](?=.*\d)[A-Za-z0-9]{6,20}$/;
+        return regExpPasaporte.test(pas);
+    }
+
     const validaRegExpId = () => {
-        if(formData.tipoId==='dni'){validaRegExpDni();}
-        if(formData.tipoId==='nie'){validaRegExpNie();}
-        if(formData.tipoId==='pasaporte'){validaRegExpPasaporte();}
+        if(formData.tipoId==='dni'){if(validaRegExpDni()){return true;}else{return false;}}
+        else if(formData.tipoId==='nie'){if(validaRegExpNie()){return true;}else{return false;}}
+        else if(formData.tipoId==='pasaporte'){if(validaRegExpPasaporte()){return true;}else{return false;}}
     }   
     
     // 3. El envío al servidor (Conectividad)
