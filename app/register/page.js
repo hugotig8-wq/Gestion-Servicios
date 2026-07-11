@@ -57,51 +57,52 @@ export default function RegisterPage() {
        const regExpMay = /(?=.*[A-Z])/;
        const regExpTamano = /^.{8,15}$/;// o /.{8,15}/
        
-       if (!regExpIni.test(formData.password)){setMensaje({texto:'Contraseña debe iniciar con letra no especial', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));}
-       if (!regExpEsp.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 caracter especial, no letra especial', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));}
-       if (!regExpMin.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 minúscula', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));}
-       if (!regExpMay.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 mayúscula', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));}
-       if (!regExpTamano.test(formData.password)){setMensaje({texto:'Contraseña debe tener de 8 a 15 caracteres', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));}
-       if (formData.password!==formData.confPassword){setMensaje({texto:'Debe ser igual la confirmacion del password.', tipo:'validationError'}); setValidForm(prev => ({...prev, ['confPassword']: false}));}
+       if (!regExpIni.test(formData.password)){setMensaje({texto:'Contraseña debe iniciar con letra no especial', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));} else {setValidForm(prev => ({...prev, ['password']:true}));}
+       if (!regExpEsp.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 caracter especial, no letra especial', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));} else {setValidForm(prev => ({...prev, ['password']:true}));}
+       if (!regExpMin.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 minúscula', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));} else {setValidForm(prev => ({...prev, ['password']:true}));}
+       if (!regExpMay.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 mayúscula', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));} else {setValidForm(prev => ({...prev, ['password']:true}));}
+       if (!regExpTamano.test(formData.password)){setMensaje({texto:'Contraseña debe tener de 8 a 15 caracteres', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));} else {setValidForm(prev => ({...prev, ['password']:true}));}
+       if (formData.password!==formData.confPassword){setMensaje({texto:'Debe ser igual la confirmacion del password.', tipo:'validationError'}); setValidForm(prev => ({...prev, ['confPassword']: false}));} else {setValidForm(prev => ({...prev, ['confPassword']:true}));}
+        
     };
 
     const validaRegExpPassword = () => {
        const regExpPassword = /^(?=[A-Za-z])(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~])[A-Za-z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]{8,15}$/;
-       if (!regExpPassword.test(formData.password){setMensaje({texto:'Debe tener al menos 1 caracter especial, no letras especiales y de 8 a 15 caracteres.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['password']: false}));}
+       if (!regExpPassword.test(formData.password){setMensaje({texto:'Debe tener al menos 1 caracter especial, no letras especiales y de 8 a 15 caracteres.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['password']: false}));} else {setValidForm(prev => ({...prev, ['password']:true}));}
     }
 
     const validaRegExpConfPassword = () => {
-       if (formData.password!==formData.confPassword){setMensaje({texto:'Confirmar contraseña debe ser igual contraseña.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['confPassword']: false}));}
+       if (formData.password!==formData.confPassword){setMensaje({texto:'Confirmar contraseña debe ser igual contraseña.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['confPassword']: false}));} else {setValidForm(prev => ({...prev, ['confPassword']:true}));}
     }
 
     const validaRegExpNombre = () => {
         const regExpNombre = /^(?=.{1,20}$)[A-Za-zÑñ]+(?:\s[A-Za-zñÑ]+)*$/;
-        if (!regExpNombre.test(formData.nombre)){setMensaje({texto:'Nombres debe ser en letras no especiales y separados por sólo 1 espacio.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['nombre']: false}));}   
+        if (!regExpNombre.test(formData.nombre)){setMensaje({texto:'Nombres debe ser en letras no especiales y separados por sólo 1 espacio.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['nombre']: false}));} else {setValidForm(prev => ({...prev, ['nombre']:true}));}
     }
 
     const validaRegExpApellidos = () => {
         const regExpApellidos = /^(?=.{1,40}$)[A-Za-zÑñ]+(?:\s[A-Za-zñÑ]+)*$/;
-        if (!regExpApellidos.test(formData.nombre)){setMensaje({texto:'Nombres debe ser en letras no especiales y separados por sólo 1 espacio.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['apellidos']: false}));}    
+        if (!regExpApellidos.test(formData.nombre)){setMensaje({texto:'Nombres debe ser en letras no especiales y separados por sólo 1 espacio.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['apellidos']: false}));} else {setValidForm(prev => ({...prev, ['apellidos']:true}));}  
     }
 
     const validaRegExpCorreo = () => {
         const regExpCorreo = /^(?=.{3,254}$)(?=[^@]{1,64}@)[a-zA-A0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-        if (!regExpCorreo.test(formData.email)){setMensaje({texto:'Correo debe tener formato xxx@yyy.zz sin espacios, subdominios o dominios deben iniciar y terminar en letra o numero pero pueden contener -', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['email']: false}));}    
+        if (!regExpCorreo.test(formData.email)){setMensaje({texto:'Correo debe tener formato xxx@yyy.zz sin espacios, subdominios o dominios deben iniciar y terminar en letra o numero pero pueden contener -', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['email']: false}));} else {setValidForm(prev => ({...prev, ['email']:true}));}  
     }
 
     const validaRegExpNie = () => {
         const regExpNie = /^[XYZxyz][0-9]{7}[A-Za-z]$/;
-        if (!regExpNombre.test(formData.identificacion)){setMensaje({texto:'Nie es 1 letra seguido de 7 números y finaliza en 1 letra sin espacios.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['identificacion']: false}));}    
+        if (!regExpNombre.test(formData.identificacion)){setMensaje({texto:'Nie es 1 letra seguido de 7 números y finaliza en 1 letra sin espacios.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['identificacion']: false}));} else {setValidForm(prev => ({...prev, ['identificacion']:true}));}  
     }
 
     const validaRegExpDni = () => {
         const regExpDni = /^[0-9]{8}[A-Za-z]$/;
-        if (!regExpDni.test(formData.identificacion)){setMensaje({texto:'Dni debe tener 8 números y finalizar en 1 letra sin espacios', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['identificacion']: false}));}    
+        if (!regExpDni.test(formData.identificacion)){setMensaje({texto:'Dni debe tener 8 números y finalizar en 1 letra sin espacios', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['identificacion']: false}));} else {setValidForm(prev => ({...prev, ['identificacion']:true}));}    
     }
 
     const validaRegExpPasaporte = () => {
         const regExpPasaporte = /^[A-Za-z](?=.*\d)[A-Za-z0-9]{6,20}$/;
-        if (!regExpPasaporte.test(formData.identificacion)){setMensaje({texto:'Pasaporte inicia en letra y tiene al menos 1 número después sin espacios', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['identificacion']: false}));}    
+        if (!regExpPasaporte.test(formData.identificacion)){setMensaje({texto:'Pasaporte inicia en letra y tiene al menos 1 número después sin espacios', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['identificacion']: false}));} else {setValidForm(prev => ({...prev, ['identificacion']:true}));}  
     }
 
     const validaRegExpId = () => {
