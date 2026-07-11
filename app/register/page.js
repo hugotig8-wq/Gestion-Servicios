@@ -70,17 +70,22 @@ export default function RegisterPage() {
         let esValido = true;
 
         switch(campo){
-            case 'nombre': esValido = validaRegExpNombre(nuevoFormData.nombre);
+            case 'nombre': esValido = validaRegExpNombre(nuevoFormData.nombre); setMensaje({texto:'Nombres debe ser en letras no especiales y separados por sólo 1 espacio.', tipo: 'validationError'});
             break;
-            case 'apellidos': esValido = validaRegExpApellidos(nuevoFormData.apellidos);
+            case 'apellidos': esValido = validaRegExpApellidos(nuevoFormData.apellidos); setMensaje({texto:'Apellidos debe ser en letras no especiales y separados por sólo 1 espacio.', tipo: 'validationError'});
             break;
-            case 'email': esValido = validaRegExpCorreo(nuevoFormData.email);
+            case 'email': esValido = validaRegExpCorreo(nuevoFormData.email); setMensaje({texto:'Correo debe tener formato xxx@yyy.zz sin espacios, subdominios o dominios deben iniciar y terminar en letra o numero pero pueden contener -', tipo: 'validationError'});
             break;
-            case 'password': esValido = validaRegExpPassword(nuevoFormData.password);
+            case 'password': esValido = validaRegExpPassword(nuevoFormData.password); setMensaje({texto:'Debe tener al menos 1 mayúscula, 1 minúscula y al menos 1 caracter especial, no letras especiales y de 8 a 15 caracteres.', tipo: 'validationError'});
             break;
-            case 'confPassword': esValido = validaRegExpConfPassword(nuevoFormData.confPassword);
+            case 'confPassword': esValido = validaRegExpConfPassword(nuevoFormData.confPassword); setMensaje({texto:'Confirmar contraseña debe ser igual contraseña.', tipo: 'validationError'});
             break;
-            case 'identificacion': esValido = validaRegExpId(nuevoFormData.identificacion);
+            case 'identificacion': esValido = validaRegExpId(nuevoFormData.identificacion); 
+                if(!esValido && nuevoFormData.tipoId==='nie'){ 
+                    setMensaje({texto:'Nie es 1 letra (x, y ó z) seguido de 7 números y finaliza en 1 letra sin espacios.', tipo: 'validationError'});}
+                else if (!esValido && nuevoFormData.tipoId==='dni') {
+                    setMensaje({texto:'Dni es 8 numeros y finaliza en 1 letra sin espacios. Rellenar con 0 al inicio si 7 números', tipo: 'validationError'});}
+                else if (!esValido && nuevoFormData.tipoId==='pasaporte'){ setMensaje({texto:'Pasaporte inicia en letra y tiene al menos 1 número después sin espacios', tipo: 'validationError'});}; 
             break;
         }
         setValidForm(prev => ({...prev, [name]:esValido}));
@@ -107,7 +112,7 @@ export default function RegisterPage() {
 
     const validaRegExpPassword1 = () => {
        const regExpPassword = /^(?=[A-Za-z])(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~])[A-Za-z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]{8,15}$/;
-       if (!regExpPassword.test(formData.password){setMensaje({texto:'Debe tener al menos 1 caracter especial, no letras especiales y de 8 a 15 caracteres.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['password']: false}));} else {setValidForm(prev => ({...prev, ['password']:true}));}
+       if (!regExpPassword.test(formData.password){setMensaje({texto:'Debe tener al menos 1 mayúscula, 1 minúscula y al menos 1 caracter especial, no letras especiales y de 8 a 15 caracteres.', tipo: 'validationError'}); setValidForm(prev => ({...prev, ['password']: false}));} else {setValidForm(prev => ({...prev, ['password']:true}));}
     }
 
     const validaRegExpPassword = (passw) => {
