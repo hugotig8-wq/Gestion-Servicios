@@ -34,7 +34,7 @@ export default function RegisterPage() {
     const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
     const [enviando, setEnviando] = useState(false);
     const [formValidado,setFormValidado] = useState(false);
-
+    
     // 2. Función de manejo de cambios (Meticulosa y limpia)
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -46,7 +46,7 @@ export default function RegisterPage() {
         if (name==='password') {setFormData(prev => ({ ...prev, [name]: value }));validaRegExpPassword();}
         if (name==='confPassword') {setFormData(prev => ({ ...prev, [name]: value }));validaRegExpConfPassword();}
        
-       if (validForm[tipoId]&& validForm[identificacion]&&validForm[nombre]&& validForm[apellidos]&& validForm[email]&& validForm[password]&& validForm[confPassword]){setValidado(true);}
+       if (validForm['tipoId']&& validForm['identificacion']&&validForm['nombre']&& validForm['apellidos']&& validForm['email']&& validForm['password']&& validForm['confPassword']){setFormValidado(true);}
     };
     
     //2 validaciones de regExp para password, una particionada que hizo la curva y la otra condensada pero bastante nutriente.
