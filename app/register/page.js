@@ -25,12 +25,19 @@ export default function RegisterPage() {
 
     // 2. Función de manejo de cambios (Meticulosa y limpia)
     const handleChange = (e) => {
-        const { etiqueta, valor } = e.target;
-        setFormData(prev => ({ ...prev, [etiqueta]: valor }));
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+        if (name==='nombre') validaRegExpNombre();
     };
 
     const handleChangeNameOrId = (e) => {
         const { etiqueta, valor } = e.target;
+        setFormData(prev => ({ ...prev, [etiqueta]: valor.toLowerCase() }));
+    };
+
+    const handleChangeName = (e) => {
+        const { etiqueta, valor } = e.target;
+        validaRegExpName();
         setFormData(prev => ({ ...prev, [etiqueta]: valor.toLowerCase() }));
     };
     
@@ -62,6 +69,25 @@ export default function RegisterPage() {
       
        return true;
     }
+
+    const validaRegExpNombre = () => {
+        const regExpNombre = /^[A-Za-z]+(?:\s[A-Za-z]+)*$/;
+        if (regExpNombre.test(formData.nombre)){setMensaje({texto:'Nombres debe ser en letras no especiales y separados por sólo 1 espacio.', tipo: 'validationError'}); return false;}    
+    }
+
+    const validaRegExpCorreo = () => {
+        const regExpCorreo = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\.[A-Za-z]{2,}$/;
+        if (regExpCorreo.test(formData.email)){setMensaje({texto:'Correo debe tener formato xxx@yyy.zz', tipo: 'validationError'}); return false;}    
+    }
+
+    const validaRegExpId = () => {
+        const regExpNie = /^[A-Za-z]([0-9]{7})[A-Za-z]$/;
+        if (regExpNombre.test(formData.identificacion)){setMensaje({texto:'Nie', tipo: 'validationError'}); return false;}    
+    }
+
+    
+
+        
     
     // 3. El envío al servidor (Conectividad)
     const handleSubmit = async (e) => {
@@ -90,10 +116,13 @@ export default function RegisterPage() {
             <form className="card" onSubmit={handleSubmit}>
                 <h1>Crea tu cuenta</h1>
                 <input 
+                    name="tipoId"
+                    type="check"
+                <input 
                     name="identificacion" //Al usar name="identificacion", la función handleChange sabe exactamente qué parte del "Estado" actualizar.
                     type="text" 
                     placeholder="DNI, NIE o Pasaporte" 
-                    onChange={handleChangeNameOrId} 
+                    onChange=()=>{handleChangeName()} 
                     className="auth-input"
                 />
                 <input 
@@ -125,7 +154,7 @@ export default function RegisterPage() {
                     className="auth-input"
                 />    
                 <button type="submit" className="btn-primary" disabled={enviando}>
-                    {enviando ? 'Cargando...' : validaRegExpPassword() ?  'Enviar' : 'Error validacion'}
+                    {enviando ? 'Cargando...' : 'Enviar'}
                 </button>
                 <p>{mensaje.texto} {mensaje.tipo}</p>
             </form>
