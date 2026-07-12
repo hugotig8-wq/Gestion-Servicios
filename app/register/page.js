@@ -52,7 +52,7 @@ export default function RegisterPage() {
                 data.tipoId,
                 data.identificacion
             )
-};
+    };
     
     const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
     const [enviando, setEnviando] = useState(false);
