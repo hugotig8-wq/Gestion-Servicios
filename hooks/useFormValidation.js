@@ -47,7 +47,7 @@ export function useFormValidation(initialData) {
         const nuevoValor =
             ['tipoId', 'identificacion', 'nombre', 'apellidos', 'email']
                 .includes(name)
-                ? value.toLowerCase()
+                ? value.toLowerCase().replace(/\s+/g, ' ');
                 : value;
 
         const nuevoFormData = {
