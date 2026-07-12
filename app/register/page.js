@@ -21,7 +21,7 @@ export default function RegisterPage() {
         mensaje,
         formValidado,
         handleChange
-    } = useFormValidation(
+    } = useFormValidation({
         tipoId:'dni',
         identificacion:'',
         nombre:'',
@@ -29,7 +29,7 @@ export default function RegisterPage() {
         email:'',
         password:'',
         confPassword:''
-    );
+    });
     // 3. El envío al servidor (Conectividad)
     const handleSubmit = async (e) => {
         e.preventDefault(); // Evita que la página se recargue (comportamiento por defecto del DOM)
