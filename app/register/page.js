@@ -1,6 +1,6 @@
-/*
+    /*
 Una visión de Humberto Gonzalez Tigreros
-Potenciado por Gemini
+Potenciado por Git y Copilot.
 */
 
 
@@ -8,27 +8,28 @@ Potenciado por Gemini
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-
+import { validaRegExpId, validaRegExpNombre, validaRegExpApellidos, validaRegExpCorreo, validaRegExpPassword, validaRegExpConfPassword, validadores } from "@/lib/validators";
+import { mensajesValidacion } from "@/lib/validationMessages";
+import { useFormValidation } from "@/hooks/useFormValidation";
 
 export default function RegisterPage() {
-    // 1. Estado: Aquí guardamos lo que el usuario escribe
-    const [formData, setFormData] = useState({
+    
+    const [enviando, setEnviando] = useState(false);
+
+    const {
+        formData,
+        mensaje,
+        formValidado,
+        handleChange
+    } = useFormValidation(
+        tipoId:'dni',
         identificacion:'',
         nombre:'',
-        email: '',
-        password: '',
-        confirmPassword: ''
+        apellidos:'',
+        email:'',
+        password:'',
+        confPassword:''
     });
-    const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
-    const [enviando, setEnviando] = useState(false);
-    const router = useRouter();
-
-    // 2. Función de manejo de cambios (Meticulosa y limpia)
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
     // 3. El envío al servidor (Conectividad)
     const handleSubmit = async (e) => {
         e.preventDefault(); // Evita que la página se recargue (comportamiento por defecto del DOM)
@@ -50,27 +51,43 @@ export default function RegisterPage() {
             setEnviando(false);
         }
     };
-
+    
     return (
         <div className="fullPage">
             <form className="card" onSubmit={handleSubmit}>
                 <h1>Crea tu cuenta</h1>
+                <select
+                    name="tipoId"
+                    value={formData.tipoId}
+                    onChange={handleChange}
+                >
+                    <option value="dni">DNI</option>
+                    <option value="nie">NIE</option>
+                    <option value="pasaporte">Pasaporte</option>
+                </select>   
                 <input 
                     name="identificacion" //Al usar name="identificacion", la función handleChange sabe exactamente qué parte del "Estado" actualizar.
                     type="text" 
-                    placeholder="DNI, NIE o Pasaporte" 
+                    placeholder="Identificación." 
                     onChange={handleChange} 
                     className="auth-input"
                 />
                 <input 
-                    name="nombre" //Al usar name="nombre", la función handleChange sabe exactamente qué parte del "Estado" actualizar.
+                    name="nombre" //la función handleChange sabe exactamente qué parte del "Estado" actualizar.
                     type="text" 
                     placeholder="Nombre completo" 
                     onChange={handleChange} 
                     className="auth-input"
                 />
                 <input 
-                    name="email" //Al usar name="email", la función handleChange sabe exactamente qué parte del "Estado" actualizar.
+                    name="apellidos" //la función handleChange sabe exactamente qué parte del "Estado" actualizar.
+                    type="text" 
+                    placeholder="Apellidos" 
+                    onChange={handleChange} 
+                    className="auth-input"
+                />
+                <input 
+                    name="email" //la handleChange sabe exactamente qué parte del "Estado" actualizar.
                     type="email" 
                     placeholder="Email" 
                     onChange={handleChange} 
@@ -83,11 +100,20 @@ export default function RegisterPage() {
                     onChange={handleChange} 
                     className="auth-input"
                 />
-                <button type="submit" className="btn-primary" disabled={enviando}>
-                    {enviando ? 'Cargando...' : 'Registrarse'}
+                <input 
+                    name="confPassword" 
+                    type="password" 
+                    placeholder="Confirmar Contraseña" 
+                    onChange={handleChange} 
+                    className="auth-input"
+                />    
+                <button type="submit" className="btn-primary" disabled={enviando||!formValidado}>
+                    {enviando ? 'Cargando...' : formValidado ? 'Enviar': 'ValidError'}
                 </button>
                 <p>{mensaje.texto} {mensaje.tipo}</p>
             </form>
         </div>
     );
 }
+
+                                                    

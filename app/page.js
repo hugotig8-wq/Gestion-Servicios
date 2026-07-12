@@ -34,7 +34,7 @@ export default function LoginPage() {
             type="email" 
             placeholder="Email" 
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {if (e.target.value===e.target.value.toUpperCase()) {setError('En correo no importan mayúsculas')} setEmail(e.target.value.toLowerCase())}
             className="auth-input"
           />
           <input 

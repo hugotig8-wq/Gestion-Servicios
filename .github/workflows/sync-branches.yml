@@ -15,7 +15,7 @@ jobs:
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          for branch in aws-infra1 gcp-infra1 audit/engine feat-ui-styles model/auditor-witness model/fsf-genforg; do
+          for branch in gh-infra do
             git checkout $branch
             git merge main -m "Internal: Sync with main [skip ci]"
             git push origin $branch
