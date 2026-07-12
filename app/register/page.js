@@ -72,7 +72,7 @@ export default function RegisterPage() {
             break;
             case 'confPassword': esValido = validaRegExpConfPassword(nuevoFormData.password,nuevoFormData.confPassword); setMensaje({texto:'Confirmar contraseña debe ser igual contraseña.', tipo: 'validationError'});
             break;
-            case 'identificacion': esValido = validaRegExpId(nuevoFormData.tipoId,nuevoFormData.identificacion); 
+            case 'identificacion': esValido = validaRegExpId(nuevoFormData.tipoId,nuevoFormData.identificacion); setMensaje(mensajesValidacion[nuevoFormData.tipoId]);
                 if(!esValido && nuevoFormData.tipoId==='nie'){ 
                     setMensaje({texto:'Nie es 1 letra (x, y ó z) seguido de 7 números y finaliza en 1 letra sin espacios.', tipo: 'validationError'});}
                 else if (!esValido && nuevoFormData.tipoId==='dni') {
