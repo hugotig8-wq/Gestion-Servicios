@@ -8,8 +8,9 @@ Potenciado por Git y Copilot.
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { validaRegExpId, validaRegExpNombre, validaRegExpApellidos, validaRegExpCorreo, validaRegExpPassword, validaRegExpConfPassword, validadores } from "@/app/lib/validators";
-import { mensajesValidacion } from "@/app/lib/validationMessages";
+import { validaRegExpId, validaRegExpNombre, validaRegExpApellidos, validaRegExpCorreo, validaRegExpPassword, validaRegExpConfPassword, validadores } from "@/lib/validators";
+import { mensajesValidacion } from "@/lib/validationMessages";
+import { useFormValidation } from "@/hooks/useFormValidation";
 
 export default function RegisterPage() {
     // 1. Estado: Aquí guardamos lo que el usuario escribe
