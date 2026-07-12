@@ -56,7 +56,14 @@ export default function RegisterPage() {
     
     const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
     const [enviando, setEnviando] = useState(false);
-    
+    const obtenerMensaje = (campo, data) => {
+
+        if (campo === "identificacion") {
+            return mensajesValidacion[data.tipoId];
+        }
+
+        return mensajesValidacion[campo];
+    };
     // 2. Función de manejo de cambios (Meticulosa y limpia)
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -70,7 +77,8 @@ export default function RegisterPage() {
         const esValido = validadores[name](nuevoFormData);
         if(!esValido) {if(name==='identificacion'){setMensaje(mensajesValidacion[nuevoFormData.tipoId]); setValidForm(prev => ({...prev, [name]:false}))} else{setMensaje(mensajesValidacion[name]); setValidForm(prev => ({...prev, [name]:false}))} }
         else {setMensaje({texto:'', tipo:''}); setValidForm(prev => ({...prev, [name]:true}))}
-                         
+        if(esValido) {setMensaje({texto:'', tipo:''}); setValidForm (prev => ({...prev, [name]:true}))}
+        else {setMensaje(obtenerMensaje(name,nuevoFormData)); setValidForm(prev => ({...prev, [name]:false}))}
     };
     
     // 3. El envío al servidor (Conectividad)
