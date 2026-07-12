@@ -21,7 +21,7 @@ export default function LoginPage() {
           setFormData(nuevoFormData);
           if(!validadores[e.target.name]) return;
           if(validadores[e.target.name](nuevoFormData).boolRegExp){setError('');nuevoFormValidado[e.target.name]=true; }
-          else {setError(mensajesValidacion[e.target.name]); nuevoFormValidado[e.target.name]=false;}
+          else {setError(mensajesValidacion[e.target.name].texto); nuevoFormValidado[e.target.name]=false;}
           setFormValidado(nuevoFormValidado);
       }
       if(e.target.name==='email'){
@@ -29,7 +29,7 @@ export default function LoginPage() {
           setFormData(nuevoFormData);
           if(!validadores[e.target.name]) return;
           if(validadores[e.target.name](nuevoFormData)){setError('');nuevoFormValidado[e.target.name]=true;}
-          else {setError(mensajesValidacion[e.target.name]); nuevoFormValidado[e.target.name]=false;}
+          else {setError(mensajesValidacion[e.target.name].texto); nuevoFormValidado[e.target.name]=false;}
           setFormValidado(nuevoFormValidado);
       }
 
@@ -73,7 +73,7 @@ export default function LoginPage() {
             className="auth-input"
           />
           {error && <p className="error-text">{error}</p>}
-          <button type="submit" className="btn-primary" disabled={validado} >{validado? 'Entrar' : 'Error'}</button>
+          <button type="submit" className="btn-primary" disabled={!validado} >{validado? 'Entrar' : 'Error'}</button>
         </form>
         <p>¿No tienes cuenta? <a href="/register">Regístrate aquí</a></p>
       </div>
