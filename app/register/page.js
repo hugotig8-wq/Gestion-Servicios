@@ -67,42 +67,48 @@ export default function RegisterPage() {
                 </select>   
                 <input 
                     name="identificacion" //Al usar name="identificacion", la función handleChange sabe exactamente qué parte del "Estado" actualizar.
-                    type="text" 
+                    type="text"
+                    value={formData.identificacion}
                     placeholder="Identificación." 
                     onChange={handleChange} 
                     className="auth-input"
                 />
                 <input 
                     name="nombre" //la función handleChange sabe exactamente qué parte del "Estado" actualizar.
-                    type="text" 
+                    type="text"
+                    value={formData.nombre}
                     placeholder="Nombre completo" 
                     onChange={handleChange} 
                     className="auth-input"
                 />
                 <input 
                     name="apellidos" //la función handleChange sabe exactamente qué parte del "Estado" actualizar.
-                    type="text" 
+                    type="text"
+                    value={formData.apellidos}
                     placeholder="Apellidos" 
                     onChange={handleChange} 
                     className="auth-input"
                 />
                 <input 
                     name="email" //la handleChange sabe exactamente qué parte del "Estado" actualizar.
-                    type="email" 
+                    type="email"
+                    value={formData.email}
                     placeholder="Email" 
                     onChange={handleChange} 
                     className="auth-input"
                 />
                 <input 
                     name="password" 
-                    type="password" 
+                    type="password"
+                    value{formData.password}
                     placeholder="Contraseña" 
                     onChange={handleChange} 
                     className="auth-input"
                 />
                 <input 
                     name="confPassword" 
-                    type="password" 
+                    type="password"
+                    value={formData.confPassword}
                     placeholder="Confirmar Contraseña" 
                     onChange={handleChange} 
                     className="auth-input"
