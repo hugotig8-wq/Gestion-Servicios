@@ -81,12 +81,12 @@ export function useFormValidation(initialData) {
                nuevoFormData[name]=false;
                nuevoFormData['confPassword']= esValido.coincide;
         }
-        console.log(formData);
-        console.log(nuevoFormData);
+        console.log(JSON.stringify(formData));
+        console.log(JSON.stringify(nuevoFormData));
         setValidForm(nuevoValidForm);
         setFormData(nuevoFormData);
-        console.log(formData);
-        condole.log(nuevoFormData);
+        console.log(JSON.stringify(formData));
+        console.log(JSON.stringify(nuevoFormData));
     };
 
     const formValidado =
