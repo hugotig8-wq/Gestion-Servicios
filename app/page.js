@@ -32,7 +32,7 @@ export default function LoginPage() {
           setFormData(nuevoFormData);
           setFormValidado(nuevoFormValidado);
       }
-      validado = Object.values(formValidado).every(Boolean);
+      validado = Object.values(nuevoFormValidado).every(Boolean);
 
   };
   
@@ -74,7 +74,7 @@ export default function LoginPage() {
             className="auth-input"
           />
           {error && <p className="error-text">{error}</p>}
-          <button type="submit" className="btn-primary" disabled={!validado} >{validado? 'Entrar' : 'Error'}</button>
+          <button type="submit" className="btn-primary" disabled=true >{validado? 'Entrar' : 'Error'}</button>
         </form>
         <p>¿No tienes cuenta? <a href="/register">Regístrate aquí</a></p>
       </div>
