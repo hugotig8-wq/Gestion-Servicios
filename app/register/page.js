@@ -13,12 +13,13 @@ import { mensajesValidacion } from "@/lib/validationMessages";
 import { useFormValidation } from "@/hooks/useFormValidation";
 
 export default function RegisterPage() {
-    
+    const router= useRouter();
     const [enviando, setEnviando] = useState(false);
 
     const {
         formData,
         mensaje,
+        setMensaje,
         formValidado,
         handleChange
     } = useFormValidation({
@@ -100,7 +101,7 @@ export default function RegisterPage() {
                 <input 
                     name="password" 
                     type="password"
-                    value{formData.password}
+                    value={formData.password}
                     placeholder="Contraseña" 
                     onChange={handleChange} 
                     className="auth-input"
