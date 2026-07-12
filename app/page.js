@@ -19,7 +19,7 @@ export default function LoginPage() {
           nuevoFormData[e.target.name]=e.target.value;
           nuevoFormData['confPassword']=e.target.value;
           setFormData(nuevoFormData);
-          if(validadores[e.target.name]) return;
+          if(!validadores[e.target.name]) return;
           if(validadores[e.target.name](nuevoFormData)){setError('');nuevoFormValidado[e.target.name]=true;}
           else {setError(mensajesValidacion[e.target.name]); nuevoFormValidado[e.target.name]=false;}
           setFormValidado(nuevoFormValidado);
@@ -27,8 +27,8 @@ export default function LoginPage() {
       if(e.target.name==='email'){
           nuevoFormData[e.target.name]=e.target.value.toLowerCase();
           setFormData(nuevoFormData);
-          if(validadores[e.target.name]) return;
-          if(validadores[e.target.name](nuevoFormData)){setError('');nuevoFormValidado[e.target.value]=true;}
+          if(!validadores[e.target.name]) return;
+          if(validadores[e.target.name](nuevoFormData)){setError('');nuevoFormValidado[e.target.name]=true;}
           else {setError(mensajesValidacion[e.target.name]); nuevoFormValidado[e.target.name]=false;}
           setFormValidado(nuevoFormValidado);
       }
@@ -40,9 +40,9 @@ export default function LoginPage() {
     setError('');
 
     const res = await signIn('credentials', {
-      formData['email'],
-      formData['password'],
-      redirect: false, // Manejamos la redirección manualmente
+      email:formData['email'],
+      password:formData['password'],
+      redirect: false,// , obligada por comentario Manejamos la redirección manualmente
     });
     if (res?.ok) {
         window.location.href = '/dashboard'; 
