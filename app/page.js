@@ -20,7 +20,7 @@ export default function LoginPage() {
           nuevoFormData['confPassword']=e.target.value;
           setFormData(nuevoFormData);
           if(!validadores[e.target.name]) return;
-          if(validadores[e.target.name](nuevoFormData)){setError('');nuevoFormValidado[e.target.name]=true;}
+          if(validadores[e.target.name](nuevoFormData).boolRegExp){setError('');nuevoFormValidado[e.target.name]=true; }
           else {setError(mensajesValidacion[e.target.name]); nuevoFormValidado[e.target.name]=false;}
           setFormValidado(nuevoFormValidado);
       }
