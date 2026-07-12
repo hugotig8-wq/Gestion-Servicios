@@ -42,5 +42,6 @@ export function validaRegExpId(tipoId, id){
         if(tipoId==='dni'){return(validaRegExpDni(id));}
         else if(tipoId==='nie'){return(validaRegExpNie(id))}
         else if(tipoId==='pasaporte'){return(validaRegExpPasaporte(id))}
+        else {return false;}
     }
                                                                                                                                                                              }
