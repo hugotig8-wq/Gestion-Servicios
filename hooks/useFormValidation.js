@@ -7,7 +7,8 @@ import {
     validaRegExpApellidos,
     validaRegExpCorreo,
     validaRegExpPassword,
-    validaRegExpConfPassword
+    validaRegExpConfPassword,
+    validadores
 } from '@/lib/validators';
 
 import { mensajesValidacion } from '@/lib/validationMessages';
@@ -30,34 +31,6 @@ export function useFormValidation(initialData) {
         texto: '',
         tipo: ''
     });
-
-    const validadores = {
-
-        nombre: data =>
-            validaRegExpNombre(data.nombre),
-
-        apellidos: data =>
-            validaRegExpApellidos(data.apellidos),
-
-        email: data =>
-            validaRegExpCorreo(data.email),
-
-        password: data =>
-            validaRegExpPassword(data.password,data.confPassword),
-
-        confPassword: data =>
-            validaRegExpConfPassword(
-                data.password,
-                data.confPassword
-            ),
-
-        identificacion: data =>
-            validaRegExpId(
-                data.tipoId,
-                data.identificacion
-            )
-
-    };
 
     const obtenerMensaje = (campo, data) => {
 
