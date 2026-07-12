@@ -70,15 +70,15 @@ export function useFormValidation(initialData) {
         else if (esValido.boolRegExp){
             //setMensaje({texto:'', tipo:''});
             if(!esValido.coincide){
+                nuevoValidForm[name]=true;
                 setMensaje(obtenerMensaje('confPassword', nuevoFormData));
-                nuevoFormData[name]=true;
-                nuevoFormData['confPassword']= esValido.coincide;}
+                nuevoFormData['confPassword']= false;}
             else{setMensaje({texto:'', tipo:''});
-                 nuevoFormData[name]= true;
+                 nuevoValidForm[name]=true;
                  nuevoFormData['confPassword']= esValido.coincide;
                 }
         }else{ setMensaje(obtenerMensaje(name, nuevoFormData));
-               nuevoFormData[name]=false;
+               nuevoValidForm[name]=false;
                nuevoFormData['confPassword']= esValido.coincide;
         }
         console.log(JSON.stringify(formData));
