@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [formData, setFormData] = useState({email:'', password:'', confPassword:''});
   const [error, setError] = useState('');
   const [formValidado, setFormValidado] = useState({email:false, password:false});
-  let validado=false;
+  
 
   const handleChange = (e) => {
       const nuevoFormData = {...formData};
@@ -32,7 +32,6 @@ export default function LoginPage() {
           setFormData(nuevoFormData);
           setFormValidado(nuevoFormValidado);
       }
-      validado = Object.values(nuevoFormValidado).every(Boolean);
 
   };
   
@@ -51,7 +50,7 @@ export default function LoginPage() {
         setError(res?.error || 'No se pudo iniciar sesión');
     }    
   };
-  validado = Object.values(formValidado).every(Boolean);
+  const validado = Object.values(formValidado).every(Boolean);
   return (
     <div className='fullPage'>
       <div className='card'>
@@ -74,7 +73,7 @@ export default function LoginPage() {
             className="auth-input"
           />
           {error && <p className="error-text">{error}</p>}
-          <button type="submit" className="btn-primary" disabled=true >{validado? 'Entrar' : 'Error'}</button>
+          <button type="submit" className="btn-primary" disabled="true" >{validado? 'Entrar' : 'Error'}</button>
         </form>
         <p>¿No tienes cuenta? <a href="/register">Regístrate aquí</a></p>
       </div>
