@@ -9,6 +9,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  const handleChange = (e) => {
+      if(e.target.name==='email'){
+          setEmail(e.target.value.toLowerCase());
+      }
+
+  };
+  
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
@@ -30,14 +37,16 @@ export default function LoginPage() {
       <div className='card'>
         <h1>GESTSEGUROS</h1>
         <form className="formLogin" onSubmit={handleLogin}>
-          <input 
+          <input
+            name="email"
             type="email" 
             placeholder="Email" 
             value={email}
-            onChange={(e) => {if (e.target.value===e.target.value.toUpperCase()) {setError('En correo no importan mayúsculas')} setEmail(e.target.value.toLowerCase())}
+            onChange={handleChange}
             className="auth-input"
           />
-          <input 
+          <input
+            name="password"
             type="password" 
             placeholder="Contraseña" 
             value={password}
