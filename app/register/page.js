@@ -31,10 +31,31 @@ export default function RegisterPage() {
         password: false,
         confPassword: false
     });
+
+    const validadores = {
+        nombre: (data)=>validaRegExpNombre(data.nombre),
+
+        apellidos: (data)=>validaRegExpApellidos(data.apellidos),
+
+        email: (data)=>validaRegExpCorreo(data.email),
+
+        password: (data)=>validaRegExpPassword(data.password),
+
+        confPassword:(data)=>
+            validaRegExpConfPassword(
+                data.password,
+                data.confPassword
+            ),
+
+        identificacion:(data)=>
+            validaRegExpId(
+                data.tipoId,
+                data.identificacion
+            )
+};
     
     const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
     const [enviando, setEnviando] = useState(false);
-    let formValidado = Object.values(validForm).every(Boolean);
     
     // 2. Función de manejo de cambios (Meticulosa y limpia)
     const handleChange = (e) => {
@@ -46,42 +67,9 @@ export default function RegisterPage() {
             [name]: nuevoValor
         };
         setFormData(nuevoFormData);
-        let esValido = true;
-
-        switch(name){
-            case 'nombre': esValido = validaRegExpNombre(nuevoFormData.nombre); setMensaje(mensajesValidacion[name]);
-            break;
-            case 'apellidos': esValido = validaRegExpApellidos(nuevoFormData.apellidos); setMensaje(mensajesValidacion[name]);
-            break;
-            case 'email': esValido = validaRegExpCorreo(nuevoFormData.email); if (!esValido) setMensaje(mensajesValidacion[name]);
-            break;
-            case 'password': esValido = validaRegExpPassword(nuevoFormData.password); if(!esValido) setMensaje(mensajesValidacion[name]);
-            break;
-            case 'confPassword': esValido = validaRegExpConfPassword(nuevoFormData.password,nuevoFormData.confPassword); if (!esValido) setMensaje(mensajesValidacion[name]);
-            break;
-            case 'identificacion': esValido = validaRegExpId(nuevoFormData.tipoId,nuevoFormData.identificacion); if (!esValido) setMensaje(mensajesValidacion[nuevoFormData.tipoId]);
-            break;
-        }
-        setValidForm(prev => ({...prev, [name]:esValido}));
-        formValidado = Object.values(validForm).every(Boolean);
-    
-    };
-    
-    //2 validaciones de regExp para password, una particionada que hizo la curva y la otra condensada pero bastante nutriente.
-    const ValidaRegExpPasswordPrecisa = () => {
-       const regExpIni = /^(?=[A-Za-z])/;
-       const regExpEsp = /(?=.*[~`|•√π÷×§∆£¢€¥^°={}\\%[\]<>@#$_&-+()/*"':;!?,.])/;
-       const regExpMin = /(?=.*[a-z])/;
-       const regExpMay = /(?=.*[A-Z])/;
-       const regExpTamano = /^.{8,15}$/;// o /.{8,15}/
-       
-       if (!regExpIni.test(formData.password)){setMensaje({texto:'Contraseña debe iniciar con letra no especial', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));}
-       if (!regExpMin.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 minúscula', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));}
-       if (!regExpMay.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 mayúscula', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));}
-       if (!regExpEsp.test(formData.password)){setMensaje({texto:'Contraseña debe tener 1 caracter especial, no letra especial', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));}
-       if (!regExpTamano.test(formData.password)){setMensaje({texto:'Contraseña debe tener de 8 a 15 caracteres', tipo:'validationError'}; setValidForm(prev => ({...prev, ['password']: false}));} else {setValidForm(prev => ({...prev, ['password']:true}));}
-       if (formData.password!==formData.confPassword){setMensaje({texto:'Debe ser igual la confirmacion del password.', tipo:'validationError'}); setValidForm(prev => ({...prev, ['confPassword']: false}));} else {setValidForm(prev => ({...prev, ['confPassword']:true}));}
-        
+        const esValido = validadores[name](nuevoFormData);
+        if(!esValido) {if(name==='identificacion'){setMensaje(mensajesValidacion[nuevoFormData.tipoId])} else{setMensaje(mensajesValidacion[name])} };        setValidForm(prev => ({...prev, [name]:esValido}));
+        else {setMensaje({texto:'', tipo:''})}
     };
     
     // 3. El envío al servidor (Conectividad)
@@ -105,7 +93,9 @@ export default function RegisterPage() {
             setEnviando(false);
         }
     };
-
+    
+    const formValidado = Object.values(validForm).every(Boolean);
+    
     return (
         <div className="fullPage">
             <form className="card" onSubmit={handleSubmit}>
