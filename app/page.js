@@ -29,7 +29,7 @@ export default function LoginPage() {
           setFormData(nuevoFormData);
           if(validadores[e.target.name]) return;
           if(validadores[e.target.name](nuevoFormData)){setError('');nuevoFormValidado[e.target.value]=true;}
-          else {setError(mensajesValidacion[e.target.name]); nuevoFormValidado[e.target.name]=false);}
+          else {setError(mensajesValidacion[e.target.name]); nuevoFormValidado[e.target.name]=false;}
           setFormValidado(nuevoFormValidado);
       }
 
