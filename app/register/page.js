@@ -68,8 +68,9 @@ export default function RegisterPage() {
         };
         setFormData(nuevoFormData);
         const esValido = validadores[name](nuevoFormData);
-        if(!esValido) {if(name==='identificacion'){setMensaje(mensajesValidacion[nuevoFormData.tipoId])} else{setMensaje(mensajesValidacion[name])} };        setValidForm(prev => ({...prev, [name]:esValido}));
-        else {setMensaje({texto:'', tipo:''})}
+        if(!esValido) {if(name==='identificacion'){setMensaje(mensajesValidacion[nuevoFormData.tipoId]); setValidForm(prev => ({...prev, [name]:false}))} else{setMensaje(mensajesValidacion[name]); setValidForm(prev => ({...prev, [name]:false}))} }
+        else {setMensaje({texto:'', tipo:''}); setValidForm(prev => ({...prev, [name]:true}))}
+                         
     };
     
     // 3. El envío al servidor (Conectividad)
