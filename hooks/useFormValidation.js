@@ -55,27 +55,38 @@ export function useFormValidation(initialData) {
             [name]: nuevoValor
         };
 
-        setFormData(nuevoFormData);
-
         if (!validadores[name]) return;
 
         const nuevoValidForm = {
             ...validForm
         };
-
+        //Posiblemente falle en los validsdores al haber validaciones cruzados necesarias
         nuevoValidForm[name] = validadores[name](nuevoFormData);
 
         const esValido= nuevoValidForm[name];
+        
         if(esValido && typeof(esValido)==='boolean') {setMensaje({texto:'', tipo:''})}
         else if (typeof(esValido)==='boolean'){setMensaje(obtenerMensaje(name,nuevoFormData))}
         else if (esValido.boolRegExp){
-            setMensaje({texto:'', tipo:''});
-            if(!esValido.coincide){setMessage(obtenerMensaje('confPassword', nuevoFormData)); nuevoFormData[name]=true}
-            else{setMensaje({texto:'', tipo:''}); nuevoFormData[name]= true}
-        }else{ setMensaje(obtenerMensaje(name, nuevoFormData)); nuevoFormData[name]=false}
-        
-        if(typeof(esValido)!=='boolean') nuevoFormData['confPassword']= esValido.coincide;
+            //setMensaje({texto:'', tipo:''});
+            if(!esValido.coincide){
+                setMensaje(obtenerMensaje('confPassword', nuevoFormData));
+                nuevoFormData[name]=true;
+                nuevoFormData['confPassword']= esValido.coincide;}
+            else{setMensaje({texto:'', tipo:''});
+                 nuevoFormData[name]= true;
+                 nuevoFormData['confPassword']= esValido.coincide;
+                }
+        }else{ setMensaje(obtenerMensaje(name, nuevoFormData));
+               nuevoFormData[name]=false;
+               nuevoFormData['confPassword']= esValido.coincide;
+        }
+        console.log(formData);
+        console.log(nuevoFormData);
         setValidForm(nuevoValidForm);
+        setFormData(nuevoFormData);
+        console.log(formData);
+        condole.log(nuevoFormData);
     };
 
     const formValidado =
