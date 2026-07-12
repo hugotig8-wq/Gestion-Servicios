@@ -3,15 +3,33 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
+import { validaRegExpCorreo, validadores } from "@/lib/validators";
+import { mensajesValidacion } from "@/lib/validationMessages";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({email:'', password:'', confPassword:''});
   const [error, setError] = useState('');
+  const [formValidado, setFormValidado] = useState({email:false, password:false});
+
 
   const handleChange = (e) => {
+      const nuevoFormData = {...formData};
+      const nuevoFormValidado = {...formValidado};
+      if(e.target.name==='password'){
+          nuevoFormData[e.target.name]=e.target.value;
+          nuevoFormData['confPassword']=e.target.value;
+          setFormData(nuevoFormData};
+          if(validadores[e.target.name]) return;
+          if(validadores[e.target.name](nuevoFormData)){setError('');nuevoFormValidado[e.target.name]=true;}
+          else {setError(mensajesValidacion[e.target.name]; nuevoFormValidado[e.target.name]=false;}
+          setFormValidado(nuevoFormValidado);
+      }
       if(e.target.name==='email'){
-          setEmail(e.target.value.toLowerCase());
+          nuevoFormData[e.target.name]=e.target.value.toLowerCase();
+          setFormData(nuevoFormData};
+          if(validadores[e.target.name](nuevoFormData)){setError('');nuevoFormValidado[e.target.value]=true;}
+          else {setError(mensajesValidacion[e.target.name]; nuevoFormValidado[e.target.name]=false);}
+          setFormValidado(nuevoFormValidado);
       }
 
   };
@@ -31,7 +49,7 @@ export default function LoginPage() {
         setError(res?.error || 'No se pudo iniciar sesión');
     }    
   };
-
+  const validado = Object.values(formValidado).every(Boolean);
   return (
     <div className='fullPage'>
       <div className='card'>
@@ -54,7 +72,7 @@ export default function LoginPage() {
             className="auth-input"
           />
           {error && <p className="error-text">{error}</p>}
-          <button type="submit" className="btn-primary" >Entrar</button>
+          <button type="submit" className="btn-primary" disabled={validado} >{validado? 'Entrar' : 'Error'}</button>
         </form>
         <p>¿No tienes cuenta? <a href="/register">Regístrate aquí</a></p>
       </div>
