@@ -8,7 +8,7 @@ Potenciado por Git y Copilot.
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { validaRegExpId, validaRegExpNombre, validaRegExpApellidos, validaRegExpCorreo, validaRegExpPassword, validaRegExpConfPassword } from "@/app/lib/validators";
+import { validaRegExpId, validaRegExpNombre, validaRegExpApellidos, validaRegExpCorreo, validaRegExpPassword, validaRegExpConfPassword, validadores } from "@/app/lib/validators";
 import { mensajesValidacion } from "@/app/lib/validationMessages";
 
 export default function RegisterPage() {
@@ -31,29 +31,7 @@ export default function RegisterPage() {
         password: false,
         confPassword: false
     });
-
-    const validadores = {
-        nombre: (data)=>validaRegExpNombre(data.nombre),
-
-        apellidos: (data)=>validaRegExpApellidos(data.apellidos),
-
-        email: (data)=>validaRegExpCorreo(data.email),
-
-        password: (data)=>validaRegExpPassword(data.password),
-
-        confPassword:(data)=>
-            validaRegExpConfPassword(
-                data.password,
-                data.confPassword
-            ),
-
-        identificacion:(data)=>
-            validaRegExpId(
-                data.tipoId,
-                data.identificacion
-            )
-    };
-    
+ 
     const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
     const [enviando, setEnviando] = useState(false);
     const obtenerMensaje = (campo, data) => {
@@ -64,6 +42,7 @@ export default function RegisterPage() {
 
         return mensajesValidacion[campo];
     };
+    
     // 2. Función de manejo de cambios (Meticulosa y limpia)
     const handleChange = (e) => {
         const { name, value } = e.target;
