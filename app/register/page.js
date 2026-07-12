@@ -70,7 +70,7 @@ export default function RegisterPage() {
             break;
             case 'password': esValido = validaRegExpPassword(nuevoFormData.password); setMensaje({texto:'Debe tener al menos 1 mayúscula, 1 minúscula y al menos 1 caracter especial, no letras especiales y de 8 a 15 caracteres.', tipo: 'validationError'});
             break;
-            case 'confPassword': esValido = validaRegExpConfPassword(nuevoFormData.confPassword); setMensaje({texto:'Confirmar contraseña debe ser igual contraseña.', tipo: 'validationError'});
+            case 'confPassword': esValido = validaRegExpConfPassword(nuevoFormData.password,nuevoFormData.confPassword); setMensaje({texto:'Confirmar contraseña debe ser igual contraseña.', tipo: 'validationError'});
             break;
             case 'identificacion': esValido = validaRegExpId(nuevoFormData.tipoId,nuevoFormData.identificacion); 
                 if(!esValido && nuevoFormData.tipoId==='nie'){ 
