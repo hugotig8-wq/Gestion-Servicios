@@ -38,7 +38,7 @@ export function validaRegExpPasaporte(pas){
         return regExpPasaporte.test(pas);
     }
 
-export function validaRegExpId = (tipoId, id) => {
+export function validaRegExpId(tipoId, id){
         if(tipoId==='dni'){return(validaRegExpDni(id));}
         else if(tipoId==='nie'){return(validaRegExpNie(id))}
         else if(tipoId==='pasaporte'){return(validaRegExpPasaporte(id))}
