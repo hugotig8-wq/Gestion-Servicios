@@ -16,3 +16,99 @@
 2026-06-14 10:18:13.272 UTC [5459] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.202 s, sync=0.002 s, total=0.249 s; sync files=3, longest=0.002 s, average=0.001 s; distance=6 kB, estimate=6 kB; lsn=0/1925E40, redo lsn=0/1925E08
 2026-06-14 10:43:13.718 UTC [5459] LOG:  checkpoint starting: time
 2026-06-14 10:43:13.824 UTC [5459] LOG:  checkpoint complete: wrote 2 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.101 s, sync=0.002 s, total=0.106 s; sync files=2, longest=0.001 s, average=0.001 s; distance=7 kB, estimate=7 kB; lsn=0/1927DC0, redo lsn=0/1927D88
+2026-07-04 22:05:11.840 UTC [83775] LOG:  starting PostgreSQL 16.3 on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 11.4.0-1ubuntu1~22.04.2) 11.4.0, 64-bit
+2026-07-04 22:05:11.843 UTC [83775] LOG:  listening on IPv6 address "::1", port 5432
+2026-07-04 22:05:11.843 UTC [83775] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2026-07-04 22:05:11.844 UTC [83775] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2026-07-04 22:05:11.847 UTC [83778] LOG:  database system was shut down at 2026-07-04 22:04:37 UTC
+2026-07-04 22:05:11.850 UTC [83775] LOG:  database system is ready to accept connections
+2026-07-04 22:05:23.686 UTC [83892] LOG:  invalid length of startup packet
+2026-07-04 22:05:23.702 UTC [83893] LOG:  invalid length of startup packet
+2026-07-04 22:05:23.713 UTC [83894] LOG:  invalid length of startup packet
+2026-07-04 22:05:23.725 UTC [83895] LOG:  invalid length of startup packet
+2026-07-04 22:10:11.946 UTC [83776] LOG:  checkpoint starting: time
+2026-07-04 22:11:45.806 UTC [83776] LOG:  checkpoint complete: wrote 942 buffers (5.7%); 0 WAL file(s) added, 0 removed, 0 recycled; write=93.817 s, sync=0.021 s, total=93.860 s; sync files=310, longest=0.003 s, average=0.001 s; distance=4293 kB, estimate=4293 kB; lsn=0/18B1628, redo lsn=0/18B15F0
+2026-07-04 22:13:11.475 UTC [84906] ERROR:  unrecognized configuration parameter "databases"
+2026-07-04 22:13:11.475 UTC [84906] STATEMENT:  show DATABASES;
+2026-07-04 22:13:40.815 UTC [84906] ERROR:  unrecognized configuration parameter "databases"
+2026-07-04 22:13:40.815 UTC [84906] STATEMENT:  SHOW DATABASES;
+2026-07-04 22:17:02.644 UTC [84906] ERROR:  syntax error at or near ";" at character 13
+2026-07-04 22:17:02.644 UTC [84906] STATEMENT:  SHOW --help
+	;
+2026-07-04 22:17:24.156 UTC [84906] ERROR:  unrecognized configuration parameter "databases"
+2026-07-04 22:17:24.156 UTC [84906] STATEMENT:  show databases;
+2026-07-04 22:17:38.076 UTC [84906] ERROR:  unrecognized configuration parameter "databases"
+2026-07-04 22:17:38.076 UTC [84906] STATEMENT:  SHOW DATABASES;
+2026-07-04 22:18:03.388 UTC [84906] ERROR:  syntax error at or near "-" at character 6
+2026-07-04 22:18:03.388 UTC [84906] STATEMENT:  SHOW -help;
+2026-07-04 22:18:27.334 UTC [84906] ERROR:  syntax error at or near ";" at character 14
+2026-07-04 22:18:27.334 UTC [84906] STATEMENT:  show --help;
+	;
+2026-07-04 22:22:00.426 UTC [84906] ERROR:  syntax error at or near ";" at character 7
+2026-07-04 22:22:00.426 UTC [84906] STATEMENT:  SHOW 
+	;
+2026-07-04 22:23:23.613 UTC [84906] ERROR:  syntax error at or near ";" at character 7
+2026-07-04 22:23:23.613 UTC [84906] STATEMENT:  SHOW 
+	;
+2026-07-04 22:24:35.141 UTC [84906] ERROR:  unrecognized configuration parameter "name"
+2026-07-04 22:24:35.141 UTC [84906] STATEMENT:  SHOW NAME;
+2026-07-04 22:25:02.734 UTC [84906] ERROR:  unrecognized configuration parameter "name"
+2026-07-04 22:25:02.734 UTC [84906] STATEMENT:  SHOW name;
+2026-07-04 22:25:26.036 UTC [84906] ERROR:  unrecognized configuration parameter "appdb"
+2026-07-04 22:25:26.036 UTC [84906] STATEMENT:  SHOW appdb;
+2026-07-04 22:30:12.146 UTC [83776] LOG:  checkpoint starting: time
+2026-07-04 22:30:25.412 UTC [83776] LOG:  checkpoint complete: wrote 133 buffers (0.8%); 0 WAL file(s) added, 0 removed, 0 recycled; write=13.243 s, sync=0.014 s, total=13.266 s; sync files=84, longest=0.007 s, average=0.001 s; distance=437 kB, estimate=3908 kB; lsn=0/191EC38, redo lsn=0/191EC00
+2026-07-04 22:35:12.507 UTC [83776] LOG:  checkpoint starting: time
+2026-07-04 22:35:13.820 UTC [83776] LOG:  checkpoint complete: wrote 14 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.304 s, sync=0.004 s, total=1.314 s; sync files=13, longest=0.003 s, average=0.001 s; distance=5 kB, estimate=3517 kB; lsn=0/1920160, redo lsn=0/1920128
+2026-07-04 22:40:12.061 UTC [99886] ERROR:  relation "pg_databases" does not exist at character 15
+2026-07-04 22:40:12.061 UTC [99886] STATEMENT:  select * from pg_databases
+	;
+2026-07-04 22:43:09.367 UTC [101674] FATAL:  database "vscode" does not exist
+2026-07-04 22:57:21.860 UTC [107915] ERROR:  duplicate key value violates unique constraint "usuarios_identificacion_key"
+2026-07-04 22:57:21.860 UTC [107915] DETAIL:  Key (identificacion)=(Y9831102L) already exists.
+2026-07-04 22:57:21.860 UTC [107915] STATEMENT:  INSERT INTO usuarios (identificacion, nombre, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING id
+2026-07-04 22:57:29.409 UTC [108010] ERROR:  duplicate key value violates unique constraint "usuarios_identificacion_key"
+2026-07-04 22:57:29.409 UTC [108010] DETAIL:  Key (identificacion)=(Y9831102L) already exists.
+2026-07-04 22:57:29.409 UTC [108010] STATEMENT:  INSERT INTO usuarios (identificacion, nombre, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING id
+2026-07-04 22:57:35.028 UTC [108062] ERROR:  duplicate key value violates unique constraint "usuarios_identificacion_key"
+2026-07-04 22:57:35.028 UTC [108062] DETAIL:  Key (identificacion)=(Y9831102L) already exists.
+2026-07-04 22:57:35.028 UTC [108062] STATEMENT:  INSERT INTO usuarios (identificacion, nombre, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING id
+2026-07-04 23:00:13.278 UTC [83776] LOG:  checkpoint starting: time
+2026-07-04 23:00:13.886 UTC [83776] LOG:  checkpoint complete: wrote 7 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.603 s, sync=0.002 s, total=0.608 s; sync files=7, longest=0.001 s, average=0.001 s; distance=6 kB, estimate=3166 kB; lsn=0/1921B28, redo lsn=0/1921AF0
+2026-07-04 23:05:13.985 UTC [83776] LOG:  checkpoint starting: time
+2026-07-04 23:05:14.198 UTC [83776] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.202 s, sync=0.005 s, total=0.213 s; sync files=3, longest=0.005 s, average=0.002 s; distance=5 kB, estimate=2850 kB; lsn=0/1922F30, redo lsn=0/1922EF8
+2026-07-04 23:30:42.098 UTC [110420] ERROR:  column "y9831102l" does not exist at character 43
+2026-07-04 23:30:42.098 UTC [110420] STATEMENT:  delete from usuarios where identificacion=y9831102l;
+2026-07-04 23:35:13.727 UTC [83776] LOG:  checkpoint starting: time
+2026-07-04 23:35:13.835 UTC [83776] LOG:  checkpoint complete: wrote 2 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.102 s, sync=0.002 s, total=0.109 s; sync files=2, longest=0.001 s, average=0.001 s; distance=1 kB, estimate=2565 kB; lsn=0/19233D0, redo lsn=0/1923398
+2026-07-04 23:41:16.972 UTC [110420] ERROR:  syntax error at or near "=" at character 27
+2026-07-04 23:41:16.972 UTC [110420] STATEMENT:  delete from usuarios where='X9999999';
+2026-07-04 23:45:14.006 UTC [83776] LOG:  checkpoint starting: time
+2026-07-04 23:45:14.616 UTC [83776] LOG:  checkpoint complete: wrote 7 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.603 s, sync=0.003 s, total=0.611 s; sync files=7, longest=0.002 s, average=0.001 s; distance=3 kB, estimate=2309 kB; lsn=0/1924070, redo lsn=0/1924038
+2026-07-04 23:45:35.994 UTC [110420] ERROR:  syntax error at or near "INSERT" at character 77
+2026-07-04 23:45:35.994 UTC [110420] STATEMENT:  INSERT INTO usuarios (nombre, identificacion, email, password_hash) VALUES 
+	INSERT INTO usuarios (nombre, identificacion, email, password_hash) VALUES 
+	        ('Ramon Garcia Lopez','x9999999l','prueba1@gmail.com','Password_123');
+2026-07-04 23:48:39.350 UTC [110420] ERROR:  cannot drop table usuarios because other objects depend on it
+2026-07-04 23:48:39.350 UTC [110420] DETAIL:  constraint servicios_user_id_fkey on table servicios depends on table usuarios
+2026-07-04 23:48:39.350 UTC [110420] HINT:  Use DROP ... CASCADE to drop the dependent objects too.
+2026-07-04 23:48:39.350 UTC [110420] STATEMENT:  drop table usuarios;
+2026-07-04 23:50:14.707 UTC [83776] LOG:  checkpoint starting: time
+2026-07-04 23:50:15.317 UTC [83776] LOG:  checkpoint complete: wrote 7 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.603 s, sync=0.003 s, total=0.611 s; sync files=5, longest=0.002 s, average=0.001 s; distance=0 kB, estimate=2078 kB; lsn=0/1924308, redo lsn=0/19242D0
+2026-07-04 23:53:49.730 UTC [110420] ERROR:  cannot truncate a table referenced in a foreign key constraint
+2026-07-04 23:53:49.730 UTC [110420] DETAIL:  Table "servicios" references "usuarios".
+2026-07-04 23:53:49.730 UTC [110420] HINT:  Truncate table "servicios" at the same time, or use TRUNCATE ... CASCADE.
+2026-07-04 23:53:49.730 UTC [110420] STATEMENT:  TRUNCATE TABLE usuarios RESTART IDENTITY;
+2026-07-04 23:55:14.401 UTC [83776] LOG:  checkpoint starting: time
+2026-07-04 23:55:14.508 UTC [83776] LOG:  checkpoint complete: wrote 2 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.102 s, sync=0.002 s, total=0.108 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=1870 kB; lsn=0/1924480, redo lsn=0/1924448
+2026-07-05 00:00:14.603 UTC [83776] LOG:  checkpoint starting: time
+2026-07-05 00:00:14.811 UTC [83776] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.202 s, sync=0.002 s, total=0.209 s; sync files=3, longest=0.002 s, average=0.001 s; distance=2 kB, estimate=1683 kB; lsn=0/1924D68, redo lsn=0/1924D30
+2026-07-05 00:05:37.143 UTC [110420] ERROR:  syntax error at or near ";" at character 77
+2026-07-05 00:05:37.143 UTC [110420] STATEMENT:  INSERT INTO usuarios (nombre, identificacion, email, password_hash) VALUES 
+	;
+2026-07-05 00:15:15.083 UTC [83776] LOG:  checkpoint starting: time
+2026-07-05 00:15:15.292 UTC [83776] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.202 s, sync=0.002 s, total=0.209 s; sync files=3, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=1515 kB; lsn=0/1924F18, redo lsn=0/1924EE0
+2026-07-05 00:20:15.386 UTC [83776] LOG:  checkpoint starting: time
+2026-07-05 00:20:16.319 UTC [83776] LOG:  checkpoint complete: wrote 10 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.927 s, sync=0.002 s, total=0.933 s; sync files=10, longest=0.002 s, average=0.001 s; distance=25 kB, estimate=1366 kB; lsn=0/192B570, redo lsn=0/192B538
+2026-07-05 00:25:15.402 UTC [83776] LOG:  checkpoint starting: time
+2026-07-05 00:25:16.112 UTC [83776] LOG:  checkpoint complete: wrote 8 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.703 s, sync=0.003 s, total=0.710 s; sync files=8, longest=0.002 s, average=0.001 s; distance=2 kB, estimate=1230 kB; lsn=0/192BFB0, redo lsn=0/192BF78
