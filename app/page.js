@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [formData, setFormData] = useState({email:'', password:'', confPassword:''});
   const [error, setError] = useState('');
   const [formValidado, setFormValidado] = useState({email:false, password:false});
-
+  let validado=false;
 
   const handleChange = (e) => {
       const nuevoFormData = {...formData};
@@ -18,20 +18,21 @@ export default function LoginPage() {
       if(e.target.name==='password'){
           nuevoFormData[e.target.name]=e.target.value;
           nuevoFormData['confPassword']=e.target.value;
-          setFormData(nuevoFormData);
           if(!validadores[e.target.name]) return;
           if(validadores[e.target.name](nuevoFormData).boolRegExp){setError('');nuevoFormValidado[e.target.name]=true; }
           else {setError(mensajesValidacion[e.target.name].texto); nuevoFormValidado[e.target.name]=false;}
+          setFormData(nuevoFormData);
           setFormValidado(nuevoFormValidado);
       }
       if(e.target.name==='email'){
           nuevoFormData[e.target.name]=e.target.value.toLowerCase();
-          setFormData(nuevoFormData);
           if(!validadores[e.target.name]) return;
           if(validadores[e.target.name](nuevoFormData)){setError('');nuevoFormValidado[e.target.name]=true;}
           else {setError(mensajesValidacion[e.target.name].texto); nuevoFormValidado[e.target.name]=false;}
+          setFormData(nuevoFormData);
           setFormValidado(nuevoFormValidado);
       }
+      validado = Object.values(formValidado).every(Boolean);
 
   };
   
@@ -50,7 +51,7 @@ export default function LoginPage() {
         setError(res?.error || 'No se pudo iniciar sesión');
     }    
   };
-  const validado = Object.values(formValidado).every(Boolean);
+  validado = Object.values(formValidado).every(Boolean);
   return (
     <div className='fullPage'>
       <div className='card'>
