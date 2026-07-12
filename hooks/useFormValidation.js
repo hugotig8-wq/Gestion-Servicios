@@ -66,13 +66,13 @@ export function useFormValidation(initialData) {
         nuevoValidForm[name] = validadores[name](nuevoFormData);
 
         const esValido= nuevoValidForm[name];
-        if(esValido && typeOf(esValido)==='boolean') {setMensaje({texto:'', tipo:''}}
-        else if (typeOf(esValido)==='boolean'){setMensaje(obtenerMensaje(name,nuevoFormData))}
+        if(esValido && typeof(esValido)==='boolean') {setMensaje({texto:'', tipo:''})}
+        else if (typeof(esValido)==='boolean'){setMensaje(obtenerMensaje(name,nuevoFormData))}
         else if (esValido.boolRegExp){
             setMensaje({texto:'', tipo:''});
             if(!esValido.coincide){setMessage(obtenerMensaje('confPassword', nuevoFormData)); nuevoFormData[name]=true}
-            else{setMessage({texto:'', tipo:''}); nuevoFormData[name]= true}
-        }else{ setMessage(obtenerMensaje(name, nuevoFormData)); nuevoFormData[name]=false}
+            else{setMensaje({texto:'', tipo:''}); nuevoFormData[name]= true}
+        }else{ setMensaje(obtenerMensaje(name, nuevoFormData)); nuevoFormData[name]=false}
         
         if(typeOf(esValido)!=='boolean') nuevoFormData['confPassword']= esValido.coincide;
         setValidForm(nuevoValidForm);
