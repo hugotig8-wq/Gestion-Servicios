@@ -60,7 +60,7 @@ export default function LoginPage() {
             name="email"
             type="email" 
             placeholder="Email" 
-            value={email}
+            value={formData.email}
             onChange={handleChange}
             className="auth-input"
           />
@@ -68,7 +68,7 @@ export default function LoginPage() {
             name="password"
             type="password" 
             placeholder="Contraseña" 
-            value={password}
+            value={formData.password}
             onChange={(e) => setPassword(e.target.value)}
             className="auth-input"
           />
