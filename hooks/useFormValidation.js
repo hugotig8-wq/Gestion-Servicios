@@ -74,7 +74,7 @@ export function useFormValidation(initialData) {
             else{setMensaje({texto:'', tipo:''}); nuevoFormData[name]= true}
         }else{ setMensaje(obtenerMensaje(name, nuevoFormData)); nuevoFormData[name]=false}
         
-        if(typeOf(esValido)!=='boolean') nuevoFormData['confPassword']= esValido.coincide;
+        if(typeof(esValido)!=='boolean') nuevoFormData['confPassword']= esValido.coincide;
         setValidForm(nuevoValidForm);
     };
 
