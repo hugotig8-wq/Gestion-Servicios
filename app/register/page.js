@@ -54,10 +54,13 @@ export default function RegisterPage() {
         };
         setFormData(nuevoFormData);
         const esValido = validadores[name](nuevoFormData);
-        if(!esValido) {if(name==='identificacion'){setMensaje(mensajesValidacion[nuevoFormData.tipoId]); setValidForm(prev => ({...prev, [name]:false}))} else{setMensaje(mensajesValidacion[name]); setValidForm(prev => ({...prev, [name]:false}))} }
-        else {setMensaje({texto:'', tipo:''}); setValidForm(prev => ({...prev, [name]:true}))}
-        if(esValido) {setMensaje({texto:'', tipo:''}); setValidForm (prev => ({...prev, [name]:true}))}
-        else {setMensaje(obtenerMensaje(name,nuevoFormData)); setValidForm(prev => ({...prev, [name]:false}))}
+        if(esValido && typeOf(esValido)==='boolean') {setMensaje({texto:'', tipo:''}); setValidForm (prev => ({...prev, [name]:true}))}
+        else if (typeOf(esValido)==='boolean'){setMensaje(obtenerMensaje(name,nuevoFormData)); setValidForm(prev => ({...prev, [name]:false}))}
+        else if (esValido.boolRegExp){
+            setMensaje({texto:'', tipo:''});
+            if(!esValido.coincide){setMessage(obtenerMensaje('confPassword', nuevoFormData)); setValidForm (prev => ({...prev, [name]:true, ['confPassword']:false}));}
+            else{setMessage({texto:'', tipo:''}); setValidForm(prev => ({...prev, [name]:true, ['confPassword']:true}));}
+        }else{ setMessage(obtenerMensaje(name, nuevoFormData)); setValidForm(prev => ({...prev, [name]:false, ['confPassword']:true}))}
     };
     
     // 3. El envío al servidor (Conectividad)
