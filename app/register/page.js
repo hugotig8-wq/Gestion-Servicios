@@ -13,57 +13,23 @@ import { mensajesValidacion } from "@/lib/validationMessages";
 import { useFormValidation } from "@/hooks/useFormValidation";
 
 export default function RegisterPage() {
-    // 1. Estado: Aquí guardamos lo que el usuario escribe
-    const [formData, setFormData] = useState({
+    
+    const [enviando, setEnviando] = useState(false);
+
+    const {
+        formData,
+        mensaje,
+        formValidado,
+        handleChange
+    } = useFormValidation(
         tipoId:'dni',
         identificacion:'',
         nombre:'',
         apellidos:'',
-        email: '',
-        password: '',
-        confPassword: ''
+        email:'',
+        password:'',
+        confPassword:''
     });
-    const [validForm, setValidForm] = useState({
-        tipoId:true,
-        identificacion:false,
-        nombre:false,
-        apellidos:false,
-        email: false,
-        password: false,
-        confPassword: false
-    });
- 
-    const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
-    const [enviando, setEnviando] = useState(false);
-    const obtenerMensaje = (campo, data) => {
-
-        if (campo === "identificacion") {
-            return mensajesValidacion[data.tipoId];
-        }
-
-        return mensajesValidacion[campo];
-    };
-    
-    // 2. Función de manejo de cambios (Meticulosa y limpia)
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        //Hay que actualizar el formData haciendo un nuevoFormData con la actualizacion o trabajaría desactualizado
-        const nuevoValor = ["tipoId","identificacion","nombre","apellidos","email"].includes(name) ? value.toLowerCase() : value;
-        const nuevoFormData = {
-            ...formData,
-            [name]: nuevoValor
-        };
-        setFormData(nuevoFormData);
-        const esValido = validadores[name](nuevoFormData);
-        if(esValido && typeOf(esValido)==='boolean') {setMensaje({texto:'', tipo:''}); setValidForm (prev => ({...prev, [name]:true}))}
-        else if (typeOf(esValido)==='boolean'){setMensaje(obtenerMensaje(name,nuevoFormData)); setValidForm(prev => ({...prev, [name]:false}))}
-        else if (esValido.boolRegExp){
-            setMensaje({texto:'', tipo:''});
-            if(!esValido.coincide){setMessage(obtenerMensaje('confPassword', nuevoFormData)); setValidForm (prev => ({...prev, [name]:true, ['confPassword']:false}));}
-            else{setMessage({texto:'', tipo:''}); setValidForm(prev => ({...prev, [name]:true, ['confPassword']:true}));}
-        }else{ setMessage(obtenerMensaje(name, nuevoFormData)); setValidForm(prev => ({...prev, [name]:false, ['confPassword']:true}))}
-    };
-    
     // 3. El envío al servidor (Conectividad)
     const handleSubmit = async (e) => {
         e.preventDefault(); // Evita que la página se recargue (comportamiento por defecto del DOM)
@@ -85,8 +51,6 @@ export default function RegisterPage() {
             setEnviando(false);
         }
     };
-    
-    const formValidado = Object.values(validForm).every(Boolean);
     
     return (
         <div className="fullPage">
