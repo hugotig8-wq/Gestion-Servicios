@@ -40,8 +40,8 @@ export default function LoginPage() {
     setError('');
 
     const res = await signIn('credentials', {
-      formData.email,
-      formData.password,
+      formData['email'],
+      formData['password'],
       redirect: false, // Manejamos la redirección manualmente
     });
     if (res?.ok) {
