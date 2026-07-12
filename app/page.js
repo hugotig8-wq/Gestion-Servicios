@@ -69,7 +69,7 @@ export default function LoginPage() {
             type="password" 
             placeholder="Contraseña" 
             value={formData.password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handleChange}
             className="auth-input"
           />
           {error && <p className="error-text">{error}</p>}
