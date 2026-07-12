@@ -44,4 +44,26 @@ export function validaRegExpId(tipoId, id){
         else if(tipoId==='pasaporte'){return(validaRegExpPasaporte(id))}
         else {return false;}
     }
+
+export const validadores = {
+        nombre: (data)=>validaRegExpNombre(data.nombre),
+
+        apellidos: (data)=>validaRegExpApellidos(data.apellidos),
+
+        email: (data)=>validaRegExpCorreo(data.email),
+
+        password: (data)=>validaRegExpPassword(data.password),
+
+        confPassword:(data)=>
+            validaRegExpConfPassword(
+                data.password,
+                data.confPassword
+            ),
+
+        identificacion:(data)=>
+            validaRegExpId(
+                data.tipoId,
+                data.identificacion
+            )
+    }
                                                                                                                                                                              }
