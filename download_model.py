@@ -1,7 +1,7 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 
-model_name = "SmolLM3-3B-instruct"  # Nombre exacto del modelo
+model_name = "Qwen/Qwen2-1.5B-Instruct-GGUF"  # Nombre exacto del modelo
 
 print("Descargando tokenizer...")
 tokenizer = AutoTokenizer.from_pretrained(model_name)
