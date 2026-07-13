@@ -1,7 +1,7 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 
-model_name = "edbeeching/SmolLM3-3B-instruct"  # Nombre exacto del modelo
+model_name = "SmolLM3-3B-instruct"  # Nombre exacto del modelo
 
 print("Descargando tokenizer...")
 tokenizer = AutoTokenizer.from_pretrained(model_name)
