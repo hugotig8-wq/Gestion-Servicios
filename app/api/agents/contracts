@@ -1,0 +1,58 @@
+import { spawn } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+
+export async function POST(req) {
+    try {
+        const { tipo, keywords, fecha_inicio, fecha_fin, pais } = await req.json();
+
+        const pythonScript = path.join(process.cwd(), 'agents', 'contracts_handler.py');
+        
+        return new Promise((resolve) => {
+            const python = spawn('python3', [pythonScript, JSON.stringify({
+                tipo,
+                keywords,
+                fecha_inicio,
+                fecha_fin,
+                pais
+            })]);
+
+            let output = '';
+            let error = '';
+
+            python.stdout.on('data', (data) => {
+                output += data.toString();
+            });
+
+            python.stderr.on('data', (data) => {
+                error += data.toString();
+            });
+
+            python.on('close', (code) => {
+                if (code === 0) {
+                    try {
+                        const resultado = JSON.parse(output);
+                        resolve(new Response(JSON.stringify(resultado), {
+                            headers: { 'Content-Type': 'application/json' }
+                        }));
+                    } catch {
+                        resolve(new Response(JSON.stringify({ error: "Parse error", raw: output }), {
+                            status: 500,
+                            headers: { 'Content-Type': 'application/json' }
+                        }));
+                    }
+                } else {
+                    resolve(new Response(JSON.stringify({ error, code }), {
+                        status: 500,
+                        headers: { 'Content-Type': 'application/json' }
+                    }));
+                }
+            });
+        });
+    } catch (error) {
+        return new Response(JSON.stringify({ error: error.message }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
+}
