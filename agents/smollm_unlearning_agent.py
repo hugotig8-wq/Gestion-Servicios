@@ -548,4 +548,56 @@ class SmolLMUnlearningAgent:
                 },
                 {
                     "paso": 5,
+                    "nombre": "Testing y Optimización",
+                    "acciones": [
+                        "Tests de performance",
+                        "Optimización de memoria",
+                        "Documentación final"
+                    ]
+                }
+            ]
+        }
+        
+        # Guardar reporte
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(reporte, f, indent=2, ensure_ascii=False)
+        
+        print(f"\n✅ Reporte guardado en: {output_file}")
+        
+        return reporte
+    
+    # Métodos auxiliares
+    def _leer_archivo(self, filepath: str) -> str:
+        """Lee contenido de archivo"""
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                return f.read()
+        except:
+            return ""
+    
+    def _razonar(self, prompt: str, max_length: int = 2000) -> str:
+        """Usa SmolLM3 para razonar"""
+        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
+        
+        outputs = self.model.generate(
+            **inputs,
+            max_length=max_length,
+            temperature=0.3,  # Más determinístico para código
+            top_p=0.9,
+            do_sample=True
+        )
+        
+        return self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+    
+    def _parsear_json(self, texto: str) -> Dict:
+        """Extrae JSON de texto"""
+        import re
+        try:
+            json_match = re.search(r'\{.*\}', texto, re.DOTALL)
+            if json_match:
+                return json.loads(json_match.group())
+        except:
+            pass
+        return {"error": "No se pudo parsear", "raw": texto[:500]}
+    
     
