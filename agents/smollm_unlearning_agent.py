@@ -8,7 +8,7 @@ import re
 
 class SmolLMUnlearningAgent:
     """
-    Agente especializado en analizar SmolLM3 y generar plans para
+    Agente especializado en analizar SmolLM3-3B-Base y generar plans para
     implementar Machine Unlearning de Cao & Yang (2015)
     """
     
@@ -36,7 +36,7 @@ class SmolLMUnlearningAgent:
     
     def analizar_estructura_smollm(self, repo_path: str) -> Dict:
         """
-        Analiza la estructura completa de SmolLM3
+        Analiza la estructura completa de SmolLM3-3B-Base
         Identifica:
         - Arquitectura de red
         - Funciones de pérdida actuales
@@ -514,8 +514,8 @@ class SmolLMUnlearningAgent:
                     "paso": 1,
                     "nombre": "Setup del entorno",
                     "acciones": [
-                        "Descargar modelo SmolLM3 completo",
-                        "Instalar dependencias",
+                        "identificar el modelo SmolLM3-3B-Base completo HuggingFaceTB/SmolLM3-3B-Base",
+                        "Instalar dependencias para SmolLm3-3B (no base)",
                         "Crear estructura de directorios"
                     ]
                 },
