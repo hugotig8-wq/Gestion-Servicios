@@ -27,7 +27,15 @@ class TrainerAgent:
 
         self.strategy = strategy
 
-        self.mean_epoch_total_loss = 0
+        self.mean_epoch_total_loss = 0.0
+
+        self.mean_epoch_retain_loss = 0.0
+
+        self.mean_epoch_forget_loss = 0.0
+
+        self.num_batches = 0
+
+        self.mean_train_result
 
     def train(
 
@@ -68,6 +76,17 @@ class TrainerAgent:
 
                 )
 
+                self.mean_epoch_total_loss += last_train_result.total_loss
+                self.mean_epoch_retain_loss += last_train_result.retain_loss
+                self.mean_epoch_forget_loss += last_train_result.forget_loss
+                self.num_batches += 1
+                
+            mean_train_result = TrainStepResult(
+                total_loss=total_loss / num_batches,
+                retain_loss=retain_loss / num_batches,
+                forget_loss=forget_loss / num_batches,
+            )
+
             validation_result = self.validator.validate(
 
                 self.trainer.model,
@@ -84,7 +103,7 @@ class TrainerAgent:
 
                 epoch,
 
-                last_train_result,
+                mean_train_result,
 
                 validation_result
 
