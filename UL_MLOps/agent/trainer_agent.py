@@ -43,7 +43,12 @@ class TrainerAgent:
 
     ):
 
-        for epoch in range(epochs):
+        epochs_progress = tqdm(
+            range(epochs),
+            desc="Training"
+        )
+
+for epoch in epochs_progress:
             
             total_loss = 0.0
 
@@ -53,17 +58,23 @@ class TrainerAgent:
 
             num_batches = 0
 
+            batches_progress = tqdm(
+                zip_longest(
+                    retain_loader,
+                    forget_loader,
+                    fillvalue=None
+                ),
+                total=min(
+                    len(retain_loader),
+                    len(forget_loader)
+                ),
+                desc=f"Epoch {epoch + 1}",
+                leave=False
+            )
+
             last_train_result = None
 
-            for retain_batch, forget_batch in zip_longest(
-
-                retain_loader,
-
-                forget_loader,
-
-                fillvalue=None
-
-            ):
+            for retain_batch, forget_batch in batches_progress :
 
                 if retain_batch is None or forget_batch is None:
                     break
@@ -80,6 +91,13 @@ class TrainerAgent:
                 retain_loss += last_train_result.retain_loss
                 forget_loss += last_train_result.forget_loss
                 num_batches += 1
+
+                progress.set_postfix(
+                    loss=f"{last_train_result.total_loss:.3f}",
+                    retain=f"{last_train_result.retain_loss:.3f}",
+                    forget=f"{last_train_result.forget_loss:.3f}"
+                )
+
                 
             mean_train_result = TrainStepResult(
                 total_loss=total_loss / num_batches,
