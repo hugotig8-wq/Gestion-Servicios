@@ -4,7 +4,8 @@ from engine.trainer import Trainer
 from engine.validator import Validator
 from checkpoint.checkpoint_manager import CheckpointManager
 from logging.experiment_logger import ExperimentLogger
-from engine.trainet import TrainStepResult
+from engine.trainer import TrainStepResult
+from tqdm import tqdm
 
 
 class TrainerAgent:
@@ -48,7 +49,7 @@ class TrainerAgent:
             desc="Training"
         )
 
-for epoch in epochs_progress:
+        for epoch in epochs_progress:
             
             total_loss = 0.0
 
@@ -92,7 +93,7 @@ for epoch in epochs_progress:
                 forget_loss += last_train_result.forget_loss
                 num_batches += 1
 
-                progress.set_postfix(
+                batches_progress.set_postfix(
                     loss=f"{last_train_result.total_loss:.3f}",
                     retain=f"{last_train_result.retain_loss:.3f}",
                     forget=f"{last_train_result.forget_loss:.3f}"
