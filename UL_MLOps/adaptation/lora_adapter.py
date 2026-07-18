@@ -70,27 +70,6 @@ class LoRAStrategy(ParameterStrategy):
             model.parameters()
         )
 
-    def create_optimizer(
-
-        self,
-
-        model: PreTrainedModel,
-
-        learning_rate: float = None
-
-    ):
-
-        if learning_rate is None:
-            learning_rate = self.learning_rate
-
-        return AdamW(
-
-            self.trainable_parameters(model),
-
-            lr=learning_rate
-
-        )
-
     def save(
 
         self,
