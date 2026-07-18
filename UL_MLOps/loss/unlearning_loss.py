@@ -1,3 +1,4 @@
+#Luego se puede implementar GA, NPO, SCRUB, KL regularization y selective forgetting.  
 import torch
 import torch.nn.functional as F
 
