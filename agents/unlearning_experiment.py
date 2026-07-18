@@ -1,43 +1,41 @@
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM, Trainer, TrainingArguments
+from transformers import AutoTokenizer, AutoModelForCausalLM
+from huggingface_hub import login
+import os
 from losses import CombinedUnlearningLoss, RegularizedUnlearningLoss
 from config import UnlearningConfig
 from metrics import UnlearningMetrics
 
+# ✅ AUTENTICACIÓN
+token = os.getenv("HF_TOKEN")
+if token:
+    login(token=token)
+    print("✅ Autenticado en Hugging Face")
+else:
+    print("⚠️  HF_TOKEN no encontrado. Intentando con credenciales guardadas...")
+
 class UnlearningExperiment:
-    """
-    Script principal para experimentos de Machine Unlearning
-    Cao & Yang (2015)
-    """
-    
     def __init__(self, config: UnlearningConfig):
         self.config = config
         self.model_name = "HuggingFaceTB/SmolLM3-3B"
         
-        print("Cargando modelo...")
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-        self.model = AutoModelForCausalLM.from_pretrained(
-            self.model_name,
-            torch_dtype=torch.float16,
-            device_map="auto",
-            load_in_8bit=True
-        )
-        
-        # Guardar parámetros originales (para regularización)
-        self.original_params = [p.clone().detach() for p in self.model.parameters()]
-        
-        # Inicializar losses
-        self.combined_loss = CombinedUnlearningLoss(
-            alpha=config.alpha,
-            beta=config.beta
-        )
-        
-        self.regularized_loss = RegularizedUnlearningLoss(
-            alpha=config.alpha,
-            beta=config.beta,
-            gamma=config.gamma
-        )
-        self.regularized_loss.set_original_params(self.model)
+        print(f"Descargando modelo: {self.model_name}...")
+        try:
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                self.model_name,
+                trust_remote_code=True  # ← Importante
+            )
+            self.model = AutoModelForCausalLM.from_pretrained(
+                self.model_name,
+                torch_dtype=torch.float16,
+                device_map="auto",
+                load_in_8bit=True,
+                trust_remote_code=True  # ← Importante
+            )
+            print("✅ Modelo descargado exitosamente")
+        except Exception as e:
+            print(f"❌ Error: {e}")
+            raise
     
     def train_unlearning(self, retain_dataset, forget_dataset, output_dir="./unlearning_output"):
         """
