@@ -1,3 +1,4 @@
+import torch
 from dataclasses import dataclass
 
 from metrics.fsr import ForgetSuccessRate
