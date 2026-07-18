@@ -15,27 +15,63 @@ else:
     print("⚠️  HF_TOKEN no encontrado. Intentando con credenciales guardadas...")
 
 class UnlearningExperiment:
+    """
+    Script principal para experimentos de Machine Unlearning
+    Cao & Yang (2015)
+    """
+    
     def __init__(self, config: UnlearningConfig):
         self.config = config
         self.model_name = "HuggingFaceTB/SmolLM3-3B"
         
         print(f"Descargando modelo: {self.model_name}...")
         try:
+            # ✅ CORRECCIÓN: Sin load_in_8bit, con dtype en lugar de torch_dtype
             self.tokenizer = AutoTokenizer.from_pretrained(
                 self.model_name,
-                trust_remote_code=True  # ← Importante
+                trust_remote_code=True
             )
+            
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.model_name,
-                torch_dtype=torch.float16,
+                dtype=torch.float16,  # ← Cambio: torch_dtype → dtype
                 device_map="auto",
-                load_in_8bit=True,
-                trust_remote_code=True  # ← Importante
+                trust_remote_code=True
+                # ✅ Removido: load_in_8bit=True (no soportado en este modelo)
             )
             print("✅ Modelo descargado exitosamente")
+            
         except Exception as e:
-            print(f"❌ Error: {e}")
-            raise
+            print(f"❌ Error cargando modelo: {e}")
+            print("\n🔧 Intentando con configuración alternativa...")
+            
+            # Fallback: Cargar sin optimizaciones
+            try:
+                self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+                self.model = AutoModelForCausalLM.from_pretrained(
+                    self.model_name,
+                    trust_remote_code=True
+                )
+                print("✅ Modelo cargado (modo CPU/standard)")
+            except Exception as e2:
+                print(f"❌ Error: {e2}")
+                raise
+        
+        # Guardar parámetros originales (para regularización)
+        self.original_params = [p.clone().detach() for p in self.model.parameters()]
+        
+        # Inicializar losses
+        self.combined_loss = CombinedUnlearningLoss(
+            alpha=config.alpha,
+            beta=config.beta
+        )
+        
+        self.regularized_loss = RegularizedUnlearningLoss(
+            alpha=config.alpha,
+            beta=config.beta,
+            gamma=config.gamma
+        )
+        self.regularized_loss.set_original_params(self.model)
     
     def train_unlearning(self, retain_dataset, forget_dataset, output_dir="./unlearning_output"):
         """
@@ -43,6 +79,7 @@ class UnlearningExperiment:
         
         Cao & Yang (2015), Cap. 5 - Algorithm 1
         """
+        from transformers import Trainer, TrainingArguments
         
         training_args = TrainingArguments(
             output_dir=output_dir,
@@ -107,5 +144,29 @@ class UnlearningExperiment:
 
 if __name__ == "__main__":
     config = UnlearningConfig()
-    experiment = UnlearningExperiment(config)
-    print("✅ Experimento inicializado")
+    
+    try:
+        experiment = UnlearningExperiment(config)
+        print("✅ Experimento inicializado correctamente")
+        
+        # Prueba simple: generar texto
+        print("\n🧪 Prueba de generación de texto:")
+        inputs = experiment.tokenizer(
+            "Machine unlearning is",
+            return_tensors="pt"
+        )
+        
+        with torch.no_grad():
+            outputs = experiment.model.generate(
+                inputs["input_ids"],
+                max_length=50,
+                num_return_sequences=1
+            )
+        
+        generated_text = experiment.tokenizer.decode(outputs[0], skip_special_tokens=True)
+        print(f"Generado: {generated_text}")
+        
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        import traceback
+        traceback.print_exc()
