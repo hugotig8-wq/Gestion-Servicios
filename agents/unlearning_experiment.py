@@ -261,6 +261,7 @@ class UnlearningExperiment:
     ) -> Dict:
         """
         Validar que el unlearning funcionó
+    
         Cao & Yang (2015), Cap. 6
         """
         print(f"\n{'='*70}")
@@ -270,10 +271,10 @@ class UnlearningExperiment:
     
         metrics = {}
     
-        print("   Calculando métricas...")
+        print("\n   Calculando métricas...")
     
+        # FSR
         try:
-            # FSR
             print("   - Forget Success Rate...")
             fsr = UnlearningMetrics.forget_success_rate(
                 self.model,
@@ -286,8 +287,8 @@ class UnlearningExperiment:
             print(f"     ❌ Error en FSR: {e}")
             metrics["fsr"] = 0.5
     
+        # Model Utility
         try:
-            # Model Utility
             print("   - Model Utility...")
             mu = UnlearningMetrics.model_utility(
                 self.model,
@@ -300,28 +301,8 @@ class UnlearningExperiment:
             print(f"     ❌ Error en MU: {e}")
             metrics["model_utility"] = 0.95
     
-        print("   - Forgetting Consistency: Skipped (memoria)")
-    
-        # Imprimir reporte (versión simplificada)
-        print(f"\n{'='*70}")
-        print("RESULTADOS")
-        print(f"{'='*70}")
-    
-        if "fsr" in metrics:
-            fsr = metrics["fsr"]
-            status = "✅ PASS" if fsr > 0.5 else "⚠️  LOW"
-            print(f"\n Forget Success Rate (FSR): {fsr:.4f} {status}")
-            print(f"   Objetivo: > 0.9")
-            print(f"   Referencia: Cao & Yang (2015), Eq. (12)")
-    
-        if "model_utility" in metrics:
-            mu = metrics["model_utility"]
-            status = "✅ PASS" if mu > 0.90 else "⚠️  LOW"
-            print(f"\n Model Utility (MU): {mu:.4f} {status}")
-            print(f"   Objetivo: > 0.95")
-            print(f"   Referencia: Cao & Yang (2015), Sec. 6.3")
-    
-        print(f"\n{'='*70}")
+        # Imprimir reporte
+        UnlearningMetrics.print_report(metrics)
     
         return metrics
 
