@@ -58,41 +58,44 @@ class Validator:
         #model.eval() desactiva también el Dropout (que sirve para evitar overfitting, aleatorias las neuronas que elija para cada batch)..
         model.eval()#Permite que no se haga BatchNorm (aunque TinyLlama usa RMSNorm que no depende del modo de entrenamiento/evaluacion).
         #model.eval() usa todas las neuronas para inferir en ese punto del pipeline.
-        fsr = self.fsr_metric.compute(
 
-            model,
+        with torch.no_grad():#No input-embedding-transformer-linear-loss, sólo el resultado sin grafo.
+        #torch.no_grad() Reduce y acelera evaluación, evita el grafo del backward().
+            fsr = self.fsr_metric.compute(
 
-            forget_loader
+                model,
 
-        )
+                forget_loader
 
-        mu = self.mu_metric.compute(
+            )
 
-            model,
+            mu = self.mu_metric.compute(
 
-            validation_loader
+                model,
 
-        )
+                validation_loader
 
-        fc = self.fc_metric.compute(
+            )
 
-            model,
+            fc = self.fc_metric.compute(
 
-            retain_loader,
+                model,
 
-            forget_loader
+                retain_loader,
 
-        )
+                forget_loader
 
-        mia = self.mia_metric.compute(
+            )
 
-            model,
+            mia = self.mia_metric.compute(
 
-            retain_loader,
+                model,
 
-            forget_loader
+                retain_loader,
 
-        )
+                forget_loader
+
+            )
 
         return ValidationResult(
 
