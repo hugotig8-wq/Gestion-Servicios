@@ -12,7 +12,7 @@ class BaseMetric(ABC):
         """
         pass
 
-#Cuando crezca se crea 
+#Cuando crezca se crea así para que pasen analisis estático
 #class ValidationContext:
    # model
     #retain_loader
