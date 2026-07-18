@@ -10,6 +10,45 @@ class UnlearningMetrics:
     """
     
     @staticmethod
+    def _unpack_batch(batch, device: str = "cpu"):
+        """
+        Desempaqueta un batch correctamente
+        Maneja tanto tuplas como diccionarios
+        """
+        try:
+            if isinstance(batch, dict):
+                input_ids = batch['input_ids'].to(device)
+                labels = batch.get('labels', input_ids).to(device)
+                return input_ids, labels
+            
+            elif isinstance(batch, (list, tuple)):
+                if len(batch) == 3:
+                    # (input_ids, attention_mask, labels)
+                    input_ids = batch[0].to(device)
+                    labels = batch[2].to(device)
+                    return input_ids, labels
+                elif len(batch) == 2:
+                    # (input_ids, labels)
+                    input_ids = batch[0].to(device)
+                    labels = batch[1].to(device)
+                    return input_ids, labels
+                else:
+                    # Solo input_ids
+                    input_ids = batch[0].to(device)
+                    return input_ids, input_ids
+            
+            else:
+                # Caso desconocido
+                return batch.to(device), batch.to(device)
+        
+        except Exception as e:
+            print(f"Error desempaquetando batch: {e}")
+            print(f"Tipo: {type(batch)}")
+            if isinstance(batch, (list, tuple)):
+                print(f"Longitud: {len(batch)}")
+            raise
+    
+    @staticmethod
     def forget_success_rate(
         model, 
         forget_loader,
@@ -23,36 +62,34 @@ class UnlearningMetrics:
         
         Mide: % de muestras donde el modelo unlearned tiene MAYOR pérdida
         Objetivo: FSR > 0.9 (al menos 90% de muestras olvidadas)
-        
-        Interpretación:
-        - FSR = 1.0: Modelo olvida perfectamente (máxima pérdida)
-        - FSR = 0.5: Neutral (igual que modelo original)
-        - FSR = 0.0: Modelo mantiene información (no olvida)
         """
         model.eval()
         correct = 0
         total = 0
         
         with torch.no_grad():
-            for batch in forget_loader:
-                if isinstance(batch, dict):
-                    input_ids = batch['input_ids'].to(device)
-                    labels = batch.get('labels', input_ids).to(device)
-                else:
-                    input_ids, labels = batch
-                    input_ids = input_ids.to(device)
-                    labels = labels.to(device)
-                
-                # Salida del modelo unlearned
-                outputs_unlearn = model(input_ids, labels=labels)
-                loss_unlearn = outputs_unlearn.loss if hasattr(outputs_unlearn, 'loss') else outputs_unlearn[0]
-                
-                # Comparar con pérdida esperada
-                # En unlearning, queremos que AUMENTE la pérdida
-                # Consideramos "olvido exitoso" si la pérdida es > umbral
-                threshold = 2.0
-                correct += (loss_unlearn > threshold).sum().item()
-                total += len(input_ids)
+            for batch_idx, batch in enumerate(forget_loader):
+                try:
+                    # Desempaquetar batch
+                    input_ids, labels = UnlearningMetrics._unpack_batch(batch, device)
+                    
+                    # Forward pass
+                    outputs_unlearn = model(input_ids, labels=labels)
+                    
+                    # Extraer loss
+                    if hasattr(outputs_unlearn, 'loss'):
+                        loss_unlearn = outputs_unlearn.loss
+                    else:
+                        loss_unlearn = outputs_unlearn[0]
+                    
+                    # Comparar con umbral
+                    threshold = 2.0
+                    correct += (loss_unlearn > threshold).sum().item()
+                    total += len(input_ids)
+                    
+                except Exception as e:
+                    print(f"⚠️  Error en batch {batch_idx}: {e}")
+                    continue
         
         fsr = correct / total if total > 0 else 0.0
         return fsr
@@ -65,51 +102,45 @@ class UnlearningMetrics:
     ) -> float:
         """
         Model Utility (MU) - Cao & Yang (2015), Sec. 6.3
-    
+        
         MU = Accuracy(D_retain) / Accuracy_original
-    
+        
         Mide: Mantención de precisión en datos a retener
         Objetivo: MU > 0.95 (mantiene al menos 95% de precisión)
         """
         model.eval()
         correct = 0
         total = 0
-    
+        
         with torch.no_grad():
-            for batch in retain_loader:
+            for batch_idx, batch in enumerate(retain_loader):
                 try:
-                    # ✅ CORREGIDO: Desempaquetar correctamente
-                    if isinstance(batch, (list, tuple)):
-                        input_ids = batch[0].to(device)
-                        if len(batch) > 2:
-                            labels = batch[2].to(device)
-                        else:
-                            labels = batch[0].to(device)
-                    else:
-                        input_ids = batch['input_ids'].to(device)
-                        labels = batch.get('labels', batch['input_ids']).to(device)
-                
+                    # Desempaquetar batch
+                    input_ids, labels = UnlearningMetrics._unpack_batch(batch, device)
+                    
+                    # Forward pass
                     outputs = model(input_ids)
-                
+                    
+                    # Extraer logits
                     if hasattr(outputs, 'logits'):
                         logits = outputs.logits
                     else:
                         logits = outputs[0]
-                
-                    # Para sequence classification
+                    
+                    # Calcular predicciones
                     if len(logits.shape) == 2:  # [batch, num_classes]
                         predictions = torch.argmax(logits, dim=-1)
-                        correct += (predictions == labels).sum().item()
                     else:  # [batch, seq_len, vocab_size]
                         predictions = torch.argmax(logits, dim=-1)
-                        correct += (predictions == labels).sum().item()
-                
+                    
+                    # Contar correctas
+                    correct += (predictions == labels).sum().item()
                     total += len(input_ids)
-                
-                except ValueError as e:
-                    print(f"⚠️  Error en batch: {e}")
+                    
+                except Exception as e:
+                    print(f"⚠️  Error en batch {batch_idx}: {e}")
                     continue
-    
+        
         accuracy = correct / total if total > 0 else 0.0
         return accuracy
     
@@ -123,13 +154,8 @@ class UnlearningMetrics:
         
         FC = || θ_unlearn - θ_original || / || θ_original ||
         
-        Mide: Cambio mínimo en pesos del modelo (no quiere cambiar demasiado)
+        Mide: Cambio mínimo en pesos del modelo
         Objetivo: FC < 0.1 (menos de 10% de cambio)
-        
-        Interpretación:
-        - FC = 0.01: Cambio mínimo (buenos - modelo estable)
-        - FC = 0.05: Cambio moderado (aceptable)
-        - FC = 0.15: Cambio excesivo (malo - modelo degradado)
         """
         numerator = 0.0
         denominator = 0.0
@@ -157,65 +183,54 @@ class UnlearningMetrics:
     ) -> float:
         """
         Membership Inference Attack (MIA) - Cao & Yang (2015), Sec. 6.2
+        
+        Mide: Capacidad de inferir si un dato fue usado para entrenar
+        Objetivo: MIA ≈ 0.5 (sin información)
         """
         model.eval()
-    
+        
         member_losses = []
         non_member_losses = []
-    
+        
         with torch.no_grad():
             # Pérdidas de miembros
-            for batch in member_loader:
+            for batch_idx, batch in enumerate(member_loader):
                 try:
-                    # ✅ CORREGIDO: Desempaquetar correctamente
-                    if isinstance(batch, (list, tuple)):
-                        input_ids = batch[0].to(device)
-                        if len(batch) > 2:
-                            labels = batch[2].to(device)
-                        else:
-                            labels = batch[0].to(device)
-                    else:
-                        input_ids = batch['input_ids'].to(device)
-                        labels = batch.get('labels', batch['input_ids']).to(device)
-                
+                    input_ids, labels = UnlearningMetrics._unpack_batch(batch, device)
+                    
                     outputs = model(input_ids, labels=labels)
                     loss = outputs.loss if hasattr(outputs, 'loss') else outputs[0]
                     member_losses.append(loss.item())
-                except:
+                    
+                except Exception as e:
+                    print(f"⚠️  Error en member batch {batch_idx}: {e}")
                     continue
-        
+            
             # Pérdidas de no-miembros
-            for batch in non_member_loader:
+            for batch_idx, batch in enumerate(non_member_loader):
                 try:
-                    # ✅ CORREGIDO: Desempaquetar correctamente
-                    if isinstance(batch, (list, tuple)):
-                        input_ids = batch[0].to(device)
-                        if len(batch) > 2:
-                            labels = batch[2].to(device)
-                        else:
-                            labels = batch[0].to(device)
-                    else:
-                        input_ids = batch['input_ids'].to(device)
-                        labels = batch.get('labels', batch['input_ids']).to(device)
-                
+                    input_ids, labels = UnlearningMetrics._unpack_batch(batch, device)
+                    
                     outputs = model(input_ids, labels=labels)
                     loss = outputs.loss if hasattr(outputs, 'loss') else outputs[0]
                     non_member_losses.append(loss.item())
-                except:
+                    
+                except Exception as e:
+                    print(f"⚠️  Error en non-member batch {batch_idx}: {e}")
                     continue
-    
-        # Calcular AUC simplificado
+        
+        # Calcular MIA
         if len(member_losses) > 0 and len(non_member_losses) > 0:
             member_mean = np.mean(member_losses)
             non_member_mean = np.mean(non_member_losses)
-        
+            
             if non_member_mean > 0:
                 mia = member_mean / (member_mean + non_member_mean)
             else:
                 mia = 0.5
         else:
             mia = 0.5
-    
+        
         return mia
     
     @staticmethod
@@ -228,14 +243,14 @@ class UnlearningMetrics:
         
         if "fsr" in metrics_dict:
             fsr = metrics_dict["fsr"]
-            status = "✅ PASS" if fsr > 0.9 else "⚠️  LOW"
+            status = "✅ PASS" if fsr > 0.9 else "⚠️  LOW" if fsr > 0.5 else "❌ FAIL"
             print(f"\n1️⃣  Forget Success Rate (FSR): {fsr:.4f} {status}")
             print(f"   Ecuación: Cao & Yang (2015), Eq. (12)")
             print(f"   Objetivo: > 0.9 (modelo olvida > 90%)")
         
         if "model_utility" in metrics_dict:
             mu = metrics_dict["model_utility"]
-            status = "✅ PASS" if mu > 0.95 else "⚠️  LOW"
+            status = "✅ PASS" if mu > 0.95 else "⚠️  LOW" if mu > 0.90 else "❌ FAIL"
             print(f"\n2️⃣  Model Utility (MU): {mu:.4f} {status}")
             print(f"   Ecuación: Cao & Yang (2015), Sec. 6.3")
             print(f"   Objetivo: > 0.95 (mantiene > 95% utilidad)")
