@@ -49,18 +49,7 @@ class ParameterStrategy(ABC):
         que el optimizador debe actualizar.
         """
         pass
-
-    @abstractmethod
-    def create_optimizer(
-        self,
-        model: PreTrainedModel,
-        learning_rate: float
-    ) -> torch.optim.Optimizer:
-        """
-        Construye el optimizador adecuado
-        para esta estrategia.
-        """
-        pass
+        
 
     @abstractmethod
     def save(
