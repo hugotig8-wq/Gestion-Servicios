@@ -23,7 +23,7 @@ class Trainer:
         self,
         model: Module,
         optimizer: Optimizer,
-        loss_function
+        loss_function # Si mas adelante quiero probar otra forma de UL simplemente cambio la implementación de loss_function
     ):
 
         self.model = model
