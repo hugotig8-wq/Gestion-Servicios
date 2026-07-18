@@ -52,13 +52,11 @@ class Trainer:
             labels=forget_batch["labels"]
         )
 
-        retain_loss = retain_outputs.loss
-
-        forget_loss = forget_outputs.loss
-
-        total_loss = self.loss_function(
-            retain_loss=retain_loss,
-            forget_loss=forget_loss
+        total_loss, retain_loss, forget_loss = self.loss_function.compute(
+            retain_outputs.logits,
+            forget_outputs.logits,
+            retain_labels,
+            forget_labels
         )
 
         total_loss.backward()
