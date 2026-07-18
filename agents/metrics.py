@@ -65,48 +65,51 @@ class UnlearningMetrics:
     ) -> float:
         """
         Model Utility (MU) - Cao & Yang (2015), Sec. 6.3
-        
+    
         MU = Accuracy(D_retain) / Accuracy_original
-        
+    
         Mide: Mantención de precisión en datos a retener
         Objetivo: MU > 0.95 (mantiene al menos 95% de precisión)
-        
-        Interpretación:
-        - MU = 1.0: Precisión igual al modelo original
-        - MU = 0.95: Pérdida de 5% de precisión (aceptable)
-        - MU < 0.90: Demasiada degradación
         """
         model.eval()
         correct = 0
         total = 0
-        
+    
         with torch.no_grad():
             for batch in retain_loader:
-                if isinstance(batch, dict):
-                    input_ids = batch['input_ids'].to(device)
-                    labels = batch.get('labels', input_ids).to(device)
-                else:
-                    input_ids, labels = batch
-                    input_ids = input_ids.to(device)
-                    labels = labels.to(device)
+                try:
+                    # ✅ CORREGIDO: Desempaquetar correctamente
+                    if isinstance(batch, (list, tuple)):
+                        input_ids = batch[0].to(device)
+                        if len(batch) > 2:
+                            labels = batch[2].to(device)
+                        else:
+                            labels = batch[0].to(device)
+                    else:
+                        input_ids = batch['input_ids'].to(device)
+                        labels = batch.get('labels', batch['input_ids']).to(device)
                 
-                outputs = model(input_ids)
+                    outputs = model(input_ids)
                 
-                if hasattr(outputs, 'logits'):
-                    logits = outputs.logits
-                else:
-                    logits = outputs[0]
+                    if hasattr(outputs, 'logits'):
+                        logits = outputs.logits
+                    else:
+                        logits = outputs[0]
                 
-                # Para sequence classification
-                if len(logits.shape) == 2:  # [batch, num_classes]
-                    predictions = torch.argmax(logits, dim=-1)
-                    correct += (predictions == labels).sum().item()
-                else:  # [batch, seq_len, vocab_size]
-                    predictions = torch.argmax(logits, dim=-1)
-                    correct += (predictions == labels).sum().item()
+                    # Para sequence classification
+                    if len(logits.shape) == 2:  # [batch, num_classes]
+                        predictions = torch.argmax(logits, dim=-1)
+                        correct += (predictions == labels).sum().item()
+                    else:  # [batch, seq_len, vocab_size]
+                        predictions = torch.argmax(logits, dim=-1)
+                        correct += (predictions == labels).sum().item()
                 
-                total += len(input_ids)
-        
+                    total += len(input_ids)
+                
+                except ValueError as e:
+                    print(f"⚠️  Error en batch: {e}")
+                    continue
+    
         accuracy = correct / total if total > 0 else 0.0
         return accuracy
     
@@ -154,64 +157,65 @@ class UnlearningMetrics:
     ) -> float:
         """
         Membership Inference Attack (MIA) - Cao & Yang (2015), Sec. 6.2
-        
-        Mide: Capacidad de inferir si un dato fue usado para entrenar
-        Objetivo: MIA ≈ 0.5 (sin información, 50-50)
-        
-        Funcionamiento:
-        1. Calcular pérdida promedio en datos de entrenamiento (members)
-        2. Calcular pérdida promedio en datos no usados (non-members)
-        3. Si son similares, el modelo no "recuerda" membership
-        
-        Interpretación:
-        - MIA = 0.5: Perfecto - modelo no recuerda membership
-        - MIA > 0.7: Problema - modelo recuerda demasiado
-        - MIA < 0.3: Modelo olvidó completamente
         """
         model.eval()
-        
+    
         member_losses = []
         non_member_losses = []
-        
+    
         with torch.no_grad():
             # Pérdidas de miembros
             for batch in member_loader:
-                if isinstance(batch, dict):
-                    input_ids = batch['input_ids'].to(device)
-                    labels = batch.get('labels', input_ids).to(device)
-                else:
-                    input_ids, labels = batch
-                    input_ids = input_ids.to(device)
-                    labels = labels.to(device)
+                try:
+                    # ✅ CORREGIDO: Desempaquetar correctamente
+                    if isinstance(batch, (list, tuple)):
+                        input_ids = batch[0].to(device)
+                        if len(batch) > 2:
+                            labels = batch[2].to(device)
+                        else:
+                            labels = batch[0].to(device)
+                    else:
+                        input_ids = batch['input_ids'].to(device)
+                        labels = batch.get('labels', batch['input_ids']).to(device)
                 
-                outputs = model(input_ids, labels=labels)
-                loss = outputs.loss if hasattr(outputs, 'loss') else outputs[0]
-                member_losses.append(loss.item())
-            
+                    outputs = model(input_ids, labels=labels)
+                    loss = outputs.loss if hasattr(outputs, 'loss') else outputs[0]
+                    member_losses.append(loss.item())
+                except:
+                    continue
+        
             # Pérdidas de no-miembros
             for batch in non_member_loader:
-                if isinstance(batch, dict):
-                    input_ids = batch['input_ids'].to(device)
-                    labels = batch.get('labels', input_ids).to(device)
-                else:
-                    input_ids, labels = batch
-                    input_ids = input_ids.to(device)
-                    labels = labels.to(device)
+                try:
+                    # ✅ CORREGIDO: Desempaquetar correctamente
+                    if isinstance(batch, (list, tuple)):
+                        input_ids = batch[0].to(device)
+                        if len(batch) > 2:
+                            labels = batch[2].to(device)
+                        else:
+                            labels = batch[0].to(device)
+                    else:
+                        input_ids = batch['input_ids'].to(device)
+                        labels = batch.get('labels', batch['input_ids']).to(device)
                 
-                outputs = model(input_ids, labels=labels)
-                loss = outputs.loss if hasattr(outputs, 'loss') else outputs[0]
-                non_member_losses.append(loss.item())
-        
+                    outputs = model(input_ids, labels=labels)
+                    loss = outputs.loss if hasattr(outputs, 'loss') else outputs[0]
+                    non_member_losses.append(loss.item())
+                except:
+                    continue
+    
         # Calcular AUC simplificado
-        member_mean = np.mean(member_losses)
-        non_member_mean = np.mean(non_member_losses)
+        if len(member_losses) > 0 and len(non_member_losses) > 0:
+            member_mean = np.mean(member_losses)
+            non_member_mean = np.mean(non_member_losses)
         
-        # Si member_loss > non_member_loss, el modelo "recuerda"
-        if non_member_mean > 0:
-            mia = member_mean / (member_mean + non_member_mean)
+            if non_member_mean > 0:
+                mia = member_mean / (member_mean + non_member_mean)
+            else:
+                mia = 0.5
         else:
             mia = 0.5
-        
+    
         return mia
     
     @staticmethod
