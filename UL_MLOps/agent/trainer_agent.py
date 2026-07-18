@@ -4,6 +4,7 @@ from engine.trainer import Trainer
 from engine.validator import Validator
 from checkpoint.checkpoint_manager import CheckpointManager
 from logging.experiment_logger import ExperimentLogger
+from engine.trainet import TrainStepResult
 
 
 class TrainerAgent:
@@ -27,15 +28,6 @@ class TrainerAgent:
 
         self.strategy = strategy
 
-        self.mean_epoch_total_loss = 0.0
-
-        self.mean_epoch_retain_loss = 0.0
-
-        self.mean_epoch_forget_loss = 0.0
-
-        self.num_batches = 0
-
-        self.mean_train_result
 
     def train(
 
@@ -52,6 +44,14 @@ class TrainerAgent:
     ):
 
         for epoch in range(epochs):
+            
+            total_loss = 0.0
+
+            retain_loss = 0.0
+
+            forget_loss = 0.0
+
+            num_batches = 0
 
             last_train_result = None
 
@@ -76,10 +76,10 @@ class TrainerAgent:
 
                 )
 
-                self.mean_epoch_total_loss += last_train_result.total_loss
-                self.mean_epoch_retain_loss += last_train_result.retain_loss
-                self.mean_epoch_forget_loss += last_train_result.forget_loss
-                self.num_batches += 1
+                total_loss += last_train_result.total_loss
+                retain_loss += last_train_result.retain_loss
+                forget_loss += last_train_result.forget_loss
+                num_batches += 1
                 
             mean_train_result = TrainStepResult(
                 total_loss=total_loss / num_batches,
