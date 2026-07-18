@@ -11,6 +11,7 @@ class ExperimentLogger:
     def __init__(
         self,
         output_dir: str
+        experiment_name: str
     ):
 
         self.output_dir = Path(output_dir)
@@ -58,7 +59,7 @@ class ExperimentLogger:
 
     def save(self):
 
-        output_file = self.output_dir / "experiment.json"
+        output_file = self.output_dir / f"{self.experiment_name}_v{len(self.history)}.json"
 
         with open(
             output_file,
