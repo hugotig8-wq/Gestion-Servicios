@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Optional
 
 from engine.validator import ValidationResult
 from adaptation.parameter_strategy import ParameterStrategy
