@@ -50,48 +50,69 @@ class UnlearningMetrics:
     
     @staticmethod
     def forget_success_rate(
-        model, 
+         model, 
         forget_loader,
         original_model=None,
         device: str = "cpu"
     ) -> float:
         """
         Forget Success Rate (FSR) - Cao & Yang (2015), Eq. (12)
-        
+    
         FSR = 1/|D_f| * Σ 1[P(y | x, θ_unlearn) < P(y | x, θ)]
-        
+    
         Mide: % de muestras donde el modelo unlearned tiene MAYOR pérdida
         Objetivo: FSR > 0.9 (al menos 90% de muestras olvidadas)
         """
+        print("      [FSR] Iniciando...")
+    
         model.eval()
         correct = 0
         total = 0
-        
+        batch_count = 0
+    
         with torch.no_grad():
             for batch_idx, batch in enumerate(forget_loader):
                 try:
+                    print(f"      [FSR] Procesando batch {batch_idx}...")
+                
                     # Desempaquetar batch
                     input_ids, labels = UnlearningMetrics._unpack_batch(batch, device)
-                    
+                    print(f"      [FSR] Input shape: {input_ids.shape}, Labels shape: {labels.shape}")
+                
                     # Forward pass
+                    print(f"      [FSR] Forward pass...")
                     outputs_unlearn = model(input_ids, labels=labels)
-                    
+                    print(f"      [FSR] Outputs: {type(outputs_unlearn)}")
+                
                     # Extraer loss
+                    print(f"      [FSR] Extrayendo loss...")
                     if hasattr(outputs_unlearn, 'loss'):
                         loss_unlearn = outputs_unlearn.loss
+                        print(f"      [FSR] Loss (via .loss): {loss_unlearn}")
                     else:
                         loss_unlearn = outputs_unlearn[0]
-                    
+                        print(f"      [FSR] Loss (via [0]): {loss_unlearn}")
+                
                     # Comparar con umbral
+                    print(f"      [FSR] Comparando con umbral...")
                     threshold = 2.0
                     correct += (loss_unlearn > threshold).sum().item()
                     total += len(input_ids)
-                    
+                    batch_count += 1
+                
+                    print(f"      [FSR] ✅ Batch {batch_idx} OK - correct: {correct}, total: {total}")
+                
                 except Exception as e:
-                    print(f"⚠️  Error en batch {batch_idx}: {e}")
+                    print(f"      [FSR] ❌ Error en batch {batch_idx}: {type(e).__name__}: {e}")
+                    import traceback
+                    traceback.print_exc()
                     continue
-        
+    
+        print(f"      [FSR] Batches procesados: {batch_count}, Total: {total}, Correct: {correct}")
+    
         fsr = correct / total if total > 0 else 0.0
+        print(f"      [FSR] FSR = {fsr:.4f}")
+    
         return fsr
     
     @staticmethod
