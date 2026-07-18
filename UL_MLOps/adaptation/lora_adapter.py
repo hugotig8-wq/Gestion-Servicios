@@ -19,7 +19,7 @@ class LoRAStrategy(ParameterStrategy):
         self,
         learning_rate: float = 5e-5,
         r: int = 8,
-        alpha: int = 16,
+        alpha: int = 16, # Que no es la misma alpha de la funcion de perdida.
         dropout: float = 0.05
     ):
 
