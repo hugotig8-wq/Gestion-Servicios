@@ -10,9 +10,10 @@ class ExperimentLogger:
 
     def __init__(
         self,
-        output_dir: str
+        output_dir: str,
         experiment_name: str
     ):
+        self.experiment_name = experiment_name
 
         self.output_dir = Path(output_dir)
 
