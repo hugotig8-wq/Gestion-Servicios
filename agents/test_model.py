@@ -13,7 +13,7 @@ print("="*60)
 print("TEST DE CARGA DE MODELO (OPTIMIZADO)")
 print("="*60)
 
-model_name = "HuggingFaceTB/SmolLM3-3B"
+model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
 print(f"\n1️⃣  Descargando tokenizer...")
 try:
@@ -50,7 +50,7 @@ print(f"   RAM disponible: {torch.cuda.get_device_properties(0).total_memory / (
 
 print(f"\n5️⃣  Prueba de generación (CORTA):")
 try:
-    inputs = tokenizer("Hello world", return_tensors="pt").to("cpu")
+    inputs = tokenizer("Cobertura de Yoigo en Madrid, ¿Cuales son las zonas de menor cobertura?", return_tensors="pt").to("cpu")
     print(f"   Input tokens: {inputs['input_ids'].shape}")
     
     print("   Generando... (esto puede tardar 30-60 segundos en Codespace)")
