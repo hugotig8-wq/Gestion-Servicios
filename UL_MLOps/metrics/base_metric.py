@@ -11,3 +11,16 @@ class BaseMetric(ABC):
         Calcula la métrica y devuelve un valor entre 0 y 1.
         """
         pass
+
+#Cuando crezca se crea 
+#class ValidationContext:
+   # model
+    #retain_loader
+    #forget_loader
+   # validation_loader
+
+# Y la interfaz sería
+#def compute(
+    #self,
+    #context: ValidationContext
+#) -> float:
