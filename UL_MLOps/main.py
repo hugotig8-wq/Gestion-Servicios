@@ -19,11 +19,7 @@ from metrics.mia import MembershipInferenceAttack
 
 from loss.unlearning_loss import UnlearningLoss
 
-from data.data_loader import (
-    build_retain_loader,
-    build_forget_loader,
-    build_validation_loader,
-)
+from data.data_loader import build_data_loaders
 
 
 MODEL_NAME = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
@@ -104,11 +100,8 @@ def main():
     # DataLoaders
     # -------------------------
 
-    retain_loader = build_retain_loader()
-
-    forget_loader = build_forget_loader()
-
-    validation_loader = build_validation_loader()
+    retain_loader, forget_loader, validation_loader =
+    = build_data_loaders(texts)
 
     # -------------------------
     # Trainer Agent
