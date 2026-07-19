@@ -5,6 +5,16 @@ from metrics.base_metric import BaseMetric
 
 class ForgetSuccessRate(BaseMetric):
 
+    def __init__(
+
+        self,
+
+        forget_threshold: float = 2.5
+
+    ):
+
+        self.forget_threshold = forget_threshold
+
     def compute(
 
         self,
