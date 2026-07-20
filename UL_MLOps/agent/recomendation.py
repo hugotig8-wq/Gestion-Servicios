@@ -70,11 +70,7 @@ class Recomendation:
             """
         return markdown
         
-     def to_json(
-
-        self
-
-     ):
+    def to_json(self):
 
         return json.dumps(
 
