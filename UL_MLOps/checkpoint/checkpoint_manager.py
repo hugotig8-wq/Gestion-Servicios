@@ -48,18 +48,75 @@ class CheckpointManager:
     ):
 
         score= self._score(result)
-        if score<=self.best_score:
+        if score<=experiment.best_score:
             return
 
-        self.best_score = score
+        experiment.best_score = score
 
         checkpoint_dir = (
-            self.output_dir /
-            f"epoch_{experiment.config.epoch}"
+
+            Path(
+
+                experiment.config.checkpoint_dir
+
+            )
+
+            /
+
+            experiment.experiment_id
+
         )
 
         checkpoint_dir.mkdir(
+
+            parents=True,
+
             exist_ok=True
+
+        )
+
+        checkpoint_path = (
+
+            checkpoint_dir
+
+            /
+
+            f"{CheckpointType.BEST.value}.pt"
+
+        )
+
+        torch.save(
+
+            {
+
+                "epoch":
+
+                    experiment.current_epoch,
+
+                "score":
+
+                    score,
+
+                "experiment_id":
+
+                    experiment.experiment_id,
+
+                "status":
+
+                    experiment.status.value,
+
+                "model_state_dict":
+
+                    strategy.get_state_dict(model),
+
+                "config":
+
+                    experiment.config
+
+            },
+
+            checkpoint_path
+
         )
 
         strategy.save(
