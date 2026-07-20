@@ -65,7 +65,9 @@ class FileFilter:
 
             ".mypy_cache",
 
-            ".cache"
+            ".cache",
+            
+            "agents"
 
         }
 
