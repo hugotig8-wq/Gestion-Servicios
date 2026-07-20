@@ -1,11 +1,11 @@
-from agent.llm.LLMEngine import LLMEngine
+from .agent.llm.LLMEngine import LLMEngine
 
-from agent.code_review_agent import PyCodeReviewAgent
-from agent.repository_scanner import RepositoryScanner
-from agent.prompt_builder import PromptBuilder
-from agent.review_report import ReviewReport
-from agent.code_review_manager import CodeReviewManager
-from agent.review_scheduler import ReviewScheduler
+from .agent.code_review_agent import PyCodeReviewAgent
+from .agent.repository_scanner import RepositoryScanner
+from .agent.prompt_builder import PromptBuilder
+from .agent.review_report import ReviewReport
+from .agent.code_review_manager import CodeReviewManager
+from .agent.review_scheduler import ReviewScheduler
 
 import time
 
