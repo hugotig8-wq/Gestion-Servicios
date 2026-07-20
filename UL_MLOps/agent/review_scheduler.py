@@ -32,7 +32,7 @@ class ReviewScheduler:
 
         self._thread = None
 
-        self._last_full_review = 0
+        self._last_full_review = 0.0
 
         self._last_diff = ""
 
@@ -68,7 +68,7 @@ class ReviewScheduler:
 
         if self.run_immediately:
 
-            self._execute_review(
+            self._execute_full_review(
 
                 "Initial review"
 
@@ -78,23 +78,13 @@ class ReviewScheduler:
 
             now = time.time()
 
-            current_diff = self._git_diff()
+            changed_files = self._git_diff()
 
-            if (
+            if changed_files:
 
-                current_diff
+                self._execute_changed_review(
 
-                and
-
-                current_diff != self._last_diff
-
-            ):
-
-                self._last_diff = current_diff
-
-                self._execute_review(
-
-                    "Git changes detected"
+                    changed_files
 
                 )
 
@@ -110,9 +100,9 @@ class ReviewScheduler:
 
             ):
 
-                self._execute_review(
+                self._execute_full_review(
 
-                    "Scheduled review"
+                    "Scheduled full review"
 
                 )
 
@@ -124,7 +114,11 @@ class ReviewScheduler:
 
             )
 
-    def _git_diff(self) -> str:
+    def _git_diff(
+
+        self
+
+    ) -> list[str]:
 
         try:
 
@@ -148,13 +142,97 @@ class ReviewScheduler:
 
             )
 
-            return result.stdout.strip()
+            diff = result.stdout.strip()
+
+            if (
+
+                not diff
+
+                or
+
+                diff == self._last_diff
+
+            ):
+
+                return []
+
+            self._last_diff = diff
+
+            return [
+
+                file
+
+                for file
+
+                in diff.splitlines()
+
+                if file.strip()
+
+            ]
 
         except Exception:
 
-            return ""
+            return []
 
-    def _execute_review(
+    def _execute_changed_review(
+
+        self,
+
+        changed_files: list[str]
+
+    ):
+
+        started = datetime.utcnow()
+
+        print()
+
+        print(
+
+            f"[{started.isoformat()}]"
+
+        )
+
+        print(
+
+            "Reviewing changed files..."
+
+        )
+
+        try:
+
+            summary = self.manager.execute(
+
+                changed_files=changed_files
+
+            )
+
+            finished = datetime.utcnow()
+
+            print(
+
+                f"[{finished.isoformat()}]"
+
+            )
+
+            print(
+
+                "Incremental review completed."
+
+            )
+
+            print(summary)
+
+        except Exception as error:
+
+            print(
+
+                "Incremental review failed."
+
+            )
+
+            print(error)
+
+    def _execute_full_review(
 
         self,
 
@@ -164,17 +242,15 @@ class ReviewScheduler:
 
         started = datetime.utcnow()
 
-        print(
-
-            f"\n[{started.isoformat()}]"
-
-        )
+        print()
 
         print(
 
-            f"Reason: {reason}"
+            f"[{started.isoformat()}]"
 
         )
+
+        print(reason)
 
         try:
 
@@ -190,7 +266,7 @@ class ReviewScheduler:
 
             print(
 
-                "Review completed."
+                "Full review completed."
 
             )
 
@@ -200,7 +276,7 @@ class ReviewScheduler:
 
             print(
 
-                "Review failed."
+                "Full review failed."
 
             )
 
