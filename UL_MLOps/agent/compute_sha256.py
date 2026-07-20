@@ -2,7 +2,7 @@ import hashlib
 from pathlib import Path
 
 
-class CommputeSha256():
+class CommputeSha256:
 
     def encriptar(self, file_path: Path):
     
