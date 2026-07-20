@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
+import json
 
 
 @dataclass
@@ -68,3 +69,55 @@ class Recommendation:
                 {self.line_start}-{self.line_end} 
             """
         return markdown
+        
+     def to_json(
+
+        self
+
+     ):
+
+        return json.dumps(
+
+            {
+
+                "file_path":
+
+                    str(self.file_path),
+
+                "severity":
+
+                    self.severity,
+
+                "category":
+
+                    self.category,
+
+                "title":
+
+                    self.title,
+
+                "explanation":
+
+                    self.explanation,
+
+                "suggestion":
+
+                    self.suggestion,
+
+                "corrected_code":
+
+                    self.corrected_code,
+
+                "line_start":
+
+                    self.line_start,
+
+                "line_end":
+
+                    self.line_end
+
+            },
+
+            ensure_ascii=False
+
+        )
