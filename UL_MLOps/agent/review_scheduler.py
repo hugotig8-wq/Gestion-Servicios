@@ -3,7 +3,7 @@ import threading
 import time
 from datetime import datetime
 from agent.git_change import GitChange
-from agent.compute_sha256 import ComputeSha256
+from agent.compute_sha256 import computeSha256
 
 
 class ReviewScheduler:
@@ -20,10 +20,8 @@ class ReviewScheduler:
 
         run_immediately: bool = True
 
-        sha256= ComputeSha256
-
     ):
-        self.sha256 = sha256
+        
 
         self.manager = manager
 
@@ -180,13 +178,13 @@ class ReviewScheduler:
                         GitChange(path= newPath,
                           oldPath= oldPath,
                           status=status,
-                          sha256=sha256.compute(newPath)
+                          sha256=computeSha256(newPath)
                     )}
                 else:{
                     changes_formateado.append(
                         GitChange(path= newPath,
                                   status= status,
-                                  sha256= sha256.compute(newPath)
+                                  sha256= computeSha256(newPath)
                         )
                     )}
 
