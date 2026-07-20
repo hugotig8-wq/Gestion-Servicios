@@ -2,7 +2,7 @@ from pathlib import Path
 
 from engine.validator import ValidationResult
 from adaptation.parameter_strategy import ParameterStrategy
-
+from config.experiment import Experiment
 
 class CheckpointManager:
 
@@ -41,9 +41,9 @@ class CheckpointManager:
 
         model,
 
-        result: ValidationResult,
+        result,
 
-        epoch: int
+        experiment: Experiment
 
     ):
 
@@ -55,7 +55,7 @@ class CheckpointManager:
 
         checkpoint_dir = (
             self.output_dir /
-            f"epoch_{epoch}"
+            f"epoch_{experiment.config.epoch}"
         )
 
         checkpoint_dir.mkdir(
