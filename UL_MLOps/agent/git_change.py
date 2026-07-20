@@ -8,3 +8,5 @@ class GitChange:
     path: Path
 
     status: str
+
+    sha256: str
