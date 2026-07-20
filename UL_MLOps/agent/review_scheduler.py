@@ -2,6 +2,7 @@ import subprocess
 import threading
 import time
 from datetime import datetime
+from agente.git_change import GitChange
 
 
 class ReviewScheduler:
@@ -158,17 +159,18 @@ class ReviewScheduler:
 
             self._last_diff = diff
 
-            return [
+            changes = diff.splitlines()
 
-                change
+            changes_formateado = []
 
-                for changes
+            for change in changes:
+                
+                changes_formateado[change.index()] =
+                GitChange(path= change.path.split[-1],
+                          status=change.status[0])
+                
 
-                in diff.splitlines()
-
-                if change.path.strip()
-
-            ]
+            return changes_formateado
 
         except Exception:
 
