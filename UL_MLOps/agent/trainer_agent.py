@@ -43,6 +43,9 @@ class TrainerAgent:
         validation_loader
 
     ):
+        self.logger.log_start(
+            experiment
+        )
 
         epochs_progress = tqdm(
             range(experiment.config.epochs),
@@ -120,13 +123,13 @@ class TrainerAgent:
 
             )
 
-            self.logger.log(
+            self.logger.log_epoch(
 
-                epoch,
+                experiment,
 
-                mean_train_result,
+                result,
 
-                validation_result
+               mean_train_result
 
             )
 
@@ -152,4 +155,6 @@ class TrainerAgent:
 
         experiment.ended_at = datetime.utcnow()
         
-        self.logger.save()
+        self.logger.log_finish(
+            experiment
+        )
