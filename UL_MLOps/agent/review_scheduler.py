@@ -118,7 +118,7 @@ class ReviewScheduler:
 
         self
 
-    ) -> list[str]:
+    ) -> list[GitChange]:
 
         try:
 
