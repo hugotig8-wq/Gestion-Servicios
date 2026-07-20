@@ -24,7 +24,9 @@ def main():
 
         manager=manager,
 
-        interval_seconds=3600,
+        interval_seconds=1800,
+
+        poll_interval=30,
 
         run_immediately=True
 
@@ -41,27 +43,6 @@ def main():
     except KeyboardInterrupt:
 
         scheduler.stop()
-
-    review_agent = PyCodeReviewAgent()
-
-    scanner = RepositoryScanner(
-        root_path="."
-    )
-
-    prompt_builder = PromptBuilder()
-
-    report = ReviewReport()
-
-    manager = CodeReviewManager(
-        review_agent=review_agent,
-        scanner=scanner,
-        prompt_builder=prompt_builder,
-        report=report
-    )
-
-    summary = manager.execute()
-
-    print(summary)
 
 
 if __name__ == "__main__":
