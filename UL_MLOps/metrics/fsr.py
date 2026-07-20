@@ -136,6 +136,8 @@ class ForgetSuccessRate(BaseMetric):
 
         self,
 
+        experiment_id,
+
         reference_model,
 
         dataloader,
@@ -179,6 +181,8 @@ class ForgetSuccessRate(BaseMetric):
                     self.reference_memory.store(
 
                         example_id=ids[i],
+
+                        experiment_id=experiment_id,
 
                         loss=loss,
 
