@@ -167,6 +167,8 @@ def main():
 
     trainer_agent.train(
 
+        experiment = experiment,
+
         strategy=strategy,
 
         model=model,
@@ -176,8 +178,6 @@ def main():
         forget_loader=forget_loader,
 
         validation_loader=validation_loader,
-
-        epochs=experiment.config.epochs
 
         device=device
 
