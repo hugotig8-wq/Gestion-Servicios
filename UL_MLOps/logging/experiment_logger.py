@@ -114,7 +114,7 @@ class ExperimentLogger:
 
             /
 
-            "metrics.json"
+            "metrics.jsonl"
 
         )
 
