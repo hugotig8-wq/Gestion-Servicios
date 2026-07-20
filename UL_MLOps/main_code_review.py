@@ -1,4 +1,4 @@
-from .llm import LLMEngine
+from ..llm import LLMEngine
 
 from agent.code_review_agent import PyCodeReviewAgent
 from agent.repository_scanner import RepositoryScanner
