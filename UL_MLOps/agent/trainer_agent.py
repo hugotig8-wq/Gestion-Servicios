@@ -6,6 +6,7 @@ from checkpoint.checkpoint_manager import CheckpointManager
 from logging.experiment_logger import ExperimentLogger
 from engine.trainer import TrainStepResult
 from tqdm import tqdm
+from training.training_snapshot import TrainingSnapshot
 
 
 class TrainerAgent:
@@ -123,14 +124,28 @@ class TrainerAgent:
 
             )
 
+            snapshot = TrainingSnapshot(
+
+                epoch=experiment.current_epoch,
+
+                train_loss=mean_train_result,
+
+                learning_rate=self.trainer.optimizer.param_groups[0]["lr"],
+
+                fsr=validation_result.fsr,
+
+                mu=validation_result.mu,
+
+                fc=validation_esult.fc,
+
+                mia=validation_result.mia
+
+            )
+
             self.logger.log_epoch(
 
                 experiment,
-
-                result,
-
-               mean_train_result
-
+                snapshot
             )
 
             if self.checkpoint_manager.should_save(
