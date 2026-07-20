@@ -2,8 +2,8 @@ import subprocess
 import threading
 import time
 from datetime import datetime
-from agente.git_change import GitChange
-import agent.compute_sha256 import ComputeSha256
+from agent.git_change import GitChange
+from agent.compute_sha256 import ComputeSha256
 
 
 class ReviewScheduler:
