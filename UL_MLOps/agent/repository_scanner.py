@@ -27,6 +27,17 @@ class RepositoryScanner:
 
         )
 
+    def exists(
+
+        self,
+
+        file_path: Path
+
+    ) -> bool:
+
+        return file_path.exists()
+    
+
     def scan(self):
 
         files = []
