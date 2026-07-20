@@ -25,24 +25,17 @@ from agent.trainer_agent import TrainerAgent
 from data.data_loader import build_data_loaders
 
 
-def generate_experiment_id() -> str:
-
-    timestamp = datetime.now().strftime(
-        "%Y%m%d_%H%M%S"
-    )
-
-    random_id = uuid.uuid4().hex[:8]
-
-    return f"{timestamp}_{random_id}"
-
-
 def main():
 
-    experiment_id = generate_experiment_id()
+    config = Config()
 
-    model_revision = "TinyLlama-1.1B-Chat-v1.0"
+    experiment = Experiment(config)
 
-    dataset_revision = "forget_v1"
+    experiment_id = experiment.experiment_id
+
+    model_revision = experiment.config.model_revision
+
+    dataset_revision = experiment.config.dataset_revision
 
     device = torch.device(
 
@@ -112,7 +105,7 @@ def main():
 
         model,
 
-        learning_rate=1e-4
+        learning_rate=experiment.config.learning_rate
 
     )
 
@@ -186,7 +179,7 @@ def main():
 
         validation_loader=validation_loader,
 
-        epochs=5,
+        epochs=experiment.config.epochs
 
         device=device
 
