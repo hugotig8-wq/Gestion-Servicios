@@ -27,6 +27,17 @@ class RepositoryScanner:
 
         )
 
+    def resolve(
+
+        self,
+
+        relative_path: str
+
+    ) -> Path:
+
+        return self.root_path / relative_path
+
+    
     def exists(
 
         self,
