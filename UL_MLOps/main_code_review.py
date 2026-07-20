@@ -1,10 +1,10 @@
-from agents.code_review_agent import PyCodeReviewAgent
-from agents.repository_scanner import RepositoryScanner
-from agents.prompt_builder import PromptBuilder
-from agents.review_report import ReviewReport
-from agents.code_review_manager import CodeReviewManager
+from agent.code_review_agent import PyCodeReviewAgent
+from agent.repository_scanner import RepositoryScanner
+from agent.prompt_builder import PromptBuilder
+from agent.review_report import ReviewReport
+from agent.code_review_manager import CodeReviewManager
 
-from agents.review_scheduler import ReviewScheduler
+from agent.review_scheduler import ReviewScheduler
 import time
 
 
