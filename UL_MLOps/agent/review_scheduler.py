@@ -160,13 +160,13 @@ class ReviewScheduler:
 
             return [
 
-                file
+                change
 
-                for file
+                for changes
 
                 in diff.splitlines()
 
-                if file.strip()
+                if change.path.strip()
 
             ]
 
