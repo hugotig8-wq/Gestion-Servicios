@@ -1,10 +1,8 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 import uuid
-from config.experiment_status import ExperimentStatus
 
 from config.config import Config
-import torch
 
 
 @dataclass
@@ -12,20 +10,18 @@ class Experiment:
 
     config: Config
 
-    experiment_id: str
+    experiment_id: str = field(init=False)
 
-    device: torch.device
+    started_at: datetime = field(init=False)
 
-    started_at: datetime
+    ended_at: datetime | None = None
 
-    ended_at: datetime | None
+    current_epoch: int = 0
 
-    status: str
+    best_score: float = float("-inf")
 
-    best_score: float
+    status: str = "created"
 
-    current_epoch: int
-    
     def __post_init__(self):
 
         self.started_at = datetime.utcnow()
