@@ -4,13 +4,13 @@ from pathlib import Path
 
 class CommputeSha256:
 
-    def compute(self, file_path: Path):
+    def compute(self, old_path: Path = None, new_path: Path):
     
         hasher = hashlib.sha256()
 
         with open(
 
-            file_path,
+            new_path,
 
             "rb"
 
