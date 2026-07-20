@@ -3,6 +3,7 @@ import threading
 import time
 from datetime import datetime
 from agente.git_change import GitChange
+import agent.compute_sha256 import ComputeSha256
 
 
 class ReviewScheduler:
@@ -167,7 +168,9 @@ class ReviewScheduler:
                 
                 changes_formateado[change.index()] =
                 GitChange(path= change.path.split[-1],
-                          status=change.status[0])
+                          status=change.status[0],
+                          sha256=ComputeSha256(change.path)
+                         )
                 
 
             return changes_formateado
