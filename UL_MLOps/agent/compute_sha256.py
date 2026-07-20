@@ -1,10 +1,7 @@
 import hashlib
 from pathlib import Path
 
-
-class CommputeSha256:
-
-    def compute(self, old_path: Path = None, new_path: Path):
+def compute_sha256(old_path: Path = None, new_path: Path)-> str:
     
         hasher = hashlib.sha256()
 
