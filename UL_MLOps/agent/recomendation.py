@@ -4,7 +4,7 @@ import json
 
 
 @dataclass
-class Recommendation:
+class Recomendation:
 
     file_path: Path
 
