@@ -42,6 +42,14 @@ class CodeReviewManager:
 
         for file_path in files:
 
+            if not self.scanner.exists(
+
+                file_path
+
+            ):
+
+                continue
+
             recommendation = self.review_file(
 
                 file_path
@@ -65,6 +73,14 @@ class CodeReviewManager:
         file_path: Path
 
     ) -> Recommendation | None:
+
+        if not self.scanner.exists(
+
+            file_path
+
+        ):
+
+            return None
 
         source_code = self.scanner.read(
 
@@ -165,7 +181,11 @@ class CodeReviewManager:
 
             )
 
-            if not file_path.exists():
+            if not self.scanner.exists(
+
+                file_path
+
+            ):
 
                 continue
 
