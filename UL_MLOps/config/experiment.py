@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 import uuid
+from config.experiment_status import ExperimentStatus
 
 from config.config import Config
 
@@ -20,7 +21,7 @@ class Experiment:
 
     best_score: float = float("-inf")
 
-    status: str = "created"
+    status: ExperimentStatus = ExperimentStatus.CREATED
 
     def __post_init__(self):
 
