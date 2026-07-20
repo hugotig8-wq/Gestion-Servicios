@@ -31,12 +31,6 @@ def main():
 
     experiment = Experiment(config)
 
-    experiment_id = experiment.experiment_id
-
-    model_revision = experiment.config.model_revision
-
-    dataset_revision = experiment.config.dataset_revision
-
     device = torch.device(
 
         "cuda"
@@ -69,9 +63,9 @@ def main():
 
         texts=texts,
 
-        batch_size=8,
+        batch_size=experiment.config.batch_size,
 
-        max_length=256
+        max_length=experiment.config.max_length
 
     )
 
@@ -115,7 +109,11 @@ def main():
 
     )
 
-    fsr = ForgetSuccessRate()
+    fsr = ForgetSuccessRate(
+
+            delta_threshold=experiment.config.delta_threshold
+
+    )
 
     mu = ModelUtility()
 
@@ -131,11 +129,11 @@ def main():
 
         device=device,
 
-        experiment_id=experiment_id,
+        experiment_id=experiment.experiment_id
 
-        model_revision=model_revision,
+        model_revision=experiment.config.model_revision,
 
-        dataset_revision=dataset_revision
+        dataset_revision=experiment.config.dataset_revision
 
     )
 
