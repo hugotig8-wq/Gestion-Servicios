@@ -146,3 +146,41 @@ class CodeReviewManager:
             )
 
             return summary
+
+    def review_changed_files(
+
+        self,
+
+        changed_files: list[str]
+
+    ) -> list[Recommendation]:
+
+        recommendations = []
+
+        for file_name in changed_files:
+
+            file_path = Path(
+
+                file_name
+
+            )
+
+            if not file_path.exists():
+
+                continue
+
+            recommendation = self.review_file(
+
+                file_path
+
+            )
+
+            if recommendation is not None:
+
+                recommendations.append(
+
+                    recommendation
+
+                )
+
+        return recommendations
