@@ -124,14 +124,3 @@ class CheckpointManager:
             str(checkpoint_dir)
         )
 
-        with open(
-            checkpoint_dir / "metrics.txt",
-            "w"
-        ) as file:
-
-            file.write(f"epoch={epoch}\n")
-            file.write(f"fsr={result.fsr}\n")
-            file.write(f"mu={result.mu}\n")
-            file.write(f"fc={result.fc}\n")
-            file.write(f"mia={result.mia}\n")
-            file.write(f"score={score}\n")
