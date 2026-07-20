@@ -4,7 +4,7 @@ from pathlib import Path
 
 class CommputeSha256:
 
-    def encriptar(self, file_path: Path):
+    def compute(self, file_path: Path):
     
         hasher = hashlib.sha256()
 
