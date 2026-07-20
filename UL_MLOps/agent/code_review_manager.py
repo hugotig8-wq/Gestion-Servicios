@@ -4,6 +4,7 @@ from agent.repository_scanner import RepositoryScanner
 from agent.prompt_builder import PromptBuilder
 from agent.review_report import ReviewReport
 from agent.recommendation import Recommendation
+from agent.git_change import GitChange
 
 
 class CodeReviewManager:
@@ -132,7 +133,7 @@ class CodeReviewManager:
 
         self,
 
-        changed_files: list[str] | None = None
+        changed_files: list[GitChange] | None = None
 
     ):
         if changed_files is None:
@@ -167,17 +168,17 @@ class CodeReviewManager:
 
         self,
 
-        changed_files: list[str]
+        changes: list[GitChange]
 
     ) -> list[Recommendation]:
 
         recommendations = []
 
-        for relative_path in changed_files:
+        for change in changes:
 
             file_path = self.scanner.resolve(
 
-                relative_path
+                change.path
 
             )
 
