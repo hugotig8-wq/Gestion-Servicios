@@ -23,12 +23,12 @@ class CheckpointManager:
         )
         self.best_score= float('-inf')
 
-    def _score(self, result):
-        if (result.fsr>=0.90 and 
-            result.mu>=0.85 and 
-            result.mia<=0.10
+    def _score(self, snapshot:TrainingSnapshot):
+        if (snapshot.fsr>=0.90 and 
+            snapshot.mu>=0.85 and 
+            snapshot.mia<=0.10
            ):
-            return result.fsr+result.mu+result.fc-result.mia
+            return snapshot.fsr+snapshot.mu+snapshot.fc-snapshot.mia
         return float('-inf')
       
     def should_save(
