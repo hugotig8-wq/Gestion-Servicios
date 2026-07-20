@@ -67,7 +67,20 @@ class FileFilter:
 
             ".cache",
             
-            "agents"
+            "agents",
+
+            "SmolLM3",
+
+            "app",
+
+            "db",
+
+            "lib",
+
+            "hooks",
+
+            "src"
+            
 
         }
 
