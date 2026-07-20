@@ -1,131 +1,198 @@
+import uuid
+from datetime import datetime
+
+import torch
 from transformers import AutoModelForCausalLM
 
-from adaptation.lora_adapter import LoRAStrategy
-from adaptation.optimizer_factory import OptimizerFactory
+from adaptation.lora_adapter import apply_lora
+from adaptation.parameter_strategy import LoRAStrategy
 
-from checkpoint.checkpoint_manager import CheckpointManager
-
+from engine.optimizer_factory import OptimizerFactory
 from engine.trainer import Trainer
 from engine.validator import Validator
 
-from logging.experiment_logger import ExperimentLogger
+from checkpoint.checkpoint_manager import CheckpointManager
 
-from agent.trainer_agent import TrainerAgent
+from logging.experiment_logger import ExperimentLogger
 
 from metrics.fsr import ForgetSuccessRate
 from metrics.mu import ModelUtility
 from metrics.fc import ForgetQuality
 from metrics.mia import MembershipInferenceAttack
 
-from loss.unlearning_loss import UnlearningLoss
+from agent.trainer_agent import TrainerAgent
 
 from data.data_loader import build_data_loaders
 
 
-MODEL_NAME = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+def generate_experiment_id() -> str:
+
+    timestamp = datetime.now().strftime(
+        "%Y%m%d_%H%M%S"
+    )
+
+    random_id = uuid.uuid4().hex[:8]
+
+    return f"{timestamp}_{random_id}"
 
 
 def main():
 
-    # -------------------------
-    # Modelo
-    # -------------------------
+    experiment_id = generate_experiment_id()
 
-    model = AutoModelForCausalLM.from_pretrained(
-        MODEL_NAME
+    model_revision = "TinyLlama-1.1B-Chat-v1.0"
+
+    dataset_revision = "forget_v1"
+
+    device = torch.device(
+
+        "cuda"
+
+        if torch.cuda.is_available()
+
+        else "cpu"
+
     )
 
-    # -------------------------
-    # Estrategia LoRA
-    # -------------------------
+    texts = [
+
+        "Primer documento",
+
+        "Segundo documento",
+
+        "Tercer documento",
+
+    ]
+
+    (
+
+        retain_loader,
+
+        forget_loader,
+
+        validation_loader
+
+    ) = build_data_loaders(
+
+        texts=texts,
+
+        batch_size=8,
+
+        max_length=256
+
+    )
+
+    reference_model = AutoModelForCausalLM.from_pretrained(
+
+        model_revision
+
+    )
+
+    reference_model.to(device)
+
+    model = AutoModelForCausalLM.from_pretrained(
+
+        model_revision
+
+    )
+
+    model.to(device)
 
     strategy = LoRAStrategy()
 
-    model = strategy.prepare_model(model)
+    model = apply_lora(
 
-    # -------------------------
-    # Optimizador
-    # -------------------------
+        model,
 
-    optimizer = OptimizerFactory.adamw(
-        parameters=strategy.trainable_parameters(model),
-        learning_rate=strategy.learning_rate
+        strategy
+
     )
 
-    # -------------------------
-    # Función de pérdida
-    # -------------------------
+    optimizer = OptimizerFactory.create(
 
-    loss_function = UnlearningLoss()
+        model,
 
-    # -------------------------
-    # Trainer
-    # -------------------------
+        learning_rate=1e-4
+
+    )
 
     trainer = Trainer(
-        model=model,
-        optimizer=optimizer,
-        loss_function=loss_function
+
+        optimizer=optimizer
+
     )
 
-    # -------------------------
-    # Validator
-    # -------------------------
+    fsr = ForgetSuccessRate()
+
+    mu = ModelUtility()
+
+    fc = ForgetQuality()
+
+    mia = MembershipInferenceAttack()
+
+    fsr.build_reference(
+
+        reference_model=reference_model,
+
+        dataloader=forget_loader,
+
+        device=device,
+
+        experiment_id=experiment_id,
+
+        model_revision=model_revision,
+
+        dataset_revision=dataset_revision
+
+    )
 
     validator = Validator(
-        fsr_metric=ForgetSuccessRate(),
-        mu_metric=ModelUtility(),
-        fc_metric=ForgetQuality(),
-        mia_metric=MembershipInferenceAttack()
+
+        fsr_metric=fsr,
+
+        mu_metric=mu,
+
+        fc_metric=fc,
+
+        mia_metric=mia,
+
     )
 
-    # -------------------------
-    # Checkpoint Manager
-    # -------------------------
+    checkpoint_manager = CheckpointManager()
 
-    checkpoint_manager = CheckpointManager(
-        output_dir="checkpoints"
-    )
-
-    # -------------------------
-    # Logger
-    # -------------------------
-
-    logger = ExperimentLogger(
-        output_dir="logs",
-        experiment_name="tinyllama_lora"
-    )
-
-    # -------------------------
-    # DataLoaders
-    # -------------------------
-
-    retain_loader, forget_loader, validation_loader =
-    = build_data_loaders(texts)
-
-    # -------------------------
-    # Trainer Agent
-    # -------------------------
+    logger = ExperimentLogger()
 
     trainer_agent = TrainerAgent(
+
         trainer=trainer,
+
         validator=validator,
+
         checkpoint_manager=checkpoint_manager,
-        logger=logger,
-        strategy=strategy
+
+        logger=logger
+
     )
 
-    # -------------------------
-    # Entrenamiento
-    # -------------------------
-
     trainer_agent.train(
-        epochs=5,
+
+        strategy=strategy,
+
+        model=model,
+
         retain_loader=retain_loader,
+
         forget_loader=forget_loader,
-        validation_loader=validation_loader
+
+        validation_loader=validation_loader,
+
+        epochs=5,
+
+        device=device
+
     )
 
 
 if __name__ == "__main__":
+
     main()
