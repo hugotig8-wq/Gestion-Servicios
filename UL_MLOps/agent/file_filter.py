@@ -15,25 +15,25 @@ class FileFilter:
 
         self.allowed_extensions = {
 
-            ".py",
+            ".py"
 
-            ".js",
+            #".js",
 
-            ".jsx",
+            #".jsx",
 
-            ".ts",
+            #".ts",
 
-            ".tsx",
+            #".tsx",
 
-            ".json",
+            #".json",
 
-            ".yaml",
+            #".yaml",
 
-            ".yml",
+            #".yml",
 
-            ".toml",
+            #".toml",
 
-            ".md"
+            #".md"
 
         }
 
