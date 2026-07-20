@@ -1,5 +1,8 @@
 from pathlib import Path
 
+from agents.recommendation import Recommendation
+
+
 class PromptBuilder:
 
     def __init__(
@@ -29,26 +32,28 @@ class PromptBuilder:
         )
 
         return f"""
-You are an expert software engineer specialized in:
+You are a senior software engineer.
 
-- Python
-- Machine Learning
-- MLOps
+Review the following source code.
 
-Analyze the following source code.
+Your response MUST be ONLY a valid JSON object.
 
-Return ONLY valid Markdown.
+Do not use Markdown.
 
-For every recommendation include:
+Do not explain anything outside the JSON.
 
-1. Severity (LOW, MEDIUM, HIGH)
-2. Category
-3. Explanation
-4. Why it is a problem
-5. Suggested improvement
-6. Corrected code if applicable
-7. Return the response in Json
-8. Implementation-estimated time
+Return exactly this schema:
+
+{{
+    "severity":"LOW | MEDIUM | HIGH | CRITICAL",
+    "category":"",
+    "title":"",
+    "explanation":"",
+    "suggestion":"",
+    "corrected_code":"",
+    "line_start":0,
+    "line_end":0
+}}
 
 File:
 
@@ -56,7 +61,6 @@ File:
 
 Source code:
 
-```text
 {source_code}
 """
 
@@ -64,58 +68,65 @@ Source code:
 
         self,
 
-        recommendations: list[str]
+        recommendations: list[Recommendation]
+
     ) -> str:
 
-        joined = "\n".join(
+        json_reports = []
 
-            recommendations
+        for recommendation in recommendations:
+
+            json_reports.append(
+
+                recommendation.to_json()
+
+            )
+
+        reports = ",\n".join(
+
+            json_reports
 
         )
 
         return f"""
-You are an expert software architect.
+You are a software architect.
 
-You have received multiple code review reports.
+You have received multiple code reviews.
 
-Create a single consolidated report.
+Return ONLY Markdown.
 
-Requirements:
+Produce:
 
-1. Group similar recommendations.
-2. Remove duplicated suggestions.
-3. Prioritize the most critical issues.
-4. Identify recurring architectural problems.
-5. Produce an action plan ordered by priority.
-6. Return the response in valid Markdown.
-7. Return response in Json.
+# Executive Summary
 
-Code review reports:
+# Main architectural issues
 
-{joined}
+# Priority roadmap
+
+Input:
+
+[
+{reports}
+]
 """
 
-    def build_test(
-        self, 
-        funcion, 
-        lenguaje)-> str:
-            return f"""
-        Generate comprehensive test cases to this function, {lenguaje}:
-        
-        ```{lenguaje}
-        {funcion}
-        ```
-        
-        Create tests to:
-        1. Normal cases
-        2. Edge cases
-        3. Error handling
-        4. Input validation
-        
-        Use frameworks by language:
-        - JS: Jest
-        - Python: pytest
-        
-        Response only test code.
-        """
-        
+    def _truncate(
+
+        self,
+
+        source_code: str
+
+    ) -> str:
+
+        if len(source_code) <= self.max_characters:
+
+            return source_code
+
+        return (
+
+            source_code[:self.max_characters]
+
+            +
+
+            "\n\n...TRUNCATED..."
+        )
