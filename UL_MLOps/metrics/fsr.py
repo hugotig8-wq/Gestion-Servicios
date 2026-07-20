@@ -131,3 +131,55 @@ class ForgetSuccessRate(BaseMetric):
         self.average_delta = total_delta / total_examples
 
         return forgotten_examples / total_examples
+
+    def build_reference(
+
+        self,
+
+        reference_model,
+
+        dataloader,
+
+        device
+
+    ):
+
+        reference_model.eval()
+
+        self.reference_memory.clear()
+
+        with torch.no_grad():
+
+            for batch in dataloader:
+
+                input_ids = batch["input_ids"].to(device)
+
+                attention_mask = batch["attention_mask"].to(device)
+
+                labels = batch["labels"].to(device)
+
+                ids = batch["id"]
+
+                batch_size = input_ids.size(0)
+
+                for i in range(batch_size):
+
+                    loss = self._example_loss(
+
+                        reference_model,
+
+                        input_ids[i].unsqueeze(0),
+
+                        attention_mask[i].unsqueeze(0),
+
+                        labels[i].unsqueeze(0)
+
+                    )
+
+                    self.reference_memory.store(
+
+                        ids[i],
+
+                        loss
+
+                    )
