@@ -28,7 +28,7 @@ class ExperimentLogger:
 
         self,
 
-        epoch: int,
+        experiment: Experiment,
 
         train_result: TrainStepResult,
 
@@ -38,7 +38,13 @@ class ExperimentLogger:
 
         record = {
 
-            "epoch": epoch,
+            "experiment_id": experiment.experiment_id,
+
+            "current_epoch": experiment.current_epoch,
+
+            "status": experiment.status,
+
+            "best_score": experiment.best_score,
 
             "total_loss": train_result.total_loss,
 
