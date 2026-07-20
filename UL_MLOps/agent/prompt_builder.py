@@ -47,7 +47,8 @@ For every recommendation include:
 4. Why it is a problem
 5. Suggested improvement
 6. Corrected code if applicable
-7. Return th response in Json
+7. Return the response in Json
+8. Implementation-estimated time
 
 File:
 
