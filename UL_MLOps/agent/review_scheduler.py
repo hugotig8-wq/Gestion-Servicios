@@ -165,14 +165,20 @@ class ReviewScheduler:
             changes_formateado = []
 
             c= ComputeSha256()
+
+            
             
             for change in changes:
-                
-                changes_formateado[change.index()] =
-                GitChange(path= change.path.split[-1],
-                          status=change.status[0],
-                          sha256=c.encriptar(change.path)
-                         )
+                parts = change.split(maxsplit=1)
+                status = parts[0]
+                path = Path(parts[-1])
+                if status=='D':
+                    continue
+                changes_formateado.append(
+                    GitChange(path= path,
+                          status=status,
+                          sha256=c.compute(path)
+                    )
                 
 
             return changes_formateado
