@@ -46,6 +46,8 @@ class CheckpointManager:
 
         model,
 
+        optimizer,
+
         snapshot: TraininhSnapshot,
 
         experiment: Experiment
@@ -141,7 +143,11 @@ class CheckpointManager:
 
                         snapshot.mia
 
-            },
+                },
+
+                "optimizer_state_dict":# luegi resume_training para restaurar el estado del optimizador
+                
+                    optimizer.state_dict(),
 
                 "model_state_dict":
 
