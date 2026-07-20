@@ -1,8 +1,12 @@
 from agent.tinyLlama_agent import agent
 import json
+from agent.prompt_builder import PromptBuilder
 
 class PyCodeReviewAgent:
     """Revisa código y propone mejoras"""
+
+    def __init__(self, prompt_builder: PromptBuilder):
+        self.prompt_builder = prompt_builder
     
     def revisar_codigo(self, codigo, lenguaje="Python"):
         """Analiza código y sugiere mejoras"""
