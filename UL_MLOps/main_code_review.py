@@ -4,8 +4,43 @@ from agents.prompt_builder import PromptBuilder
 from agents.review_report import ReviewReport
 from agents.code_review_manager import CodeReviewManager
 
+from agents.review_scheduler import ReviewScheduler
+import time
+
+
+try:
+
+    while True:
+
+        time.sleep(1)
+
+except KeyboardInterrupt:
+
+    scheduler.stop()
 
 def main():
+
+    scheduler = ReviewScheduler(
+
+        manager=manager,
+
+        interval_seconds=3600,
+
+        run_immediately=True
+
+    )
+
+    scheduler.start()
+
+    try:
+
+        while True:
+
+            time.sleep(1)
+
+    except KeyboardInterrupt:
+
+        scheduler.stop()
 
     review_agent = PyCodeReviewAgent()
 
