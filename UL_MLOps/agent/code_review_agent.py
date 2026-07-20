@@ -2,9 +2,9 @@ import json
 
 from pathlib import Path
 
-from agent.llm.LLMEngine import LLMEngine
+from .agent.llm.LLMEngine import LLMEngine
 
-from agent.recommendation import Recommendation
+from .agent.recommendation import Recommendation
 
 
 class PyCodeReviewAgent:
