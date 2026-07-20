@@ -4,6 +4,11 @@ from engine.validator import ValidationResult
 from adaptation.parameter_strategy import ParameterStrategy
 from config.experiment import Experiment
 
+import torch
+
+from training import TrainingSnapshot
+
+
 class CheckpointManager:
 
     def __init__(
@@ -41,13 +46,13 @@ class CheckpointManager:
 
         model,
 
-        result,
+        snapshot: TraininhSnapshot,
 
         experiment: Experiment
 
     ):
 
-        score= self._score(result)
+        score= self._score(snapshot)
         if score<=experiment.best_score:
             return
 
@@ -84,6 +89,11 @@ class CheckpointManager:
             f"{CheckpointType.BEST.value}.pt"
 
         )
+        
+        strategy.save(
+            model,
+            str(checkpoint_dir)
+        )
 
         torch.save(
 
@@ -91,11 +101,19 @@ class CheckpointManager:
 
                 "epoch":
 
-                    experiment.current_epoch,
+                    snapshot.epoch,
 
-                "score":
+                "best_score":
 
-                    score,
+                    experiment.best_score,
+
+                "train_loss":
+
+                    snapshot.train_loss,
+                
+                "learning_rate":
+
+                    snapshot.learning_rate,
 
                 "experiment_id":
 
@@ -105,22 +123,43 @@ class CheckpointManager:
 
                     experiment.status.value,
 
+                 "metrics": {
+
+                    "fsr":
+
+                        snapshot.fsr,
+
+                    "mu":
+
+                        snapshot.mu,
+
+                    "fc":
+
+                        snapshot.fc,
+
+                    "mia":
+
+                        snapshot.mia
+
+            },
+
                 "model_state_dict":
 
                     strategy.get_state_dict(model),
 
                 "config":
 
-                    experiment.config
+                    experiment.config.__dict__
 
             },
 
-            checkpoint_path
+            checkpoint_dir
+
+            /
+
+            "training_state.pt"
 
         )
 
-        strategy.save(
-            model,
-            str(checkpoint_dir)
-        )
+        
 
