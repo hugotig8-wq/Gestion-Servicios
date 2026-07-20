@@ -1,10 +1,10 @@
 from pathlib import Path
 
-from agent.repository_scanner import RepositoryScanner
-from agent.prompt_builder import PromptBuilder
-from agent.review_report import ReviewReport
-from agent.recommendation import Recommendation
-from agent.git_change import GitChange
+from .repository_scanner import RepositoryScanner
+from .prompt_builder import PromptBuilder
+from .review_report import ReviewReport
+from .recommendation import Recommendation
+from .git_change import GitChange
 
 
 class CodeReviewManager:
