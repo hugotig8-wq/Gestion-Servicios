@@ -3,10 +3,13 @@ from datetime import datetime
 import uuid
 from config.config import Config
 from config.experiment_status import ExperimentStatus
+import torch
 
 
 @dataclass
 class Experiment:
+
+    device: torch.device | None = None
 
     config: Config
 
