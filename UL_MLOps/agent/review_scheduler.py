@@ -20,7 +20,10 @@ class ReviewScheduler:
 
         run_immediately: bool = True
 
+        sha256= ComputeSha256
+
     ):
+        self.sha256 = sha256
 
         self.manager = manager
 
@@ -163,23 +166,29 @@ class ReviewScheduler:
             changes = diff.splitlines()
 
             changes_formateado = []
-
-            c= ComputeSha256()
-
-            
             
             for change in changes:
                 parts = change.split(maxsplit=1)
                 status = parts[0]
-                path = Path(parts[-1])
+                newPath = Path(parts[-1])
+                oldPath = Path(parts[1])
                 if status=='D':
                     continue
-                changes_formateado.append(
-                    GitChange(path= path,
+
+                if status=='R':{
+                    changes_formateado.append(
+                        GitChange(path= newPath,
+                          oldPath= oldPath,
                           status=status,
-                          sha256=c.compute(path)
-                    )
-                
+                          sha256=sha256.compute(newPath)
+                    )}
+                else:{
+                    changes_formateado.append(
+                        GitChange(path= newPath,
+                                  status= status,
+                                  sha256= sha256.compute(newPath)
+                        )
+                    )}
 
             return changes_formateado
 
