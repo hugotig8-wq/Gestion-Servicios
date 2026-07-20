@@ -130,7 +130,7 @@ class ReviewScheduler:
 
                     "diff",
 
-                    "--name-only"
+                    "--name-status"
 
                 ],
 
