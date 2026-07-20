@@ -47,6 +47,7 @@ For every recommendation include:
 4. Why it is a problem
 5. Suggested improvement
 6. Corrected code if applicable
+7. Return th response in Json
 
 File:
 
@@ -86,6 +87,7 @@ Requirements:
 4. Identify recurring architectural problems.
 5. Produce an action plan ordered by priority.
 6. Return the response in valid Markdown.
+7. Return response in Json.
 
 Code review reports:
 
