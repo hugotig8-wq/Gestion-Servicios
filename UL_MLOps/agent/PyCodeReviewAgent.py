@@ -1,4 +1,4 @@
-from smollm_agent import agent
+from tinyLlama_agent import agent
 import json
 
 class PyCodeReviewAgent:
