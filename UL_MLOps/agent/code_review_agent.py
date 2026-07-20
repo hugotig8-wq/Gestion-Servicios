@@ -4,7 +4,7 @@ from pathlib import Path
 
 from .llm.LLMEngine import LLMEngine
 
-from .recomendation import Recomendation
+from .recommendation import Recommendation
 
 
 class PyCodeReviewAgent:
@@ -27,7 +27,7 @@ class PyCodeReviewAgent:
 
         file_path: Path
 
-    ) -> Recomendation:
+    ) -> Recommendation:
 
         response = self.llm.generate(
 
@@ -65,7 +65,7 @@ class PyCodeReviewAgent:
 
             }
 
-        return Recomendation(
+        return Recommendation(
 
             file_path=file_path,
 
