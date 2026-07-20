@@ -94,3 +94,28 @@ Code review reports:
 
 {joined}
 """
+
+    def build_test(
+        self, 
+        funcion, 
+        lenguaje)-> str:
+            return f"""
+        Generate comprehensive test cases to this function, {lenguaje}:
+        
+        ```{lenguaje}
+        {funcion}
+        ```
+        
+        Create tests to:
+        1. Normal cases
+        2. Edge cases
+        3. Error handling
+        4. Input validation
+        
+        Use frameworks by language:
+        - JS: Jest
+        - Python: pytest
+        
+        Response only test code.
+        """
+        
