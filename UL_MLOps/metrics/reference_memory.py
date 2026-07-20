@@ -1,4 +1,5 @@
 import torch
+from datetime import datetime
 
 
 class ReferenceMemory:
@@ -13,22 +14,39 @@ class ReferenceMemory:
 
         example_id: str,
 
-        loss: float
+        loss: float,
+
+        model_revision: str,
+
+        dataset_revision: str,
+
+        epoch: int = 0
 
     ):
 
-        self.losses[example_id] = loss
+        self.losses[example_id] = {
 
+            "loss": loss,
+
+            "model_revision": model_revision,
+
+            "dataset_revision": dataset_revision,
+
+            "epoch": epoch,
+
+            "timestamp": datetime.utcnow().isoformat()
+
+        }
     def load(
 
         self,
 
         example_id: str
 
-    ) -> float:
+    ):
 
         return self.losses[example_id]
-
+        
     def exists(
 
         self,
