@@ -178,8 +178,14 @@ class ForgetSuccessRate(BaseMetric):
 
                     self.reference_memory.store(
 
-                        ids[i],
+                        example_id=ids[i],
 
-                        loss
+                        loss=loss,
+
+                        model_revision="TinyLlama-1.1B-Chat-v1.0",
+
+                        dataset_revision="forget_v1",
+
+                        epoch=0
 
                     )
