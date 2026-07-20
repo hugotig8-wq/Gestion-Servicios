@@ -1,6 +1,3 @@
-from dataclasses import dataclass
-
-
 @dataclass
 class TrainingSnapshot:
 
@@ -8,7 +5,11 @@ class TrainingSnapshot:
 
     train_loss: float
 
+    validation_loss: float
+
     learning_rate: float
+
+    elapsed_seconds: float
 
     fsr: float
 
