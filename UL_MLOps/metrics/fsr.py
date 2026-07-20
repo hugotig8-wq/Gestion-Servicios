@@ -1,4 +1,5 @@
 import torch
+import torch.nn.functional as F
 
 from metrics.base_metric import BaseMetric
 
@@ -9,17 +10,59 @@ class ForgetSuccessRate(BaseMetric):
 
         self,
 
-        forget_threshold: float = 2.5
+        delta_threshold: float = 1.0
 
     ):
 
-        self.forget_threshold = forget_threshold
+        self.delta_threshold = delta_threshold
+
+    def _example_loss(
+
+        self,
+
+        model,
+
+        input_ids,
+
+        attention_mask,
+
+        labels
+
+    ):
+
+        outputs = model(
+
+            input_ids=input_ids,
+
+            attention_mask=attention_mask
+
+        )
+
+        logits = outputs.logits
+
+        return F.cross_entropy(
+
+            logits.view(
+
+                -1,
+
+                logits.size(-1)
+
+            ),
+
+            labels.view(-1),
+
+            ignore_index=-100
+
+        )
 
     def compute(
 
         self,
 
-        model,
+        reference_model,
+
+        unlearned_model,
 
         dataloader,
 
@@ -27,11 +70,13 @@ class ForgetSuccessRate(BaseMetric):
 
     ) -> float:
 
-        model.eval()
+        reference_model.eval()
 
-        total_examples = 0
+        unlearned_model.eval()
 
         forgotten_examples = 0
+
+        total_examples = 0
 
         with torch.no_grad():
 
@@ -43,25 +88,49 @@ class ForgetSuccessRate(BaseMetric):
 
                 labels = batch["labels"].to(device)
 
-                outputs = model(
+                batch_size = input_ids.size(0)
 
-                    input_ids=input_ids,
+                for i in range(batch_size):
 
-                    attention_mask=attention_mask
+                    reference_loss = self._example_loss(
 
-                )
+                        reference_model,
 
-                predictions = outputs.logits.argmax(dim=-1)
+                        input_ids[i].unsqueeze(0),
 
-                correct = (
+                        attention_mask[i].unsqueeze(0),
 
-                    predictions == labels
+                        labels[i].unsqueeze(0)
 
-                ).all(dim=1)
+                    )
 
-                forgotten_examples += (~correct).sum().item()
+                    unlearned_loss = self._example_loss(
 
-                total_examples += input_ids.size(0)
+                        unlearned_model,
+
+                        input_ids[i].unsqueeze(0),
+
+                        attention_mask[i].unsqueeze(0),
+
+                        labels[i].unsqueeze(0)
+
+                    )
+
+                    delta = (
+
+                        unlearned_loss
+
+                        -
+
+                        reference_loss
+
+                    ).item()
+
+                    if delta >= self.delta_threshold:
+
+                        forgotten_examples += 1
+
+                    total_examples += 1
 
         if total_examples == 0:
 
