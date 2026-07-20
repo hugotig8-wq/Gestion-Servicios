@@ -22,3 +22,26 @@ class Recommendation:
     line_start: int | None = None
 
     line_end: int | None = None
+
+    def to_markdown(self) -> str:
+
+    return f"""
+    ## {self.severity} - {self.title}
+
+    **Archivo**
+
+    {self.file_path}
+
+    **Categoría**
+
+    {self.category}
+
+    **Problema**
+
+    {self.explanation}
+
+    **Sugerencia**
+
+    {self.suggestion}
+    
+    """
