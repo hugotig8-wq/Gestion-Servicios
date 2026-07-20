@@ -1,2 +1,2 @@
 from .config import Config
-from .experiment import Experiment
+from .config import Experiment
