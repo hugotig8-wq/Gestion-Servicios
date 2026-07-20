@@ -173,11 +173,11 @@ class CodeReviewManager:
 
         recommendations = []
 
-        for file_name in changed_files:
+        for relative_path in changed_files:
 
-            file_path = Path(
+            file_path = self.scanner.resolve(
 
-                file_name
+                relative_path
 
             )
 
