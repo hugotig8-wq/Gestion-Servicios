@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from agents.file_filter import FileFilter
+from agent.file_filter import FileFilter
 
 
 class RepositoryScanner:
