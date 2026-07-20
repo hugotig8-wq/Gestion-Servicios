@@ -96,9 +96,7 @@ class ExperimentLogger:
 
         experiment,
 
-        result,
-
-        train_loss
+        snapshot
 
     ):
 
@@ -126,11 +124,11 @@ class ExperimentLogger:
 
             "epoch":
 
-                experiment.current_epoch,
+                snapshot.current_epoch,
 
             "train_loss":
 
-                train_loss,
+                snapshot.train_loss,
 
             "best_score":
 
@@ -142,19 +140,19 @@ class ExperimentLogger:
 
             "fsr":
 
-                result.fsr,
+                snapshot.fsr,
 
             "mu":
 
-                result.mu,
+                snapshot.mu,
 
             "fc":
 
-                result.fc,
+                snapshot.fc,
 
             "mia":
 
-                result.mia
+                snapshot.mia
 
         }
 
