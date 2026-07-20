@@ -20,7 +20,7 @@ class Experiment:
 
     best_score: float = float("-inf")
 
-    status: str = "created"
+    status: ExperimentStatus = ExperimentStatus.CREATED
 
     def __post_init__(self):
 
