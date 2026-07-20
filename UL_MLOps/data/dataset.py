@@ -57,11 +57,8 @@ class UnlearningDataset(Dataset):
         labels = input_ids.clone()
 
         return {
-
+            "id": index,
             "input_ids": input_ids,
-
             "attention_mask": attention_mask,
-
             "labels": labels
-
         }
