@@ -112,22 +112,37 @@ class CodeReviewManager:
 
         )
 
-    def execute(self):
+    def execute(
 
-        recommendations = self.review_repository()
+        self,
 
-        summary = self.build_summary(
+        changed_files: list[str] | None = None
 
-            recommendations
+    ):
+        if changed_files is None:
 
-        )
+            recommendations = self.review_repository()
 
-        self.report.save(
+        else:
 
-            recommendations,
+            recommendations = self.review_changed_files(
 
-            summary
+                changed_files
 
-        )
+            )
 
-        return summary
+            summary = self.build_summary(
+
+                recommendations
+
+            )
+
+            self.report.save(
+
+                recommendations,
+
+                summary
+
+            )
+
+            return summary
