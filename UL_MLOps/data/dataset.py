@@ -22,6 +22,18 @@ class UnlearningDataset(Dataset):
 
         self.max_length = max_length
 
+        self.ids = [
+
+            hashlib.sha256(
+
+                text.encode("utf-8")
+
+            ).hexdigest()
+
+            for text in texts
+
+        ]
+
     def __len__(self):
 
         return len(self.texts)
@@ -36,11 +48,7 @@ class UnlearningDataset(Dataset):
 
         text = self.texts[index]
 
-        example_id = hashlib.sha256(
-
-            text.encode("utf-8")
-
-        ).hexdigest()
+        example_id = self.ids[index]
 
         encoding = self.tokenizer(
 
