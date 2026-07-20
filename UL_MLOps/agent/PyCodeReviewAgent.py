@@ -1,4 +1,4 @@
-from tinyLlama_agent import agent
+from agent.tinyLlama_agent import agent
 import json
 
 class PyCodeReviewAgent:
@@ -96,5 +96,5 @@ class PyCodeReviewAgent:
             pass
         return {"error": "No se pudo parsear"}
 
-code_review_agent = CodeReviewAgent()
+code_review_agent = PyCodeReviewAgent()
       
