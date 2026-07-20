@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 import uuid
-
 from config.config import Config
+from config.experiment_status import ExperimentStatus
 
 
 @dataclass
