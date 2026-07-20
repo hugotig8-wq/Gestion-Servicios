@@ -25,23 +25,23 @@ class Recommendation:
 
     def to_markdown(self) -> str:
 
-    return f"""
-    ## {self.severity} - {self.title}
+        return f"""
+        ## {self.severity} - {self.title}
 
-    **Archivo**
+        **Archivo**
 
-    {self.file_path}
+        {self.file_path}
 
-    **Categoría**
+        **Categoría**
 
-    {self.category}
+        {self.category}
 
-    **Problema**
+        **Problema**
 
-    {self.explanation}
+        {self.explanation}
 
-    **Sugerencia**
+        **Sugerencia**
 
-    {self.suggestion}
+        {self.suggestion}
     
-    """
+        """
