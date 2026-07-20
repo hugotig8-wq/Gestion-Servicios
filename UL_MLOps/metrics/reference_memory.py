@@ -12,6 +12,8 @@ class ReferenceMemory:
 
         self,
 
+        experiment_id: str,
+
         example_id: str,
 
         loss: float,
@@ -25,6 +27,8 @@ class ReferenceMemory:
     ):
 
         self.losses[example_id] = {
+
+            "experiment_id": experiment_id,
 
             "loss": loss,
 
