@@ -25,7 +25,7 @@ class Recommendation:
 
     def to_markdown(self) -> str:
 
-        return f"""
+        markdown = f"""
         ## {self.severity} - {self.title}
 
         **Archivo**
@@ -45,3 +45,26 @@ class Recommendation:
         {self.suggestion}
     
         """
+        if self.corrected_code:
+
+            markdown += f"""
+
+            ```python
+            {self.corrected_code}
+            """
+
+        if (
+
+            self.line_start is not None
+
+            and
+
+           self.line_end is not None
+
+        ):
+
+            markdown += f"""
+            Lines:
+                {self.line_start}-{self.line_end} 
+            """
+        return markdown
