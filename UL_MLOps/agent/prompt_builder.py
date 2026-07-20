@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from agents.recommendation import Recommendation
+from agent.recommendation import Recommendation
 
 
 class PromptBuilder:
