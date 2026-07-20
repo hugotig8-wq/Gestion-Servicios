@@ -1,7 +1,7 @@
 from smollm_agent import agent
 import json
 
-class CodeReviewAgent:
+class PyCodeReviewAgent:
     """Revisa código y propone mejoras"""
     
     def revisar_codigo(self, codigo, lenguaje="Python"):
