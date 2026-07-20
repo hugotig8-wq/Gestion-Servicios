@@ -1,9 +1,9 @@
 from pathlib import Path
 
-from agents.repository_scanner import RepositoryScanner
-from agents.prompt_builder import PromptBuilder
-from agents.review_report import ReviewReport
-from agents.recommendation import Recommendation
+from agent.repository_scanner import RepositoryScanner
+from agent.prompt_builder import PromptBuilder
+from agent.review_report import ReviewReport
+from agent.recommendation import Recommendation
 
 
 class CodeReviewManager:
