@@ -178,7 +178,7 @@ class ReviewScheduler:
 
         self,
 
-        changed_files: list[str]
+        changes: list[GitChange]
 
     ):
 
@@ -202,7 +202,7 @@ class ReviewScheduler:
 
             summary = self.manager.execute(
 
-                changed_files=changed_files
+                changed_files=changes
 
             )
 
