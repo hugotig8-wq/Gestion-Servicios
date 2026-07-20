@@ -132,20 +132,26 @@ class TrainerAgent:
 
                 learning_rate=self.trainer.optimizer.param_groups[0]["lr"],
 
-                fsr=validation_result.fsr,
+                    fsr=validation_result.fsr,
 
-                mu=validation_result.mu,
+                    mu=validation_result.mu,
 
-                fc=validation_esult.fc,
+                    fc=validation_esult.fc,
 
-                mia=validation_result.mia
+                    mia=validation_result.mia
 
             )
 
-            self.logger.log_epoch(
+            self.checkpoint_manager.save_checkpoint(
 
-                experiment,
-                snapshot
+                experiment=experiment,
+
+                strategy=strategy,
+
+                model=model,
+
+                snapshot=snapshot
+
             )
 
             if self.checkpoint_manager.should_save(
