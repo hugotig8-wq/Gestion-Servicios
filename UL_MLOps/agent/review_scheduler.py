@@ -78,13 +78,13 @@ class ReviewScheduler:
 
             now = time.time()
 
-            changed_files = self._git_diff()
+            changes = self._git_diff()
 
-            if changed_files:
+            if changes:
 
                 self._execute_changed_review(
 
-                    changed_files
+                    changes
 
                 )
 
