@@ -1,6 +1,7 @@
-from datetime import datetime
+import subprocess
 import threading
 import time
+from datetime import datetime
 
 
 class ReviewScheduler:
@@ -11,7 +12,9 @@ class ReviewScheduler:
 
         manager,
 
-        interval_seconds: int = 3600,
+        interval_seconds: int = 1800,
+
+        poll_interval: int = 30,
 
         run_immediately: bool = True
 
@@ -21,11 +24,17 @@ class ReviewScheduler:
 
         self.interval_seconds = interval_seconds
 
+        self.poll_interval = poll_interval
+
         self.run_immediately = run_immediately
 
         self._running = False
 
         self._thread = None
+
+        self._last_full_review = 0
+
+        self._last_diff = ""
 
     def start(self):
 
@@ -55,33 +64,115 @@ class ReviewScheduler:
 
     def _run(self):
 
+        self._last_full_review = time.time()
+
         if self.run_immediately:
 
-            self._execute_review()
+            self._execute_review(
 
-        while self._running:
-
-            time.sleep(
-
-                self.interval_seconds
+                "Initial review"
 
             )
 
-            if not self._running:
+        while self._running:
 
-                break
+            now = time.time()
 
-            self._execute_review()
+            current_diff = self._git_diff()
 
-    def _execute_review(self):
+            if (
+
+                current_diff
+
+                and
+
+                current_diff != self._last_diff
+
+            ):
+
+                self._last_diff = current_diff
+
+                self._execute_review(
+
+                    "Git changes detected"
+
+                )
+
+                self._last_full_review = now
+
+            elif (
+
+                now - self._last_full_review
+
+                >=
+
+                self.interval_seconds
+
+            ):
+
+                self._execute_review(
+
+                    "Scheduled review"
+
+                )
+
+                self._last_full_review = now
+
+            time.sleep(
+
+                self.poll_interval
+
+            )
+
+    def _git_diff(self) -> str:
+
+        try:
+
+            result = subprocess.run(
+
+                [
+
+                    "git",
+
+                    "diff",
+
+                    "--name-only"
+
+                ],
+
+                capture_output=True,
+
+                text=True,
+
+                check=False
+
+            )
+
+            return result.stdout.strip()
+
+        except Exception:
+
+            return ""
+
+    def _execute_review(
+
+        self,
+
+        reason: str
+
+    ):
 
         started = datetime.utcnow()
 
         print(
 
-            f"[{started.isoformat()}] "
+            f"\n[{started.isoformat()}]"
 
-            "Starting code review..."
+        )
+
+        print(
+
+            f"Reason: {reason}"
 
         )
 
@@ -93,9 +184,13 @@ class ReviewScheduler:
 
             print(
 
-                f"[{finished.isoformat()}] "
+                f"[{finished.isoformat()}]"
 
-                "Code review completed."
+            )
+
+            print(
+
+                "Review completed."
 
             )
 
@@ -105,8 +200,8 @@ class ReviewScheduler:
 
             print(
 
-                f"[ERROR] "
-
-                f"{error}"
+                "Review failed."
 
             )
+
+            print(error)
