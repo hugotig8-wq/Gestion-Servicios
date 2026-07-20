@@ -69,5 +69,4 @@ class ParameterStrategy(ABC):
             Full Fine Tuning:
                 guarda todo el modelo
         """
-        model.save_pretrained(output_dir)
         pass
