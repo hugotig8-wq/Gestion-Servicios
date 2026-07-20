@@ -34,7 +34,7 @@ class TrainerAgent:
 
         self,
 
-        epochs,
+        experiment,
 
         retain_loader,
 
