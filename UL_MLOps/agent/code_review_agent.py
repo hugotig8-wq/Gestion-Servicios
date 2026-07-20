@@ -10,13 +10,64 @@ class PyCodeReviewAgent:
     
     def revisar_codigo(self, codigo, lenguaje="Python"):
         """Analiza código y sugiere mejoras"""
-        
-        prompt = self.prompt_builder.build(file_path, codigo)
-        
-        
-        
-        resultado = agent.razonar(prompt)
-        return self._parsear_json(resultado)
+
+        response = self._generate(
+
+            prompt
+
+        )
+
+        try:
+
+            data = json.loads(
+
+                response
+
+            )
+
+        except json.JSONDecodeError:
+
+            data = {
+
+                "severity":"LOW",
+
+                "category":"Parsing",
+
+                "title":"Invalid JSON",
+
+                "explanation":response,
+
+                "suggestion":"",
+
+                "corrected_code":None,
+
+                "line_start":None,
+
+                "line_end":None
+
+            }
+
+        return Recommendation(
+
+            file_path=file_path,
+
+            severity=data["severity"],
+
+            category=data["category"],
+
+            title=data["title"],
+
+            explanation=data["explanation"],
+
+            suggestion=data["suggestion"],
+
+            corrected_code=data["corrected_code"],
+
+            line_start=data["line_start"],
+
+            line_end=data["line_end"]
+
+        )
     
     def sugerir_mejoras(self, archivo_path, contenido):
         """Propone mejoras específicas"""
