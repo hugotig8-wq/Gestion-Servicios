@@ -60,9 +60,7 @@ class ForgetSuccessRate(BaseMetric):
 
         self,
 
-        reference_model,
-
-        unlearned_model,
+        model,
 
         dataloader,
 
@@ -70,13 +68,21 @@ class ForgetSuccessRate(BaseMetric):
 
     ) -> float:
 
-        reference_model.eval()
+        if len(self.reference_memory) == 0:
 
-        unlearned_model.eval()
+            raise RuntimeError(
+
+                "Reference memory is empty."
+
+            )
+
+        model.eval()
 
         forgotten_examples = 0
 
         total_examples = 0
+
+        total_delta = 0.0
 
         with torch.no_grad():
 
@@ -88,25 +94,15 @@ class ForgetSuccessRate(BaseMetric):
 
                 labels = batch["labels"].to(device)
 
+                ids = batch["id"]
+
                 batch_size = input_ids.size(0)
 
                 for i in range(batch_size):
 
-                    reference_loss = self._example_loss(
+                    current_loss = self._example_loss(
 
-                        reference_model,
-
-                        input_ids[i].unsqueeze(0),
-
-                        attention_mask[i].unsqueeze(0),
-
-                        labels[i].unsqueeze(0)
-
-                    )
-
-                    unlearned_loss = self._example_loss(
-
-                        unlearned_model,
+                        model,
 
                         input_ids[i].unsqueeze(0),
 
@@ -116,15 +112,15 @@ class ForgetSuccessRate(BaseMetric):
 
                     )
 
-                    delta = (
+                    reference_loss = self.reference_memory.load(
 
-                        unlearned_loss
+                        ids[i]
 
-                        -
+                    )
 
-                        reference_loss
+                    delta = current_loss - reference_loss
 
-                    ).item()
+                    total_delta += delta
 
                     if delta >= self.delta_threshold:
 
@@ -132,8 +128,6 @@ class ForgetSuccessRate(BaseMetric):
 
                     total_examples += 1
 
-        if total_examples == 0:
-
-            return 0.0
+        self.average_delta = total_delta / total_examples
 
         return forgotten_examples / total_examples
