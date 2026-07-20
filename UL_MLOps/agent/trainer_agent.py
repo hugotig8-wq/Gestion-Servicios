@@ -45,7 +45,7 @@ class TrainerAgent:
     ):
 
         epochs_progress = tqdm(
-            range(epochs),
+            range(experiment.config.epochs),
             desc="Training"
         )
 
@@ -58,6 +58,8 @@ class TrainerAgent:
             forget_loss = 0.0
 
             num_batches = 0
+
+            experiment.current_epoch = epoch +1
 
             batches_progress = tqdm(
                 zip_longest(
@@ -136,14 +138,18 @@ class TrainerAgent:
 
                 self.checkpoint_manager.save_checkpoint(
 
-                    self.strategy,
+                    experiment = experiment,
 
-                    self.trainer.model,
+                    strategy= strategy,
 
-                    validation_result,
+                    model= model,
 
-                    epoch
+                    result = validation_result,
 
                 )
 
+        experiment.status = ExperimentStatus.FINISHED
+
+        experiment.ended_at = datetime.utcnow()
+        
         self.logger.save()
