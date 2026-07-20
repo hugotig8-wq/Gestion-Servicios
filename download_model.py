@@ -1,18 +1,14 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
-model_name = "HuggingFaceTB/SmolLM3-3B"  # Nombre exacto del modelo
+model_id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
-print("Descargando tokenizer...")
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-
-print("Descargando modelo...")
+# Carga ligera para CPU sin necesidad de bitsandbytes
 model = AutoModelForCausalLM.from_pretrained(
-    model_name,
-    torch_dtype=torch.float16,
-    device_map="auto",
-    load_in_8bit=True  # Importante para ahorrar memoria en Codespaces
+    model_id,
+    torch_dtype=torch.bfloat16,  # O torch.float16
+    device_map="cpu",
+    low_cpu_mem_usage=True
 )
 
-print("✅ Modelo descargado exitosamente!")
-print(f"Modelo guardado en: ~/.cache/huggingface/hub/")
+tokenizer = AutoTokenizer.from_pretrained(model_id)
