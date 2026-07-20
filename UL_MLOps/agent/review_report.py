@@ -2,7 +2,7 @@ from pathlib import Path
 from datetime import datetime
 import json
 
-from agent.recommendation import Recommendation
+from .recommendation import Recommendation
 
 
 class ReviewReport:
