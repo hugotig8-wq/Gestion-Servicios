@@ -28,6 +28,10 @@ class PyCodeReviewAgent:
         file_path: Path
 
     ) -> Recommendation:
+        """
+        Recibe el prompt para el llm configurado.
+
+        """
 
         response = self.llm.generate(
 
