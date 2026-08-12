@@ -9,9 +9,9 @@ import torch
 @dataclass
 class Experiment:
 
-    device: torch.device | None = None
-
     config: Config
+    
+    device: torch.device | None = None
 
     experiment_id: str = field(init=False)
 
