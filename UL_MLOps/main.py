@@ -129,7 +129,7 @@ def main():
 
         device=device,
 
-        experiment_id=experiment.experiment_id
+        experiment_id=experiment.experiment_id,
 
         model_revision=experiment.config.model_revision,
 
