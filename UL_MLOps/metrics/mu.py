@@ -14,7 +14,7 @@ class MUResult:
     mu: float
 
 
-class MU:
+class ModelUtility:
 
     def __init__(
 
