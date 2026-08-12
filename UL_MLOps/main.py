@@ -4,8 +4,8 @@ from datetime import datetime
 import torch
 from transformers import AutoModelForCausalLM
 
-from adaptation.lora_adapter import apply_lora
-from adaptation.parameter_strategy import LoRAStrategy
+from adaptation.lora_adapter import LoRAStrategy
+from adaptation.parameter_strategy import ParameterStrategy
 
 from engine.optimizer_factory import OptimizerFactory
 from engine.trainer import Trainer
