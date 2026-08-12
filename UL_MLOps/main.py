@@ -16,7 +16,7 @@ from checkpoint.checkpoint_manager import CheckpointManager
 from logging.experiment_logger import ExperimentLogger
 
 from metrics.fsr import ForgetSuccessRate
-from metrics.mu import MU
+from metrics.mu import ModelUtility
 from metrics.fc import ForgetQuality
 from metrics.mia import MembershipInferenceAttack
 
