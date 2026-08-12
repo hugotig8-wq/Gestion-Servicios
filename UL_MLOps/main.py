@@ -7,7 +7,7 @@ from transformers import AutoModelForCausalLM
 from adaptation.lora_adapter import LoRAStrategy
 from adaptation.parameter_strategy import ParameterStrategy
 
-from engine.optimizer_factory import OptimizerFactory
+from adaptation.optimizer_factory import OptimizerFactory
 from engine.trainer import Trainer
 from engine.validator import Validator
 
