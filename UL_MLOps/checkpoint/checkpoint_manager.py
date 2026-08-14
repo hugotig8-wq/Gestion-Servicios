@@ -6,7 +6,7 @@ from config.experiment import Experiment
 
 import torch
 
-from training import TrainingSnapshot
+from training.training_snapshot import TrainingSnapshot
 
 
 class CheckpointManager:
