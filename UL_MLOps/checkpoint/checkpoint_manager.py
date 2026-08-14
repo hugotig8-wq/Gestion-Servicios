@@ -48,7 +48,7 @@ class CheckpointManager:
 
         optimizer,
 
-        snapshot: TraininhSnapshot,
+        snapshot: TrainingSnapshot,
 
         experiment: Experiment
 
