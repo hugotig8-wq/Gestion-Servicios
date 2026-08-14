@@ -3,7 +3,7 @@ from itertools import zip_longest
 from engine.trainer import Trainer
 from engine.validator import Validator
 from checkpoint.checkpoint_manager import CheckpointManager
-from logging.experiment_logger import ExperimentLogger
+from logExp.experiment_logger import ExperimentLogger
 from engine.trainer import TrainStepResult
 from tqdm import tqdm
 from training.training_snapshot import TrainingSnapshot
