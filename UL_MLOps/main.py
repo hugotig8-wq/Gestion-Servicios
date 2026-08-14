@@ -24,6 +24,9 @@ from agent.trainer_agent import TrainerAgent
 
 from data.data_loader import build_data_loaders
 
+from config.config import Config
+from config.config import Experiment
+
 
 def main():
 
