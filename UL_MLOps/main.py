@@ -13,7 +13,7 @@ from engine.validator import Validator
 
 from checkpoint.checkpoint_manager import CheckpointManager
 
-from logging.experiment_logger import ExperimentLogger
+from logExp.experiment_logger import ExperimentLogger
 
 from metrics.fsr import ForgetSuccessRate
 from metrics.mu import ModelUtility
