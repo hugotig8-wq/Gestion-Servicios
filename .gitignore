@@ -24,3 +24,5 @@ postgresql-16.3/
 *.pyc
 
 __pycache__/
+
+*.csv
