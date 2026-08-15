@@ -2,6 +2,7 @@ import torch
 import torch.nn.functional as F
 
 from metrics.base_metric import BaseMetric
+from metrics.reference_memory import ReferenceMemory   # + import
 
 
 class ForgetSuccessRate(BaseMetric):
