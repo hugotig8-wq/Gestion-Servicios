@@ -16,6 +16,10 @@ class ForgetSuccessRate(BaseMetric):
 
         self.delta_threshold = delta_threshold
 
+        self.reference_memory = ReferenceMemory()
+
+        self.avetage_delta = 0.0
+
     def _example_loss(
 
         self,
@@ -112,13 +116,14 @@ class ForgetSuccessRate(BaseMetric):
 
                     )
 
-                    reference_loss = self.reference_memory.load(
-
-                        ids[i]
-
-                    )
-
-                    delta = current_loss - reference_loss
+                    if isinstance(reference_record, dict):
+                        reference_loss = reference_record.get("loss")
+                    else:
+                        reference_loss = reference_record
+                    # asegurar floats
+                    current_val = current_loss.item() if torch.is_tensor(current_loss) else float(current_loss)
+                    reference_val = reference_loss.item() if torch.is_tensor(reference_loss) else float(reference_loss)
+                    delta = current_val - reference_val
 
                     total_delta += delta
 
@@ -188,11 +193,11 @@ class ForgetSuccessRate(BaseMetric):
 
                         experiment_id=experiment_id,
 
-                        loss=loss,
+                        loss=loss.item() if torch.is_tensor(loss) else float(loss),
+                        
+                        model_revision=model_revision,
 
-                        model_revision="TinyLlama-1.1B-Chat-v1.0",
-
-                        dataset_revision="forget_v1",
+                        dataset_revision=dataset_revision,
 
                         epoch=0
 
