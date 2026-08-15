@@ -207,17 +207,11 @@ def main():
 
         experiment = experiment,
 
-        strategy=strategy,
-
-        model=model,
-
         retain_loader=retain_loader,
 
         forget_loader=forget_loader,
 
-        validation_loader=validation_loader,
-
-        device=device
+        validation_loader=validation_loader
 
     )
 
