@@ -77,9 +77,11 @@ def build_data_loaders(
 
         validation_dataset,
 
+        tokenizer,
+
         batch_size=batch_size,
 
-        shuffle=False
+        shuffle=False,
 
     )
 
