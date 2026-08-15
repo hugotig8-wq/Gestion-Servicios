@@ -166,7 +166,7 @@ def main():
 
     mu = ModelUtility(reference_loss=reference_loss)
 
-    fc = ForgetQuality(tokenizer)
+    fc = ForgetQuality()
 
     mia = MembershipInferenceAttack()
     
