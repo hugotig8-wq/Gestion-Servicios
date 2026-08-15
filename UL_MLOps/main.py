@@ -92,13 +92,7 @@ def main():
 
     strategy = LoRAStrategy()
 
-    model = apply_lora(
-
-        model,
-
-        strategy
-
-    )
+    model = strategy.prepare_model(model)
 
     optimizer = OptimizerFactory.create(
 
