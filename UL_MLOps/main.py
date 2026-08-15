@@ -143,13 +143,13 @@ def main():
 
     fsr.build_reference(
 
+        experiment_id=experiment.experiment_id,
+
         reference_model=reference_model,
 
         dataloader=forget_loader,
 
         device=device,
-
-        experiment_id=experiment.experiment_id,
 
         model_revision=experiment.config.model_revision,
 
