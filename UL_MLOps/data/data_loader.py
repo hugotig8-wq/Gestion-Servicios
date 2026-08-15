@@ -91,6 +91,8 @@ def build_data_loaders(
 
         forget_loader,
 
-        validation_loader
+        validation_loader,
+
+        tokenizer
 
     )
