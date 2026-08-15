@@ -27,6 +27,8 @@ from data.data_loader import build_data_loaders
 from config.config import Config
 from config.experiment import Experiment
 
+from loss.unlearning_loss import UnlearningLoss
+
 
 def main():
 
@@ -108,7 +110,7 @@ def main():
 
         optimizer=optimizer,
 
-        loss_function=loss_function
+        loss_function=UnlearningLoss()
 
     )
 
