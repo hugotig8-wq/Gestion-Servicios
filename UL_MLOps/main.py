@@ -185,7 +185,7 @@ def main():
 
     )
 
-    checkpoint_manager = CheckpointManager("./outputCheck")
+    checkpoint_manager = CheckpointManager(experiment.config.checkpoint_dir)
 
     logger = ExperimentLogger()
 
