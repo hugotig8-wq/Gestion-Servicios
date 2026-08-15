@@ -142,7 +142,11 @@ class ForgetSuccessRate(BaseMetric):
 
         dataloader,
 
-        device
+        device,
+
+        model_revision,
+
+        dataset_revison
 
     ):
 
