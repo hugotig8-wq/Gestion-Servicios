@@ -13,11 +13,13 @@ def build_data_loaders(
 
     max_length: int = 256,
 
-    shuffle: bool = True
+    shuffle: bool = True,
+
+    model_name: model_name
 
 ):
 
-    tokenizer = build_tokenizer()
+    tokenizer = build_tokenizer(model_name)
 
     splits = split_dataset(texts)
 
