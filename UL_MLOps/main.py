@@ -94,9 +94,9 @@ def main():
 
     model = strategy.prepare_model(model)
 
-    optimizer = OptimizerFactory.create(
+    optimizer = OptimizerFactory.adamw(
 
-        model,
+        parameters=strategy.trainable_parameters(model),
 
         learning_rate=experiment.config.learning_rate
 
