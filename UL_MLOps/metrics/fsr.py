@@ -146,7 +146,7 @@ class ForgetSuccessRate(BaseMetric):
 
         model_revision,
 
-        dataset_revison
+        dataset_revision
 
     ):
 
