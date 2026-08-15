@@ -68,7 +68,9 @@ def main():
 
         batch_size=experiment.config.batch_size,
 
-        max_length=experiment.config.max_length
+        max_length=experiment.config.max_length,
+        
+        model_name=Config.model_revision
 
     )
 
