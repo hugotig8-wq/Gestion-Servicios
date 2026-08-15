@@ -197,7 +197,9 @@ def main():
 
         checkpoint_manager=checkpoint_manager,
 
-        logger=logger
+        logger=logger,
+
+        strategy=strategy
 
     )
 
