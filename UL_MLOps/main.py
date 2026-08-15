@@ -83,9 +83,7 @@ def main():
 
         forget_loader,
 
-        validation_loader,
-
-        tokenizer
+        validation_loader
 
     ) = build_data_loaders(
 
