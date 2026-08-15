@@ -185,7 +185,7 @@ def main():
 
     )
 
-    checkpoint_manager = CheckpointManager()
+    checkpoint_manager = CheckpointManager("./outputCheck")
 
     logger = ExperimentLogger()
 
