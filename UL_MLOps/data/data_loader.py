@@ -81,7 +81,7 @@ def build_data_loaders(
 
         batch_size=batch_size,
 
-        shuffle=False,
+        shuffle=False
 
     )
 
