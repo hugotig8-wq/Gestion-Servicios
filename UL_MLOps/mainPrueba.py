@@ -1,7 +1,7 @@
 
 import pandas as pd
 
-path = "/workspaces/Gestion-Servicios/UL_MLOps/data/raw/earthquakes.csv"
+path = "./data/raw/earthquakes.csv"
 
 df = pd.read_csv(path)
 
