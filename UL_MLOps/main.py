@@ -104,7 +104,11 @@ def main():
 
     trainer = Trainer(
 
-        optimizer=optimizer
+        model=model,
+
+        optimizer=optimizer,
+
+        loss_function=loss_function
 
     )
 
