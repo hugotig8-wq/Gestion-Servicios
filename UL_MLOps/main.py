@@ -76,7 +76,7 @@ def main():
 
     reference_model = AutoModelForCausalLM.from_pretrained(
 
-        model_revision
+        experiment.config.model_revision
 
     )
 
@@ -84,7 +84,7 @@ def main():
 
     model = AutoModelForCausalLM.from_pretrained(
 
-        model_revision
+        experiment.config.model_revision
 
     )
 
