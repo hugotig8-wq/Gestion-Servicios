@@ -83,7 +83,9 @@ def main():
 
         forget_loader,
 
-        validation_loader
+        validation_loader,
+
+        tokenizer,
 
     ) = build_data_loaders(
 
@@ -166,7 +168,7 @@ def main():
 
     mu = ModelUtility(reference_loss=reference_loss)
 
-    fc = ForgetQuality()
+    fc = ForgetQuality(tokenizer)
 
     mia = MembershipInferenceAttack()
     
