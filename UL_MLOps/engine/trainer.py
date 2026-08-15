@@ -55,8 +55,8 @@ class Trainer:
         total_loss, retain_loss, forget_loss = self.loss_function.compute(
             retain_outputs.logits,
             forget_outputs.logits,
-            retain_labels,
-            forget_labels
+            retain_batch["labels"],
+            forget_batch["labels"]
         )
 
         total_loss.backward()
