@@ -4,7 +4,7 @@ from xgboost import XGBRegressor
 from sklearn.model_selection import train_test_split
 
 # 1. Cargar datos
-df = pd.read_csv("/workspaces/Gestion-Servicios/data/raw/earthquakes.csv")
+df = pd.read_csv("/workspaces/Gestion-Servicios/UL_MLOps/data/raw/earthquakes.csv")
 
 # 2. Definir variables de entrada (X) y objetivo (y)
 X = df[["latitude", "longitude", "depth"]]
