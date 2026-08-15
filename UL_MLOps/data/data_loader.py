@@ -15,7 +15,7 @@ def build_data_loaders(
 
     shuffle: bool = True,
 
-    model_name: model_name
+    model_name: str
 
 ):
 
