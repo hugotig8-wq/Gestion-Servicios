@@ -8,7 +8,7 @@ df = pd.read_csv("/workspaces/Gestion-Servicios/UL_MLOps/data/raw/earthquakes.cs
 
 # 2. Definir variables de entrada (X) y objetivo (y)
 X = df[["latitude", "longitude", "depth"]]
-y = df["mag"]
+y = df["magnitude"]
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -40,9 +40,9 @@ for idx, row in epicentros_m5.iterrows():
 # Los reales:
 
 df_real = X_test.copy()
-df_real["mag"] = y_test.copy()
+df_real["magnitude"] = y_test.copy()
 
-epicentros_reales_m5 = df_real[df_real['mag'] > 5.0]
+epicentros_reales_m5 = df_real[df_real['magnitude'] > 5.0]
 
 print("###############################################")
 print("###############################################")
@@ -59,5 +59,5 @@ for idx, row in epicentros_reales_m5.iterrows():
     print(f"   ├─ Latitud:  {row['latitude']:.4f}")
     print(f"   ├─ Longitud: {row['longitude']:.4f}")
     print(f"   ├─ Profundidad: {row['depth']:.1f} km")
-    print(f"   └─ Magnitud real estimada: {row['mag']:.2f} M\n")
+    print(f"   └─ Magnitud real estimada: {row['magnitude']:.2f} M\n")
 
