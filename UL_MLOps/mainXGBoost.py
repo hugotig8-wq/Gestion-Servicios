@@ -24,10 +24,10 @@ df_forecast = X_test.copy()
 df_forecast['predicted_mag'] = y_pred
 
 # 3. Filtrar solo los sismos con Magnitud Predicha > 5.0
-epicentros_m5 = df_forecast[df_forecast['predicted_mag'] > 5.0]
+epicentros_m5 = df_forecast[df_forecast['predicted_mag'] > 3.0]
 
 # 4. Imprimir los resultados formateados
-print(f"--- PRONÓSTICO DE EPICENTROS (M > 5.0) ---")
+print(f"--- PRONÓSTICO DE EPICENTROS (M > 3.0) ---")
 print(f"Se encontraron {len(epicentros_m5)} eventos potencialmente fuertes:\n")
 
 for idx, row in epicentros_m5.iterrows():
