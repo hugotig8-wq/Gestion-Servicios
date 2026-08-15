@@ -30,6 +30,27 @@ from config.experiment import Experiment
 from loss.unlearning_loss import UnlearningLoss
 
 
+def compute_reference_loss(model, dataloader, device):
+    model.eval()
+    total_loss = 0.0
+    total_samples = 0
+    with torch.no_grad():
+        for batch in dataloader:
+            input_ids = batch["input_ids"].to(device)
+            attention_mask = batch.get("attention_mask")
+            if attention_mask is not None:
+                attention_mask = attention_mask.to(device)
+            labels = batch["labels"].to(device)
+            outputs = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
+            loss = outputs.loss
+            bs = input_ids.size(0)
+            total_loss += loss.item() * bs
+            total_samples += bs
+    if total_samples == 0:
+        raise ValueError("El dataloader contiene 0 muestras al calcular reference_loss.")
+    return total_loss / total_samples
+
+
 def main():
 
     config = Config()
@@ -62,7 +83,9 @@ def main():
 
         forget_loader,
 
-        validation_loader
+        validation_loader,
+
+        tokenizer
 
     ) = build_data_loaders(
 
@@ -120,12 +143,6 @@ def main():
 
     )
 
-    mu = ModelUtility()
-
-    fc = ForgetQuality()
-
-    mia = MembershipInferenceAttack()
-
     fsr.build_reference(
 
         reference_model=reference_model,
@@ -141,6 +158,20 @@ def main():
         dataset_revision=experiment.config.dataset_revision
 
     )
+
+    # en main.py, después de reference_model.to(device) y después de fsr.build_reference(...) si quieres:
+    reference_loss = compute_reference_loss(reference_model, validation_loader, device)
+
+    # defensa por si sale 0 o negativo (evita ValueError)
+    if reference_loss <= 0.0:
+        reference_loss = 1e-8
+
+    mu = ModelUtility(reference_loss=reference_loss)
+
+    fc = ForgetQuality(tokenizer)
+
+    mia = MembershipInferenceAttack()
+    
 
     validator = Validator(
 
