@@ -53,7 +53,9 @@ class Validator:
 
         forget_loader,
 
-        validation_loader
+        validation_loader,
+
+        device
 
     ) -> ValidationResult:
         #model.eval() desactiva también el Dropout (que sirve para evitar overfitting, aleatorias las neuronas que elija para cada batch)..
@@ -74,7 +76,9 @@ class Validator:
 
                 model,
 
-                validation_loader
+                validation_loader,
+
+                device=device
 
             )
 
