@@ -136,7 +136,7 @@ class TrainerAgent:
 
                 mu=validation_result.mu,
 
-                fc=validation_esult.fc,
+                fc=validation_result.fc,
 
                 mia=validation_result.mia
 
