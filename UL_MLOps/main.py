@@ -70,7 +70,7 @@ def main():
 
         max_length=experiment.config.max_length,
         
-        model_name=Config.model_revision
+        model_name=experiment.config.model_revision
 
     )
 
