@@ -7,6 +7,8 @@ from data.split import split_dataset
 
 def build_data_loaders(
 
+    model_name: str,
+
     texts: list[str],
 
     batch_size: int = 8,
@@ -14,8 +16,6 @@ def build_data_loaders(
     max_length: int = 256,
 
     shuffle: bool = True,
-
-    model_name: str
 
 ):
 
