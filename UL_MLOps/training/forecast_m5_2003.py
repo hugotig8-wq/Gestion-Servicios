@@ -65,13 +65,25 @@ MODEL_DIR.mkdir(parents=True, exist_ok=True)
 # Temporal boundaries
 # ------------------------------------------------------------
 
-TRAIN_START = pd.Timestamp("1981-04-01")
-TRAIN_END = pd.Timestamp("2003-12-31 23:59:59")
+TRAIN_START = pd.Timestamp(
+    "1981-04-01",
+    tz="UTC",
+)
 
-# 2004 is intentionally left out.
-FORECAST_START = pd.Timestamp("2005-01-01")
-FORECAST_END = pd.Timestamp("2014-12-31 23:59:59")
+TRAIN_END = pd.Timestamp(
+    "2003-12-31 23:59:59",
+    tz="UTC",
+)
 
+FORECAST_START = pd.Timestamp(
+    "2005-01-01",
+    tz="UTC",
+)
+
+FORECAST_END = pd.Timestamp(
+    "2014-12-31 23:59:59",
+    tz="UTC",
+)
 
 # ------------------------------------------------------------
 # Earthquake thresholds
