@@ -1,5 +1,5 @@
 import pandas as pd
-from Sismic_MLOps.config import DATA_PATH, TRAIN_START, TRAIN_END, MIN_MAGNITUDE_FEATURE
+from config import DATA_PATH, TRAIN_START, TRAIN_END, MIN_MAGNITUDE_FEATURE
 
 
 def find_column(df: pd.DataFrame, candidates: list[str], description: str) -> str:
