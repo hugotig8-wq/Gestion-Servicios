@@ -1468,6 +1468,564 @@ def main():
         df_train
     )
 
+    ##############
+    
+
+    def build_backtesting_dataset(
+    df,
+    cutoff_dates=None,
+    forecast_horizon_years=10,
+):
+    """
+    Builds a temporal backtesting dataset.
+
+    Each row represents:
+
+        one spatial cell
+        at one historical forecast date
+
+    Features use ONLY earthquakes occurring on or before
+    the forecast date.
+
+    Target represents whether at least one M>=5 earthquake
+    occurs during the following forecast horizon.
+
+    Example:
+
+        forecast_date = 1994-12-31
+
+        X:
+            earthquakes <= 1994-12-31
+
+        y:
+            M>=5 earthquakes during 1995-01-01 -> 2004-12-31
+
+    This prevents future information from entering X.
+    """
+
+    print("\nBuilding temporal backtesting dataset...")
+
+    # --------------------------------------------------------
+    # Forecast dates
+    # --------------------------------------------------------
+
+    if cutoff_dates is None:
+
+        cutoff_dates = pd.date_range(
+            start="1994-12-31",
+            end="2003-12-31",
+            freq="YE",
+            tz="UTC",
+        )
+
+    print(
+        "\nBacktesting dates:"
+    )
+
+    for date in cutoff_dates:
+        print(
+            f"  {date.date()}"
+        )
+
+    # --------------------------------------------------------
+    # Verify required columns
+    # --------------------------------------------------------
+
+    required_columns = {
+        "time",
+        "latitude",
+        "longitude",
+        "magnitude",
+        "depth",
+        "grid_x",
+        "grid_y",
+        "cell_id",
+    }
+
+    missing = (
+        required_columns
+        - set(df.columns)
+    )
+
+    if missing:
+
+        raise ValueError(
+            "Missing columns required by "
+            f"build_backtesting_dataset(): {missing}"
+        )
+
+    # --------------------------------------------------------
+    # Temporal windows for features
+    # --------------------------------------------------------
+
+    windows = {
+        "1y": pd.DateOffset(years=1),
+        "3y": pd.DateOffset(years=3),
+        "5y": pd.DateOffset(years=5),
+        "10y": pd.DateOffset(years=10),
+        "20y": pd.DateOffset(years=20),
+    }
+
+    # --------------------------------------------------------
+    # Geographic conversion
+    # --------------------------------------------------------
+
+    lat_step = km_to_lat_degrees(
+        CELL_KM
+    )
+
+    rows = []
+
+    # ========================================================
+    # One complete temporal snapshot
+    # ========================================================
+
+    for cutoff in cutoff_dates:
+
+        print(
+            f"\nProcessing forecast date "
+            f"{cutoff.date()}..."
+        )
+
+        # ----------------------------------------------------
+        # Historical information available at cutoff
+        # ----------------------------------------------------
+
+        historical = df[
+            df["time"] <= cutoff
+        ].copy()
+
+        # ----------------------------------------------------
+        # Future period used ONLY to construct the label.
+        #
+        # It is never included in the features.
+        # ----------------------------------------------------
+
+        future_start = (
+            cutoff
+            + pd.Timedelta(days=1)
+        )
+
+        future_end = (
+            cutoff
+            + pd.DateOffset(
+                years=forecast_horizon_years
+            )
+        )
+
+        future = df[
+            (df["time"] >= future_start)
+            & (df["time"] <= future_end)
+            & (
+                df["magnitude"]
+                >= TARGET_MAGNITUDE
+            )
+        ].copy()
+
+        # ----------------------------------------------------
+        # Process all 324 cells
+        # ----------------------------------------------------
+
+        for grid_y in range(GRID_ROWS):
+
+            for grid_x in range(GRID_COLS):
+
+                cell_id = (
+                    grid_y * GRID_COLS
+                    + grid_x
+                )
+
+                historical_cell = historical[
+                    (historical["grid_y"] == grid_y)
+                    & (historical["grid_x"] == grid_x)
+                    & (
+                        historical["magnitude"]
+                        >= MIN_MAGNITUDE_FEATURE
+                    )
+                ].copy()
+
+                future_cell = future[
+                    (future["grid_y"] == grid_y)
+                    & (future["grid_x"] == grid_x)
+                ]
+
+                # ------------------------------------------------
+                # Cell geographic center
+                # ------------------------------------------------
+
+                center_lat = (
+                    GRID_MIN_LAT
+                    + (grid_y + 0.5)
+                    * lat_step
+                )
+
+                lon_step = km_to_lon_degrees(
+                    CELL_KM,
+                    center_lat,
+                )
+
+                center_lon = (
+                    GRID_MIN_LON
+                    + (grid_x + 0.5)
+                    * lon_step
+                )
+
+                row = {
+                    "forecast_date": cutoff,
+                    "cell_id": cell_id,
+                    "grid_x": grid_x,
+                    "grid_y": grid_y,
+                    "cell_lat": center_lat,
+                    "cell_lon": center_lon,
+                }
+
+                # =================================================
+                # Historical temporal features
+                # =================================================
+
+                for (
+                    window_name,
+                    offset,
+                ) in windows.items():
+
+                    window_start = (
+                        cutoff - offset
+                    )
+
+                    window_events = (
+                        historical_cell[
+                            historical_cell["time"]
+                            > window_start
+                        ]
+                    )
+
+                    mags = (
+                        window_events[
+                            "magnitude"
+                        ].values
+                    )
+
+                    depths = (
+                        window_events[
+                            "depth"
+                        ].values
+                    )
+
+                    prefix = (
+                        f"eq_{window_name}"
+                    )
+
+                    # ------------------------------------------------
+                    # Number of earthquakes
+                    # ------------------------------------------------
+
+                    row[
+                        f"{prefix}_count"
+                    ] = len(
+                        window_events
+                    )
+
+                    # ------------------------------------------------
+                    # Magnitude statistics
+                    # ------------------------------------------------
+
+                    if len(window_events) > 0:
+
+                        row[
+                            f"{prefix}_max_mag"
+                        ] = np.max(mags)
+
+                        row[
+                            f"{prefix}_mean_mag"
+                        ] = np.mean(mags)
+
+                        row[
+                            f"{prefix}_std_mag"
+                        ] = (
+                            np.std(mags)
+                            if len(mags) > 1
+                            else 0.0
+                        )
+
+                        # ------------------------------------------------
+                        # Depth statistics
+                        # ------------------------------------------------
+
+                        row[
+                            f"{prefix}_mean_depth"
+                        ] = np.mean(depths)
+
+                        row[
+                            f"{prefix}_std_depth"
+                        ] = (
+                            np.std(depths)
+                            if len(depths) > 1
+                            else 0.0
+                        )
+
+                        # ------------------------------------------------
+                        # Relative seismic-energy proxy
+                        # ------------------------------------------------
+
+                        row[
+                            f"{prefix}_energy"
+                        ] = np.sum(
+                            calculate_energy(
+                                mags
+                            )
+                        )
+
+                        # ------------------------------------------------
+                        # b-value
+                        # ------------------------------------------------
+
+                        row[
+                            f"{prefix}_b_value"
+                        ] = calculate_b_value(
+                            mags
+                        )
+
+                    else:
+
+                        row[
+                            f"{prefix}_max_mag"
+                        ] = 0.0
+
+                        row[
+                            f"{prefix}_mean_mag"
+                        ] = 0.0
+
+                        row[
+                            f"{prefix}_std_mag"
+                        ] = 0.0
+
+                        row[
+                            f"{prefix}_mean_depth"
+                        ] = 0.0
+
+                        row[
+                            f"{prefix}_std_depth"
+                        ] = 0.0
+
+                        row[
+                            f"{prefix}_energy"
+                        ] = 0.0
+
+                        row[
+                            f"{prefix}_b_value"
+                        ] = np.nan
+
+                # =================================================
+                # Entire history available at cutoff
+                # =================================================
+
+                row[
+                    "eq_all_count"
+                ] = len(
+                    historical_cell
+                )
+
+                if len(
+                    historical_cell
+                ) > 0:
+
+                    row[
+                        "eq_all_max_mag"
+                    ] = historical_cell[
+                        "magnitude"
+                    ].max()
+
+                    row[
+                        "eq_all_mean_mag"
+                    ] = historical_cell[
+                        "magnitude"
+                    ].mean()
+
+                    row[
+                        "eq_all_mean_depth"
+                    ] = historical_cell[
+                        "depth"
+                    ].mean()
+
+                    row[
+                        "eq_all_b_value"
+                    ] = calculate_b_value(
+                        historical_cell[
+                            "magnitude"
+                        ].values
+                    )
+
+                else:
+
+                    row[
+                        "eq_all_max_mag"
+                    ] = 0.0
+
+                    row[
+                        "eq_all_mean_mag"
+                    ] = 0.0
+
+                    row[
+                        "eq_all_mean_depth"
+                    ] = 0.0
+
+                    row[
+                        "eq_all_b_value"
+                    ] = np.nan
+
+                # =================================================
+                # FUTURE TARGET
+                # =================================================
+                #
+                # IMPORTANT:
+                #
+                # future_cell is NOT used above to create features.
+                #
+                # It is used ONLY here to create y.
+                # =================================================
+
+                row[
+                    "n_m5_future"
+                ] = len(
+                    future_cell
+                )
+
+                row[
+                    "has_m5_future"
+                ] = int(
+                    len(future_cell) > 0
+                )
+
+                if len(future_cell) > 0:
+
+                    row[
+                        "max_m5_future"
+                    ] = future_cell[
+                        "magnitude"
+                    ].max()
+
+                else:
+
+                    row[
+                        "max_m5_future"
+                    ] = 0.0
+
+                rows.append(row)
+
+    # ========================================================
+    # Create dataframe
+    # ========================================================
+
+    backtest = pd.DataFrame(
+        rows
+    )
+
+    # --------------------------------------------------------
+    # Sort chronologically
+    # --------------------------------------------------------
+
+    backtest = backtest.sort_values(
+        [
+            "forecast_date",
+            "cell_id",
+        ]
+    ).reset_index(
+        drop=True
+    )
+
+    # ========================================================
+    # Sanity checks
+    # ========================================================
+
+    expected_rows = (
+        len(cutoff_dates)
+        * GRID_ROWS
+        * GRID_COLS
+    )
+
+    if len(backtest) != expected_rows:
+
+        raise RuntimeError(
+            "Unexpected number of backtesting rows.\n"
+            f"Expected: {expected_rows}\n"
+            f"Actual: {len(backtest)}"
+        )
+
+    # --------------------------------------------------------
+    # Critical leakage check
+    # --------------------------------------------------------
+
+    feature_columns = [
+        col
+        for col in backtest.columns
+        if col.startswith("eq_")
+    ]
+
+    forbidden_features = {
+        "n_m5_future",
+        "max_m5_future",
+        "has_m5_future",
+    }
+
+    leakage = (
+        forbidden_features
+        & set(feature_columns)
+    )
+
+    if leakage:
+
+        raise RuntimeError(
+            "LEAKAGE DETECTED: "
+            f"{leakage}"
+        )
+
+    # --------------------------------------------------------
+    # Print summary
+    # --------------------------------------------------------
+
+    print(
+        "\nBacktesting dataset created."
+    )
+
+    print(
+        f"  Rows: {len(backtest):,}"
+    )
+
+    print(
+        f"  Columns: {len(backtest.columns)}"
+    )
+
+    print(
+        f"  Cells: "
+        f"{GRID_ROWS * GRID_COLS}"
+    )
+
+    print(
+        f"  Forecast dates: "
+        f"{len(cutoff_dates)}"
+    )
+
+    print(
+        "\nPositive cells by forecast date:"
+    )
+
+    summary = (
+        backtest
+        .groupby("forecast_date")
+        ["has_m5_future"]
+        .agg(
+            cells_with_m5="sum",
+            total_m5_events=(
+                "n_m5_future",
+                "sum",
+            ),
+        )
+    )
+
+    print(summary)
+
+    return backtest
+
     # --------------------------------------------------------
     # Build y
     # --------------------------------------------------------
@@ -1491,7 +2049,7 @@ def main():
     # --------------------------------------------------------
     # Train
     # --------------------------------------------------------
-
+    '''
     (
         model,
         data,
@@ -1499,7 +2057,48 @@ def main():
     ) = train_model(
         features,
         targets,
-    )
+    )'''
+    # --------------------------------------------------------
+# TEMPORARY: DO NOT TRAIN YET
+# --------------------------------------------------------
+
+data = features.merge(
+    targets[
+        [
+            "cell_id",
+            "has_m5_future",
+            "n_m5_future",
+        ]
+    ],
+    on="cell_id",
+    how="inner",
+)
+
+print("\nWARNING:")
+print(
+    "The current target represents 2005-2014."
+)
+print(
+    "It MUST NOT be used to train the final forecast."
+)
+print(
+    "Next step: build historical backtesting samples."
+)
+
+print("\nDataset prepared:")
+print(data.shape)
+
+print(
+    data[
+        [
+            "cell_id",
+            "has_m5_future",
+            "n_m5_future",
+        ]
+    ].head()
+)
+
+return
 
     # --------------------------------------------------------
     # Generate risk map
