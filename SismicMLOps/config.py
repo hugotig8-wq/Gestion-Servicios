@@ -1,13 +1,46 @@
+"""
+Configuration for the seismic MLOps project.
+
+Project structure:
+
+    Gestion-Servicios/
+    ├── UL_MLOps/
+    └── sismic_MLOps/
+        ├── config.py
+        ├── forecast_m5_2003.py
+        ├── data/
+        │   ├── raw/
+        │   └── processed/
+        ├── metrics/
+        └── training/
+            └── models/
+
+This module contains configuration only.
+
+It does not:
+- load datasets
+- clean data
+- build features
+- train models
+- evaluate models
+"""
+
+
 from pathlib import Path
 
 import pandas as pd
 
 
 # ============================================================
-# PROJECT PATHS
+# PROJECT ROOT
 # ============================================================
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parent
+
+
+# ============================================================
+# PROJECT PATHS
+# ============================================================
 
 DATA_PATH = (
     PROJECT_ROOT
@@ -73,16 +106,18 @@ MIN_MAGNITUDE_FEATURE = 1.4
 # ============================================================
 
 GRID_ROWS = 18
+
 GRID_COLS = 18
 
 CELL_KM = 10.0
 
 GRID_MIN_LAT = 32.8
+
 GRID_MIN_LON = -118.5
 
 
 # ============================================================
-# XGBOOST
+# XGBOOST CONFIGURATION
 # ============================================================
 
 RANDOM_STATE = 42
