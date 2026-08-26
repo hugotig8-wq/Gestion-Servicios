@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from xgboost import XGBClassifier
-from sismic_MLOps.config import MODEL_PARAMS
+from config import MODEL_PARAMS
 
 
 def train_model(data: pd.DataFrame) -> tuple[XGBClassifier, list[str]]:
