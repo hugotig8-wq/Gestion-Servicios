@@ -1407,9 +1407,9 @@ def save_outputs(
 # ============================================================
 # MAIN
 # ============================================================
-
+'''
 def main():
-
+    
     print("=" * 70)
     print(
         "XGBOOST M>=5 FORECAST EXPERIMENT"
@@ -1420,12 +1420,40 @@ def main():
     print(
         "Blind forecast: 2005-01-01 -> 2014-12-31"
     )
-    print("=" * 70)
+    print("=" * 70)'''
+def main():
+
+    df_all, df_train = load_catalog()
+
+    df_all, lat_step, lon_step = assign_grid(
+        df_all
+    )
+
+    backtest = build_backtesting_dataset(
+        df_all
+    )
+
+    print("\nBacktest shape:")
+    print(backtest.shape)
+
+    print("\nBacktest preview:")
+    print(
+        backtest[
+            [
+                "forecast_date",
+                "cell_id",
+                "has_m5_future",
+                "n_m5_future",
+            ]
+        ].head(20)
+    )
+
+    return
 
     # --------------------------------------------------------
     # Load catalog
     # --------------------------------------------------------
-
+    '''
     df_all, df_train = (
         load_catalog()
     )
@@ -1436,7 +1464,49 @@ def main():
 
     df_train, lat_step, lon_step = (
         assign_grid(df_train)
+    )'''
+
+    # --------------------------------------------------------
+    # Load complete catalog
+    # --------------------------------------------------------
+
+    df_all, df_train = load_catalog()
+
+# --------------------------------------------------------
+# Assign the SAME spatial grid to the COMPLETE catalog
+# --------------------------------------------------------
+
+    df_all, lat_step, lon_step = assign_grid(
+        df_all
     )
+
+    
+# --------------------------------------------------------
+# Build temporal backtesting dataset
+# --------------------------------------------------------
+
+    backtest = build_backtesting_dataset(
+        df_all
+    )
+
+    print("\nBacktest shape:")
+    print(backtest.shape)
+
+    print("\nBacktest preview:")
+    print(
+        backtest[
+            [
+                "forecast_date",
+                "cell_id",
+                "has_m5_future",
+                "n_m5_future",
+            ]
+        ].head(20)
+    )
+
+# STOP HERE FOR NOW
+    return
+
 
     # Need the future events to be assigned to exactly
     # the same grid.
@@ -2029,7 +2099,7 @@ def main():
     # --------------------------------------------------------
     # Build y
     # --------------------------------------------------------
-
+    '''
     targets, future = (
         build_targets(
             df_future_candidate
@@ -2058,6 +2128,7 @@ def main():
         features,
         targets,
     )'''
+    '''
     # --------------------------------------------------------
 # TEMPORARY: DO NOT TRAIN YET
 # --------------------------------------------------------
