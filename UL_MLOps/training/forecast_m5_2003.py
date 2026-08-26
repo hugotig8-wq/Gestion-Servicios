@@ -1546,34 +1546,34 @@ def main():
         cutoff_dates=None,
         forecast_horizon_years=10,
     ):
-    """
-    Builds a temporal backtesting dataset.
+        """
+        Builds a temporal backtesting dataset.
 
-    Each row represents:
+        Each row represents:
 
-        one spatial cell
-        at one historical forecast date
+            one spatial cell
+            at one historical forecast date
 
-    Features use ONLY earthquakes occurring on or before
-    the forecast date.
+        Features use ONLY earthquakes occurring on or before
+        the forecast date.
 
-    Target represents whether at least one M>=5 earthquake
-    occurs during the following forecast horizon.
+        Target represents whether at least one M>=5 earthquake
+        occurs during the following forecast horizon.
 
-    Example:
+        Example:
 
-        forecast_date = 1994-12-31
+            forecast_date = 1994-12-31
 
-        X:
-            earthquakes <= 1994-12-31
+            X:
+                earthquakes <= 1994-12-31
 
-        y:
-            M>=5 earthquakes during 1995-01-01 -> 2004-12-31
+            y:
+                M>=5 earthquakes during 1995-01-01 -> 2004-12-31
 
-    This prevents future information from entering X.
-    """
+        This prevents future information from entering X.
+        """
 
-    print("\nBuilding temporal backtesting dataset...")
+        print("\nBuilding temporal backtesting dataset...")
 
     # --------------------------------------------------------
     # Forecast dates
