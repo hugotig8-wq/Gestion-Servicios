@@ -1,9 +1,9 @@
 import json
-from Sismic_MLOps.config import PROCESSED_DIR, METRICS_DIR, MODEL_DIR
-from Sismic_MLOps.data_loader import load_catalog
+from SismicMLOps.config import PROCESSED_DIR, METRICS_DIR, MODEL_DIR
+from SismicMLOps.data_loader import load_catalog
 from Sismic_MLOps.features import assign_grid, build_backtesting_dataset
-from Sismic_MLOps.models import train_model, generate_risk_map
-from Sismic_MLOps.evaluation import calculate_metrics
+from SismicMLOps.models import train_model, generate_risk_map
+from SismicMLOps.evaluation import calculate_metrics
 
 
 def run_pipeline():
