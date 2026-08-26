@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import pandas as pd
-from Sismic_MLOps.config import (
+from config import (
     GRID_ROWS, GRID_COLS, CELL_KM, GRID_MIN_LAT, GRID_MIN_LON,
     MIN_MAGNITUDE_FEATURE, TARGET_MAGNITUDE
 )
