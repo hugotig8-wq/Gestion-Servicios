@@ -1542,10 +1542,10 @@ def main():
     
 
     def build_backtesting_dataset(
-    df,
-    cutoff_dates=None,
-    forecast_horizon_years=10,
-):
+        df,
+        cutoff_dates=None,
+        forecast_horizon_years=10,
+    ):
     """
     Builds a temporal backtesting dataset.
 
