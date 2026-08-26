@@ -1,57 +1,109 @@
-# config.py
+from pathlib import Path
 
-# ---------------------------------------------------------
-# Spatial grid
-# ---------------------------------------------------------
-
-CELL_KM = 10
-
-GRID_MIN_LAT = 32.0
-GRID_MAX_LAT = 35.0
-
-GRID_MIN_LON = -119.0
-GRID_MAX_LON = -114.0
+import pandas as pd
 
 
-# ---------------------------------------------------------
-# Earthquake filtering
-# ---------------------------------------------------------
+# ============================================================
+# PROJECT PATHS
+# ============================================================
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+DATA_PATH = (
+    PROJECT_ROOT
+    / "data"
+    / "raw"
+    / "earthquakes.csv"
+)
+
+PROCESSED_DIR = (
+    PROJECT_ROOT
+    / "data"
+    / "processed"
+)
+
+METRICS_DIR = (
+    PROJECT_ROOT
+    / "metrics"
+)
+
+MODEL_DIR = (
+    PROJECT_ROOT
+    / "training"
+    / "models"
+)
+
+
+# ============================================================
+# TEMPORAL BOUNDARIES
+# ============================================================
+
+TRAIN_START = pd.Timestamp(
+    "1981-04-01",
+    tz="UTC",
+)
+
+TRAIN_END = pd.Timestamp(
+    "2003-12-31 23:59:59",
+    tz="UTC",
+)
+
+FORECAST_START = pd.Timestamp(
+    "2005-01-01",
+    tz="UTC",
+)
+
+FORECAST_END = pd.Timestamp(
+    "2014-12-31 23:59:59",
+    tz="UTC",
+)
+
+
+# ============================================================
+# EARTHQUAKE THRESHOLDS
+# ============================================================
 
 TARGET_MAGNITUDE = 5.0
 
-MIN_MAGNITUDE_FEATURE = 2.0
+MIN_MAGNITUDE_FEATURE = 1.4
 
 
-# ---------------------------------------------------------
-# Forecast
-# ---------------------------------------------------------
+# ============================================================
+# SPATIAL GRID
+# ============================================================
 
-FORECAST_HORIZON_YEARS = 10
+GRID_ROWS = 18
+GRID_COLS = 18
 
+CELL_KM = 10.0
 
-# ---------------------------------------------------------
-# Backtesting
-# ---------------------------------------------------------
-
-BACKTEST_START_YEAR = 1994
-BACKTEST_END_YEAR = 2003
+GRID_MIN_LAT = 32.8
+GRID_MIN_LON = -118.5
 
 
-# ---------------------------------------------------------
-# Temporal feature windows
-# ---------------------------------------------------------
-
-FEATURE_WINDOWS_YEARS = [
-    1,
-    3,
-    5,
-    10,
-    20,
-]
-
-
-# ---------------------------------------------------------
-# Model
-# ---------------------------------------------------------
+# ============================================================
+# XGBOOST
+# ============================================================
 
 RANDOM_STATE = 42
+
+MODEL_PARAMS = {
+    "objective": "binary:logistic",
+    "eval_metric": "logloss",
+
+    "n_estimators": 300,
+    "learning_rate": 0.03,
+
+    "max_depth": 3,
+    "min_child_weight": 2,
+
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+
+    "reg_alpha": 0.1,
+    "reg_lambda": 1.0,
+
+    "random_state": RANDOM_STATE,
+
+    "n_jobs": 4,
+}
