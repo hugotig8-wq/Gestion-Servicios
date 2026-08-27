@@ -25,7 +25,7 @@ def km_to_lon_degrees(km: float, latitude: float) -> float:
     return km / (111.32 * math.cos(math.radians(latitude)))
 
 
-def assign_grid(df: pd.DataFrame) -> Tuple[pd.DataFrame, float, float]:
+def assign_grid(df: pd.DataFrame) -> tuple[pd.DataFrame, float, float]:
     """Map earthquake lat/lon to discrete 18x18 spatial grid cells."""
     df = df.copy()
 
