@@ -2,7 +2,7 @@
 
 from typing import Tuple
 import pandas as pd
-from SismicMLOps.config import (
+from config import (
     DATA_PATH,
     MIN_MAGNITUDE_FEATURE,
     TRAIN_END,
