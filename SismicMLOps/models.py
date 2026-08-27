@@ -4,7 +4,7 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 from xgboost import XGBClassifier
-from sismic_MLOps.config import MODEL_PARAMS
+from SismicMLOps.config import MODEL_PARAMS
 
 
 def train_model(data: pd.DataFrame) -> Tuple[XGBClassifier, list[str]]:
