@@ -1,7 +1,7 @@
 """Main orchestration script for M>=5 Earthquake Forecast pipeline."""
 
 import json
-from SismicMLOps.config import (
+from config import (
     FORECAST_END,
     FORECAST_START,
     GRID_COLS,
@@ -13,10 +13,10 @@ from SismicMLOps.config import (
     TRAIN_END,
     TRAIN_START,
 )
-from SismicMLOps.data_loader import load_catalog
-from SismicMLOps.evaluation import calculate_metrics
-from SismicMLOps.features import assign_grid, build_backtesting_dataset
-from SismicMLOps.models import generate_risk_map, train_model
+from data_loader import load_catalog
+from evaluation import calculate_metrics
+from features import assign_grid, build_backtesting_dataset
+from models import generate_risk_map, train_model
 
 
 def run_experiment():
