@@ -4,7 +4,7 @@ import math
 from typing import Optional
 import numpy as np
 import pandas as pd
-from sismic_MLOps.config import (
+from SismicMLOps.config import (
     CELL_KM,
     GRID_COLS,
     GRID_MIN_LAT,
