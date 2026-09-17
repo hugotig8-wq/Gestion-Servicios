@@ -1,58 +1,88 @@
-"""Configuration module for the seismic MLOps pipeline."""
-
+# config.py
 from pathlib import Path
-import pandas as pd
 
 # ============================================================
-# PROJECT ROOT & PATHS
+# 1. PROJECT ROOT & PATHS (Rutas Dinámicas Robusta)
 # ============================================================
-
 PROJECT_ROOT = Path(__file__).resolve().parent
 
-DATA_PATH = PROJECT_ROOT / "data" / "raw" / "earthquakes.csv"
+DATA_DIR = PROJECT_ROOT / "data" / "raw"
+DATA_PATH = DATA_DIR / "earthquakes.csv"
+ROCK_DATA_PATH = DATA_DIR / "rock_properties.parquet"
+
 PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
 METRICS_DIR = PROJECT_ROOT / "metrics"
 MODEL_DIR = PROJECT_ROOT / "training" / "models"
 
-# ============================================================
-# TEMPORAL BOUNDARIES
-# ============================================================
+# Crear directorios si no existen
+for directory in [PROCESSED_DIR, METRICS_DIR, MODEL_DIR]:
+    directory.mkdir(parents=True, exist_ok=True)
 
-TRAIN_START = pd.Timestamp("1981-04-01", tz="UTC")
-TRAIN_END = pd.Timestamp("2003-12-31 23:59:59", tz="UTC")
-FORECAST_START = pd.Timestamp("2005-01-01", tz="UTC")
-FORECAST_END = pd.Timestamp("2014-12-31 23:59:59", tz="UTC")
+RISK_MAP_SAVE_PATH = PROCESSED_DIR / "risk_map_calibrated.csv"
+METRICS_SAVE_PATH = METRICS_DIR / "forecast_metrics.json"
 
 # ============================================================
-# EARTHQUAKE THRESHOLDS & SPATIAL GRID
+# 2. PARÁMETROS GEOGRÁFICOS Y DE LA MALLA
 # ============================================================
-
-TARGET_MAGNITUDE = 5.0
-MIN_MAGNITUDE_FEATURE = 1.4
+LAT_MIN = 32.0
+LAT_MAX = 36.0
+LON_MIN = -120.0
+LON_MAX = -115.0
 
 GRID_ROWS = 18
 GRID_COLS = 18
 CELL_KM = 10.0
-GRID_MIN_LAT = 32.8
-GRID_MIN_LON = -118.5
 
 # ============================================================
-# XGBOOST CONFIGURATION
+# 3. PARÁMETROS DE CATÁLOGO Y SISMOLOGÍA
 # ============================================================
+MIN_MAGNITUDE = 1.4     # Mmin para cálculo de b-value
+TARGET_MAGNITUDE = 5.0  # Magnitud objetivo (M >= 5.0)
 
-RANDOM_STATE = 42
+# ============================================================
+# 4. VENTANAS TEMPORALES
+# ============================================================
+TRAIN_START = "1981-01-01"
+TRAIN_END = "2003-12-31"
 
-MODEL_PARAMS = {
-    "objective": "binary:logistic",
-    "eval_metric": "logloss",
-    "n_estimators": 300,
-    "learning_rate": 0.03,
-    "max_depth": 3,
-    "min_child_weight": 2,
-    "subsample": 0.8,
-    "colsample_bytree": 0.8,
-    "reg_alpha": 0.1,
-    "reg_lambda": 1.0,
-    "random_state": RANDOM_STATE,
-    "n_jobs": 4,
+TEST_START = "2005-01-01"
+TEST_END = "2014-12-31"
+
+PREDICTION_HORIZON_YEARS = 10
+
+# ============================================================
+# 5. SELECCIÓN DE MODELO E HIPERPARÁMETROS
+# ============================================================
+# Opciones disponibles: "xgboost", "lightgbm", "random_forest"
+MODEL_TYPE = "xgboost"
+
+MODEL_CONFIGS = {
+    "xgboost": {
+        "n_estimators": 100,
+        "max_depth": 4,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "random_state": 42,
+        "n_jobs": -1
+    },
+    "lightgbm": {
+        "n_estimators": 100,
+        "max_depth": 4,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "random_state": 42,
+        "n_jobs": -1,
+        "verbose": -1
+    },
+    "random_forest": {
+        "n_estimators": 100,
+        "max_depth": 6,
+        "random_state": 42,
+        "n_jobs": -1
+    }
 }
+
+SCALE_POS_WEIGHT = 10.0
+CALIBRATION_METHOD = "isotonic"  # 'isotonic' o 'sigmoid'
