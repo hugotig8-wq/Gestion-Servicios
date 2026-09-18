@@ -16,7 +16,7 @@ from config import (
 from data_loader import load_catalog
 from evaluation import calculate_metrics
 from features import assign_grid, build_backtesting_dataset
-from models import generate_risk_map, train_model
+from models import generate_risk_map, train_model, train_and_calibrate_model
 
 
 def run_experiment():
