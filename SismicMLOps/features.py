@@ -4,7 +4,7 @@ import math
 from typing import Optional
 import numpy as np
 import pandas as pd
-from config import (
+'''from config import (
     CELL_KM,
     GRID_COLS,
     GRID_MIN_LAT,
@@ -12,7 +12,13 @@ from config import (
     GRID_ROWS,
     MIN_MAGNITUDE_FEATURE,
     TARGET_MAGNITUDE,
-)
+)'''
+
+# features.py (Sección de Modelos SCEC)
+import pandas as pd
+import numpy as np
+from pathlib import Path
+import config
 
 
 def km_to_lat_degrees(km: float) -> float:
@@ -200,4 +206,45 @@ def build_backtesting_dataset(
     )
 
     return backtest
+
+# Añadimos para incorporar los CXSM
+
+def add_ctm_features(features_df: pd.DataFrame, ctm_file_path: Path = None) -> pd.DataFrame:
+    """
+    Incorpora características térmicas del SCEC Community Thermal Model (CTM).
+    Si no existe el archivo procesado, genera una interpolación/estimación basada en la malla.
+    """
+    if ctm_file_path is None:
+        ctm_file_path = config.PROCESSED_DIR / "scec_ctm_features.parquet"
+
+    if ctm_file_path.exists():
+        ctm_df = pd.read_parquet(ctm_file_path)
+        merged_df = pd.merge(features_df, ctm_df, on=["grid_i", "grid_j"], how="left")
+    else:
+        # Si el dataset procesado de CTM no está presente, calculamos valores base
+        merged_df = features_df.copy()
+        
+        # Gradiente térmico estándar de California con variaciones espaciales
+        # Estimación en función de coordenadas o distancia a la costa/cuencas
+        merged_df["ctm_temp_10km"] = 250.0 + (merged_df["grid_i"] * 3.5) - (merged_df["grid_j"] * 2.0)
+        
+        # Profundidad de la Transición Frágil-Dúctil (BDT) ~ Isoterma 300-350 °C
+        # Profundidad_BDT = 300 / (Gradiente por km)
+        merged_df["ctm_bdt_depth_km"] = 300.0 / (merged_df["ctm_temp_10km"] / 10.0)
+        
+        # Viscosidad en la corteza inferior (Pa·s)
+        merged_df["ctm_log_viscosity"] = 21.0 - (merged_df["ctm_temp_10km"] - 250.0) * 0.015
+
+    # Imputación de seguridad para evitar NaNs en el árbol
+    defaults = {
+        "ctm_temp_10km": 275.0,
+        "ctm_bdt_depth_km": 11.0,
+        "ctm_log_viscosity": 20.0
+    }
+    for col, val in defaults.items():
+        if col in merged_df.columns:
+            merged_df[col] = merged_df[col].fillna(val)
+
+    return merged_df
+        
     
