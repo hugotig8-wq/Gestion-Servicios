@@ -8,7 +8,7 @@ from sklearn.metrics import roc_auc_score, brier_score_loss
 import config
  # O el pipeline de extracción completo
 from models import train_and_calibrate_model
-from features import assign_grid_indices, add_ctm_features, create_target_label
+from features import assign_grid_indices, add_ctm_features, create_target_label, grid_to_latlon
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -73,6 +73,28 @@ def run_forecast_pipeline():
     logging.info("Evaluating calibrated model on test set...")
     y_probs = calibrated_model.predict_proba(X_test)[:, 1]
 
+ 
+
+# ... después de calcular y_probs ...
+
+    # Guardar mapa de riesgo con coordenadas y enlace a Google Maps
+    X_test_map = X_test.copy()
+    X_test_map["grid_i"] = df_grid.loc[X_test.index, "grid_i"]
+    X_test_map["grid_j"] = df_grid.loc[X_test.index, "grid_j"]
+    X_test_map["risk_probability"] = y_probs
+
+# Recuperar coordenadas geográficas
+    X_test_map = grid_to_latlon(X_test_map)
+
+# Ordenar colocando el enlace al principio para fácil lectura en el móvil
+    cols_order = ["google_maps_url", "latitude", "longitude", "risk_probability", "seismic_rate"] + [
+        c for c in X_test_map.columns if c not in ["google_maps_url", "latitude", "longitude", "risk_probability", "seismic_rate"]
+    ]
+    X_test_map = X_test_map[cols_order]
+
+    X_test_map.to_csv(config.RISK_MAP_SAVE_PATH, index=False)
+
+    '''
     auc_score = roc_auc_score(y_test, y_probs)
     brier_score = brier_score_loss(y_test, y_probs)
     max_prob = float(y_probs.max())
@@ -102,7 +124,7 @@ def run_forecast_pipeline():
     X_test_map["risk_probability"] = y_probs
     X_test_map.to_csv(config.RISK_MAP_SAVE_PATH, index=False)
     logging.info(f"Calibrated risk map saved to {config.RISK_MAP_SAVE_PATH}")
-
+    '''
 if __name__ == "__main__":
     run_forecast_pipeline()
     
