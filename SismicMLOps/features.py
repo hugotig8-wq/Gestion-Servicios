@@ -18,6 +18,28 @@ import pandas as pd
 from pathlib import Path
 import config
 
+def create_target_label(df: pd.DataFrame, target_mag: float = config.TARGET_MAGNITUDE) -> pd.DataFrame:
+    """
+    Crea la columna 'target' binaria:
+    1 si ocurrió un evento con magnitud >= TARGET_MAGNITUDE (ej. 5.0)
+    0 en caso contrario.
+    """
+    df = df.copy()
+    
+    # Identificar el nombre de la columna de magnitud en el DataFrame
+    mag_col = None
+    for col in ["magnitude", "mag", "Magnitude", "MAG"]:
+        if col in df.columns:
+            mag_col = col
+            break
+            
+    if mag_col is None:
+        raise KeyError("No se encontró una columna de magnitud ('magnitude' o 'mag') en el DataFrame.")
+        
+    df["target"] = (df[mag_col] >= target_mag).astype(int)
+    return df
+    
+
 def assign_grid_indices(df: pd.DataFrame) -> pd.DataFrame:
     """
     Asigna los índices de celda (grid_i, grid_j) a un DataFrame que contenga 
