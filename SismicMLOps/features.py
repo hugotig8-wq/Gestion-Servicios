@@ -18,6 +18,28 @@ import pandas as pd
 from pathlib import Path
 import config
 
+def grid_to_latlon(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Convierte índices de malla (grid_i, grid_j) a coordenadas geográficas (latitude, longitude)
+    y genera el enlace directo a Google Maps.
+    """
+    df = df.copy()
+    
+    lat_step = (config.LAT_MAX - config.LAT_MIN) / config.GRID_ROWS
+    lon_step = (config.LON_MAX - config.LON_MIN) / config.GRID_COLS
+    
+    # Calcular centroide de la celda
+    df["latitude"] = config.LAT_MIN + (df["grid_i"] + 0.5) * lat_step
+    df["longitude"] = config.LON_MIN + (df["grid_j"] + 0.5) * lon_step
+    
+    # Generar URL cliqueable para Google Maps
+    df["google_maps_url"] = df.apply(
+        lambda r: f"https://www.google.com/maps?q={r['latitude']:.4f},{r['longitude']:.4f}", axis=1
+    )
+    
+    return df
+    
+
 def build_grid_features(df_events: pd.DataFrame) -> pd.DataFrame:
     """
     Agrupa el catálogo de eventos individuales por celda de la malla (grid_i, grid_j)
