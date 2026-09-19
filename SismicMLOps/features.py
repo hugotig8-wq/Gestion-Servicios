@@ -18,6 +18,33 @@ import pandas as pd
 from pathlib import Path
 import config
 
+def build_grid_features(df_events: pd.DataFrame) -> pd.DataFrame:
+    """
+    Agrupa el catálogo de eventos individuales por celda de la malla (grid_i, grid_j)
+    y calcula las características sismológicas junto con el target de la celda.
+    """
+    df = df_events.copy()
+    
+    # Asegurar que existan los índices de la malla y el indicador binario por evento
+    if "grid_i" not in df.columns or "grid_j" not in df.columns:
+        from features import assign_grid_indices
+        df = assign_grid_indices(df)
+        
+    df["is_m5"] = (df["magnitude"] >= config.TARGET_MAGNITUDE).astype(int)
+
+    # Agregación por celda (grid_i, grid_j)
+    grid_df = df.groupby(["grid_i", "grid_j"]).agg(
+        # Target de la celda: 1 si al menos un evento tuvo M >= 5.0
+        target=("is_m5", "max"),
+        # Características sismológicas
+        seismic_rate=("magnitude", "count"),
+        max_magnitude=("magnitude", "max"),
+        mean_magnitude=("magnitude", "mean")
+    ).reset_index()
+
+    return grid_df
+    
+
 def create_target_label(df: pd.DataFrame, target_mag: float = config.TARGET_MAGNITUDE) -> pd.DataFrame:
     """
     Crea la columna 'target' binaria:
