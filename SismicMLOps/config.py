@@ -121,7 +121,7 @@ CSM_DATA_PATH = SCEC_DIR / "csm_processed.parquet"
 
 # Switches para experimentos (Permite activar/desactivar en pruebas)
 USE_SCEC_CTM = True
-USE_SCEC_CFM = False  # Activaremos en el siguiente paso
+USE_SCEC_CFM = True  # Activaremos en el siguiente paso
 USE_SCEC_CGM = False  # Activaremos en el siguiente paso
 USE_SCEC_CRM = False  # Activaremos en el siguiente paso
 USE_SCEC_CSM = False  # Activaremos en el siguiente paso
