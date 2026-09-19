@@ -15,7 +15,15 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 # forecast_m5_2003.py
 import pandas as pd
 import config
-from features import assign_grid_indices, build_grid_features, add_ctm_features
+#from features import assign_grid_indices, build_grid_features, add_ctm_features
+
+from features import (
+    assign_grid_indices,
+    build_grid_features,
+    add_ctm_features,
+    add_new_scec_features,
+    grid_to_latlon
+)
 
 def run_forecast_pipeline():
     # 1. Cargar catálogo raw
@@ -31,6 +39,10 @@ def run_forecast_pipeline():
     if config.USE_SCEC_CTM:
         df_grid = add_ctm_features(df_grid, config.CTM_DATA_PATH)
 
+    if getattr(config, "USE_SCEC_NEW_MODEL", False):
+        df_grid = add_new_scec_features(df_grid, config.NEW_SCEC_MODEL_PATH)
+     
+ 
     # 5. Separar X e y (Línea 106 protegida)
     target_col = "target"
     if target_col not in df_grid.columns:
