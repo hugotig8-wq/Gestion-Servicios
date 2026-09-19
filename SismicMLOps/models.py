@@ -101,40 +101,7 @@ def get_base_model(model_type: str = config.MODEL_TYPE, scale_pos_weight: float 
     else:
         raise ValueError(f"Modelo '{model_type}' no soportado.")
 
-#def train_and_calibrate_model(X_train, y_train, X_val, y_val, scale_pos_weight: float = config.SCALE_POS_WEIGHT):
-def train_and_calibrate_model(data: pd.DataFrame) -> Tuple[XGBClassifier, list[str]]:  
-    
-    """Entrena y calibra el modelo seleccionado."""
-    
-    excluded = {
-        "forecast_date",
-        "cell_id",
-        "cell_lat",
-        "cell_lon",
-        "grid_x",
-        "grid_y",
-        "has_m5_future",
-        "n_m5_future",
-        "max_m5_future",
-    }
-    feature_columns = [col for col in data.columns if col not in excluded]
-
-    X = data[feature_columns].replace([np.inf, -np.inf], np.nan)
-    y = data["has_m5_future"].astype(int)
-
-    positive = int(y.sum())
-    negative = int(len(y) - positive)
-
-    if positive == 0:
-        raise RuntimeError(
-            "Training error: Zero positive instances found in target."
-        )
-
-    params = config.MODEL_PARAMS.copy()
-    params["scale_pos_weight"] = negative / positive
-    
-    
-    
+def train_and_calibrate_model(X_train, y_train, X_val, y_val, scale_pos_weight: float = config.SCALE_POS_WEIGHT):
     
     base_model = get_base_model(config.MODEL_TYPE, scale_pos_weight=scale_pos_weight)
     base_model.fit(X, y)
