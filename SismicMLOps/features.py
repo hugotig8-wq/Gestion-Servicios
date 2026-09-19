@@ -20,6 +20,29 @@ import numpy as np
 from pathlib import Path
 import config
 
+def assign_grid_indices(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Asigna los índices de celda (grid_i, grid_j) a un DataFrame que contenga 
+    columnas 'latitude' y 'longitude' según los límites en config.py.
+    """
+    df = df.copy()
+    
+    if "latitude" not in df.columns or "longitude" not in df.columns:
+        raise KeyError("El DataFrame debe contener las columnas 'latitude' y 'longitude'.")
+        
+    lat_step = (config.LAT_MAX - config.LAT_MIN) / config.GRID_ROWS
+    lon_step = (config.LON_MAX - config.LON_MIN) / config.GRID_COLS
+    
+    df["grid_i"] = ((df["latitude"] - config.LAT_MIN) / lat_step).astype(int)
+    df["grid_j"] = ((df["longitude"] - config.LON_MIN) / lon_step).astype(int)
+    
+    # Recortar valores por seguridad dentro de los límites de la malla [0, 17]
+    df["grid_i"] = df["grid_i"].clip(0, config.GRID_ROWS - 1)
+    df["grid_j"] = df["grid_j"].clip(0, config.GRID_COLS - 1)
+    
+    return df
+    
+
 
 def km_to_lat_degrees(km: float) -> float:
     """Approximate conversion from km to latitude degrees."""
