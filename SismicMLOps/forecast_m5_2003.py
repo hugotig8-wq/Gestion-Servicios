@@ -6,9 +6,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score, brier_score_loss
 
 import config
-from features import add_ctm_features, assign_grid_indices, add_ctm_features  # O el pipeline de extracción completo
+ # O el pipeline de extracción completo
 from models import train_and_calibrate_model
-
+from features import assign_grid_indices, add_ctm_features, create_target_label
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -23,6 +23,9 @@ def run_forecast_pipeline():
     logging.info(f"Loading raw earthquake data from {config.DATA_PATH}")
     df_raw = pd.read_csv(config.DATA_PATH)
 
+    # Crear variable objetivo 'target' (M >= 5.0)
+    df_features = create_target_label(df_raw, target_mag=config.TARGET_MAGNITUDE)  # <── SOLUCIONA KeyError: 'target'
+    
     df_features = assign_grid_indices(df_raw)  # <── AQUÍ SE CREAN 'grid_i' Y 'grid_j'
 
     # 2. Construcción/Enriquecimiento de Características
@@ -36,7 +39,9 @@ def run_forecast_pipeline():
 
     # 3. Separación de Variables X e y
     target_col = "target"  # Sismo M >= 5.0 (1 o 0)
-    drop_cols = ["target", "time", "latitude", "longitude"] if "time" in df_features.columns else ["target"]
+    #drop_cols = ["target", "time", "latitude", "longitude"] if "time" in df_features.columns else ["target"]
+    drop_cols = ["target", "time", "latitude", "longitude", "magnitude", "mag"]
+    
     
     X = df_features.drop(columns=[c for c in drop_cols if c in df_features.columns])
     y = df_features[target_col]
