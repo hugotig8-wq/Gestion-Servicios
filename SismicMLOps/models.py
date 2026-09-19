@@ -11,7 +11,16 @@ import config
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.ensemble import RandomForestClassifier
 
-
+# Para versiones de scikit-learn >= 1.6:
+try:
+    from sklearn.frozen import FrozenEstimator
+    def get_calibrated_model(base_model):
+        return CalibratedClassifierCV(estimator=FrozenEstimator(base_model), method="isotonic")
+except ImportError:
+    # Compatibilidad con versiones anteriores (< 1.6)
+    def get_calibrated_model(base_model):
+        return CalibratedClassifierCV(estimator=base_model, method="isotonic", cv="prefit")
+        
 
 def train_model(data: pd.DataFrame) -> Tuple[XGBClassifier, list[str]]:
     """Train XGBoost spatial risk model on prepared feature set."""
@@ -106,11 +115,12 @@ def train_and_calibrate_model(X_train, y_train, X_val, y_val, scale_pos_weight: 
     base_model = get_base_model(config.MODEL_TYPE, scale_pos_weight=scale_pos_weight)
     base_model.fit(X_train, y_train)
     
-    calibrated_model = CalibratedClassifierCV(
+    '''calibrated_model = CalibratedClassifierCV(
         estimator=base_model,
         method=config.CALIBRATION_METHOD,
         cv="prefit"
-    )
+    )'''
+    calibrated_model = get_calibrated_model(base_model)
     calibrated_model.fit(X_val, y_val)
     
     # Guardar modelo entrenado automáticamente usando config.MODEL_DIR
