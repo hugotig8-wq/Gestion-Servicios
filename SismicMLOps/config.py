@@ -86,3 +86,23 @@ MODEL_CONFIGS = {
 
 SCALE_POS_WEIGHT = 10.0
 CALIBRATION_METHOD = "isotonic"  # 'isotonic' o 'sigmoid'
+
+# ============================================================
+# 6. CONFIGURACIÓN DE MODELOS COMUNITARIOS SCEC
+# ============================================================
+SCEC_DIR = DATA_DIR / "scec"
+
+# Rutas de los datasets SCEC
+CTM_DATA_PATH = SCEC_DIR / "ctm_processed.parquet"
+CFM_DATA_PATH = SCEC_DIR / "cfm_processed.parquet"
+CGM_DATA_PATH = SCEC_DIR / "cgm_processed.parquet"
+CRM_DATA_PATH = SCEC_DIR / "crm_processed.parquet"
+CSM_DATA_PATH = SCEC_DIR / "csm_processed.parquet"
+
+# Switches para experimentos (Permite activar/desactivar en pruebas)
+USE_SCEC_CTM = True
+USE_SCEC_CFM = False  # Activaremos en el siguiente paso
+USE_SCEC_CGM = False  # Activaremos en el siguiente paso
+USE_SCEC_CRM = False  # Activaremos en el siguiente paso
+USE_SCEC_CSM = False  # Activaremos en el siguiente paso
+
