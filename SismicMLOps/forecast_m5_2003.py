@@ -36,9 +36,13 @@ def run_forecast_pipeline():
     if target_col not in df_grid.columns:
         raise KeyError(f"La columna '{target_col}' no existe en el DataFrame. Columnas disponibles: {list(df_grid.columns)}")
 
-    drop_cols = ["target", "grid_i", "grid_j"]
-    
+    # Eliminar la magnitud máxima del conjunto de entrenamiento
+    drop_cols = ["target", "grid_i", "grid_j", "max_magnitude"]
     X = df_grid.drop(columns=[c for c in drop_cols if c in df_grid.columns])
+
+    #drop_cols = ["target", "grid_i", "grid_j"]
+    
+    #X = df_grid.drop(columns=[c for c in drop_cols if c in df_grid.columns])
     y = df_grid[target_col]
 
     # Continuar con la división train/val/test y entrenamiento con XGBoost/Calibración...
