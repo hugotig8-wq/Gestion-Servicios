@@ -15,8 +15,6 @@ import pandas as pd
 )'''
 
 # features.py (Sección de Modelos SCEC)
-import pandas as pd
-import numpy as np
 from pathlib import Path
 import config
 
@@ -237,6 +235,9 @@ def add_ctm_features(features_df: pd.DataFrame, ctm_file_path: Path = None) -> p
     Incorpora características térmicas del SCEC Community Thermal Model (CTM).
     Si no existe el archivo procesado, genera una interpolación/estimación basada en la malla.
     """
+    if "grid_i" not in features_df.columns or "grid_j" not in features_df.columns:
+        features_df = assign_grid_indices(features_df)
+     
     if ctm_file_path is None:
         ctm_file_path = config.PROCESSED_DIR / "scec_ctm_features.parquet"
 
