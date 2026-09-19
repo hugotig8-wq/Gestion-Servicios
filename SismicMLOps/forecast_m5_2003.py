@@ -39,8 +39,8 @@ def run_forecast_pipeline():
     if config.USE_SCEC_CTM:
         df_grid = add_ctm_features(df_grid, config.CTM_DATA_PATH)
 
-    if getattr(config, "USE_SCEC_CVM", False):
-        df_grid = add_cvm_features(df_grid, config.NEW_SCEC_MODEL_PATH)
+    if getattr(config, "USE_SCEC_CFM", False):
+        df_grid = add_cfm_features(df_grid, config.NEW_SCEC_MODEL_PATH)
      
  
     # 5. Separar X e y (Línea 106 protegida)
