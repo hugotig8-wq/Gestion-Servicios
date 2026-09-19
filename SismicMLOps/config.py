@@ -5,11 +5,11 @@ from pathlib import Path
 
 # --- SCEC INTEGRATION FLAGS ---
 USE_SCEC_CTM = True
-USE_SCEC_CVM = True  # Activador de SCEC CVM
+USE_SCEC_CFM = True  # Activador de SCEC CVM
 
 # Rutas de datos SCEC
 CTM_DATA_PATH = "data/raw/scec_ctm_data.csv"
-CVM_DATA_PATH = "data/raw/scec_cvm_data.csv"
+CFM_DATA_PATH = "data/raw/scec_cfm_data.csv"
 
 
 # --- SCEC INTEGRATION FLAGS ---
