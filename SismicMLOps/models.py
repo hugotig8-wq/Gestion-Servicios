@@ -104,14 +104,14 @@ def get_base_model(model_type: str = config.MODEL_TYPE, scale_pos_weight: float 
 def train_and_calibrate_model(X_train, y_train, X_val, y_val, scale_pos_weight: float = config.SCALE_POS_WEIGHT):
     
     base_model = get_base_model(config.MODEL_TYPE, scale_pos_weight=scale_pos_weight)
-    base_model.fit(X, y)
+    base_model.fit(X_train, y_train)
     
     calibrated_model = CalibratedClassifierCV(
         estimator=base_model,
         method=config.CALIBRATION_METHOD,
         cv="prefitted"
     )
-    calibrated_model.fit(X, y)
+    calibrated_model.fit(X_val, y_val)
     
     # Guardar modelo entrenado automáticamente usando config.MODEL_DIR
     model_path = config.MODEL_DIR / f"calibrated_{config.MODEL_TYPE}_model.joblib"
