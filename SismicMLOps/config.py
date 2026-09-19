@@ -1,6 +1,15 @@
 # config.py
 from pathlib import Path
 
+# config.py
+
+# --- SCEC INTEGRATION FLAGS ---
+USE_SCEC_CTM = True
+USE_SCEC_CVM = True  # Activador de SCEC CVM
+
+# Rutas de datos SCEC
+CTM_DATA_PATH = "data/raw/scec_ctm_data.csv"
+CVM_DATA_PATH = "data/raw/scec_cvm_data.csv"
 
 
 # --- SCEC INTEGRATION FLAGS ---
@@ -104,7 +113,7 @@ CALIBRATION_METHOD = "isotonic"  # 'isotonic' o 'sigmoid'
 SCEC_DIR = DATA_DIR / "scec"
 
 # Rutas de los datasets SCEC
-CTM_DATA_PATH = SCEC_DIR / "ctm_processed.parquet"
+#CTM_DATA_PATH = SCEC_DIR / "ctm_processed.parquet"
 CFM_DATA_PATH = SCEC_DIR / "cfm_processed.parquet"
 CGM_DATA_PATH = SCEC_DIR / "cgm_processed.parquet"
 CRM_DATA_PATH = SCEC_DIR / "crm_processed.parquet"
