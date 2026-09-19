@@ -1,6 +1,17 @@
 # config.py
 from pathlib import Path
 
+
+
+# --- SCEC INTEGRATION FLAGS ---
+USE_SCEC_CTM = True
+USE_SCEC_NEW_MODEL = True  # Activador del nuevo modelo
+
+# Rutas a los datos
+CTM_DATA_PATH = "data/raw/scec_ctm_data.csv"
+NEW_SCEC_MODEL_PATH = "data/raw/scec_new_model_data.csv"
+
+
 # ============================================================
 # 1. PROJECT ROOT & PATHS (Rutas Dinámicas Robusta)
 # ============================================================
