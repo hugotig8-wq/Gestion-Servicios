@@ -6,8 +6,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score, brier_score_loss
 
 import config
-from features import add_ctm_features  # O el pipeline de extracción completo
+from features import add_ctm_features, assign_grid_indices, add_ctm_features  # O el pipeline de extracción completo
 from models import train_and_calibrate_model
+
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -21,6 +22,8 @@ def run_forecast_pipeline():
 
     logging.info(f"Loading raw earthquake data from {config.DATA_PATH}")
     df_raw = pd.read_csv(config.DATA_PATH)
+
+    df_features = assign_grid_indices(df_raw)  # <── AQUÍ SE CREAN 'grid_i' Y 'grid_j'
 
     # 2. Construcción/Enriquecimiento de Características
     logging.info("Building base features and integrating SCEC CTM features...")
