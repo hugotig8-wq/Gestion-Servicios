@@ -18,6 +18,40 @@ import pandas as pd
 from pathlib import Path
 import config
 
+def add_new_scec_features(df_grid: pd.DataFrame, model_path: str = config.NEW_SCEC_MODEL_PATH) -> pd.DataFrame:
+    """
+    Integra las variables del nuevo modelo de SCEC (ej. distancia a fallas, Vs30, velocidades sísmicas)
+    asociando cada celda (grid_i, grid_j) con los datos espaciales del modelo.
+    """
+    df = df_grid.copy()
+    
+    try:
+        df_scec = pd.read_csv(model_path)
+    except FileNotFoundError:
+        print(f"⚠️ Advertencia: No se encontró el archivo {model_path}. Se omiten las nuevas características.")
+        return df
+
+    # Asignar celdas a los puntos del nuevo modelo de SCEC
+    from features import assign_grid_indices
+    df_scec_mapped = assign_grid_indices(df_scec)
+    
+    # Agrupar por celda tomando el promedios de las variables físicas
+    # (Ajusta los nombres de columnas según el dataset específico)
+    scec_features = df_scec_mapped.groupby(["grid_i", "grid_j"]).agg(
+        fault_distance_km=("fault_distance_km", "mean"),
+        vs30_m_s=("vs30_m_s", "mean")
+    ).reset_index()
+
+    # Unir (Merge) con el DataFrame principal de la malla
+    df_merged = pd.merge(df, scec_features, on=["grid_i", "grid_j"], how="left")
+    
+    # Rellenar posibles celdas sin cobertura con la mediana
+    df_merged["fault_distance_km"] = df_merged["fault_distance_km"].fillna(df_merged["fault_distance_km"].median())
+    df_merged["vs30_m_s"] = df_merged["vs30_m_s"].fillna(df_merged["vs30_m_s"].median())
+
+    return df_merged
+    
+
 def grid_to_latlon(df: pd.DataFrame) -> pd.DataFrame:
     """
     Convierte índices de malla (grid_i, grid_j) a coordenadas geográficas (latitude, longitude)
