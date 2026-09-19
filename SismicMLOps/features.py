@@ -18,6 +18,35 @@ import pandas as pd
 from pathlib import Path
 import config
 
+from scipy.spatial import cKDTree
+
+def add_cfm_features(df_grid: pd.DataFrame, cfm_path: str = "data/raw/scec_cfm_faults.csv") -> pd.DataFrame:
+    """
+    Integra la distancia a la falla activa más cercana según el SCEC CFM.
+    No requiere GPU ni compilación pesada.
+    """
+    df = df_grid.copy()
+    
+    try:
+        df_cfm = pd.read_csv(cfm_path)
+    except FileNotFoundError:
+        print(f"⚠️ No se encontró el archivo CFM en {cfm_path}. Se omite esta característica.")
+        return df
+
+    # Convertir coordenadas geográficas a radianes para KDTree
+    grid_coords = np.radians(df[["latitude", "longitude"]].values)
+    fault_coords = np.radians(df_cfm[["latitude", "longitude"]].values)
+
+    # Construir árbol de búsqueda espacial (en Milisegundos en CPU)
+    tree = cKDTree(fault_coords)
+    distances_rad, _ = tree.query(grid_coords)
+
+    # Convertir distancia angular a kilómetros (Radio medio de la Tierra R ≈ 6371 km)
+    df["cfm_dist_min_fault_km"] = distances_rad * 6371.0
+
+    return df
+    
+
 def add_cvm_features(df_grid: pd.DataFrame, cvm_path: str = config.CVM_DATA_PATH) -> pd.DataFrame:
     """
     Integra las propiedades geofísicas del SCEC CVM (Community Velocity Model)
