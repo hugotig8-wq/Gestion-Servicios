@@ -12,41 +12,38 @@ from features import assign_grid_indices, add_ctm_features, create_target_label
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
+# forecast_m5_2003.py
+import pandas as pd
+import config
+from features import assign_grid_indices, build_grid_features, add_ctm_features
+
 def run_forecast_pipeline():
-    logging.info("Starting Earthquake Forecasting Pipeline...")
-    logging.info(f"Selected Model Type: {config.MODEL_TYPE}")
-
-    # 1. Cargar conjunto de datos procesado
-    if not config.DATA_PATH.exists():
-        raise FileNotFoundError(f"Raw catalog not found at: {config.DATA_PATH}")
-
-    logging.info(f"Loading raw earthquake data from {config.DATA_PATH}")
+    # 1. Cargar catálogo raw
     df_raw = pd.read_csv(config.DATA_PATH)
-
-    # Crear variable objetivo 'target' (M >= 5.0)
-    df_features = create_target_label(df_raw, target_mag=config.TARGET_MAGNITUDE)  # <── SOLUCIONA KeyError: 'target'
     
-    df_features = assign_grid_indices(df_raw)  # <── AQUÍ SE CREAN 'grid_i' Y 'grid_j'
-
-    # 2. Construcción/Enriquecimiento de Características
-    logging.info("Building base features and integrating SCEC CTM features...")
-    # Supongamos que df_features es tu dataframe con grid_i, grid_j, b-value, etc.
-    df_features = df_raw.copy() 
-
+    # 2. Mapear celdas (grid_i, grid_j)
+    df_mapped = assign_grid_indices(df_raw)
+    
+    # 3. Construir dataset agrupado por celda (AQUÍ SE GENERA 'target')
+    df_grid = build_grid_features(df_mapped)
+    
+    # 4. Unir modelo térmico CTM
     if config.USE_SCEC_CTM:
-        df_features = add_ctm_features(df_features, config.CTM_DATA_PATH)
-        logging.info("SCEC CTM features successfully merged.")
+        df_grid = add_ctm_features(df_grid, config.CTM_DATA_PATH)
 
-    # 3. Separación de Variables X e y
-    target_col = "target"  # Sismo M >= 5.0 (1 o 0)
-    #drop_cols = ["target", "time", "latitude", "longitude"] if "time" in df_features.columns else ["target"]
-    drop_cols = ["target", "time", "latitude", "longitude", "magnitude", "mag"]
-    
-    
-    X = df_features.drop(columns=[c for c in drop_cols if c in df_features.columns])
-    y = df_features[target_col]
+    # 5. Separar X e y (Línea 106 protegida)
+    target_col = "target"
+    if target_col not in df_grid.columns:
+        raise KeyError(f"La columna '{target_col}' no existe en el DataFrame. Columnas disponibles: {list(df_grid.columns)}")
 
-    # 4. Split de Entrenamiento, Validación (para calibración) y Test
+    drop_cols = ["target", "grid_i", "grid_j"]
+    
+    X = df_grid.drop(columns=[c for c in drop_cols if c in df_grid.columns])
+    y = df_grid[target_col]
+
+    # Continuar con la división train/val/test y entrenamiento con XGBoost/Calibración...
+
+    # Split de Entrenamiento, Validación (para calibración) y Test
     # Importante: Mantener división temporal o de validación limpia
     X_train_full, X_test, y_train_full, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y
