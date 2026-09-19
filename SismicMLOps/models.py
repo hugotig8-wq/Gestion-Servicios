@@ -109,7 +109,7 @@ def train_and_calibrate_model(X_train, y_train, X_val, y_val, scale_pos_weight: 
     calibrated_model = CalibratedClassifierCV(
         estimator=base_model,
         method=config.CALIBRATION_METHOD,
-        cv="prefitted"
+        cv="prefit"
     )
     calibrated_model.fit(X_val, y_val)
     
