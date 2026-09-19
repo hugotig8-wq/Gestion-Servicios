@@ -8,7 +8,7 @@ from sklearn.metrics import roc_auc_score, brier_score_loss
 import config
  # O el pipeline de extracción completo
 from models import train_and_calibrate_model
-from features import assign_grid_indices, add_ctm_features, create_target_label, grid_to_latlon
+#from features import assign_grid_indices, add_ctm_features, create_target_label, grid_to_latlon
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -21,7 +21,7 @@ from features import (
     assign_grid_indices,
     build_grid_features,
     add_ctm_features,
-    add_new_scec_features,
+    add_cvm_features,
     grid_to_latlon
 )
 
@@ -39,8 +39,8 @@ def run_forecast_pipeline():
     if config.USE_SCEC_CTM:
         df_grid = add_ctm_features(df_grid, config.CTM_DATA_PATH)
 
-    if getattr(config, "USE_SCEC_NEW_MODEL", False):
-        df_grid = add_new_scec_features(df_grid, config.NEW_SCEC_MODEL_PATH)
+    if getattr(config, "USE_SCEC_CVM", False):
+        df_grid = add_cvm_features(df_grid, config.NEW_SCEC_MODEL_PATH)
      
  
     # 5. Separar X e y (Línea 106 protegida)
