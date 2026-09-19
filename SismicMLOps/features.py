@@ -18,6 +18,52 @@ import pandas as pd
 from pathlib import Path
 import config
 
+def add_cvm_features(df_grid: pd.DataFrame, cvm_path: str = config.CVM_DATA_PATH) -> pd.DataFrame:
+    """
+    Integra las propiedades geofísicas del SCEC CVM (Community Velocity Model)
+    a la malla espacial (grid_i, grid_j).
+    Variables:
+      - vp_1km_km_s: Velocidad de Onda P a 1 km
+      - vs_1km_km_s: Velocidad de Onda S a 1 km
+      - vp_vs_ratio: Relación Vp/Vs (sensibilidad a la saturación de fluidos)
+      - z1_0_m: Profundidad del isovalor Vs = 1.0 km/s (profundidad de cuenca)
+    """
+    df = df_grid.copy()
+    
+    try:
+        df_cvm = pd.read_csv(cvm_path)
+    except FileNotFoundError:
+        print(f"⚠️ Advertencia: No se encontró el archivo CVM en {cvm_path}. Se omite esta integración.")
+        return df
+
+    # Asignar índices de malla a las coordenadas del dataset CVM
+    from features import assign_grid_indices
+    df_cvm_mapped = assign_grid_indices(df_cvm)
+    
+    # Calcular Vp/Vs si no viene en el dataset
+    if "vp_vs_ratio" not in df_cvm_mapped.columns and "vp_1km_km_s" in df_cvm_mapped.columns and "vs_1km_km_s" in df_cvm_mapped.columns:
+        df_cvm_mapped["vp_vs_ratio"] = df_cvm_mapped["vp_1km_km_s"] / df_cvm_mapped["vs_1km_km_s"]
+
+    # Agrupar por celda (grid_i, grid_j) promediando las variables
+    agg_dict = {}
+    if "vp_1km_km_s" in df_cvm_mapped.columns: agg_dict["cvm_vp_1km"] = ("vp_1km_km_s", "mean")
+    if "vs_1km_km_s" in df_cvm_mapped.columns: agg_dict["cvm_vs_1km"] = ("vs_1km_km_s", "mean")
+    if "vp_vs_ratio" in df_cvm_mapped.columns: agg_dict["cvm_vp_vs_ratio"] = ("vp_vs_ratio", "mean")
+    if "z1_0_m" in df_cvm_mapped.columns: agg_dict["cvm_z1_0_basin_m"] = ("z1_0_m", "mean")
+
+    cvm_summary = df_cvm_mapped.groupby(["grid_i", "grid_j"]).agg(**agg_dict).reset_index()
+
+    # Fusionar con el DataFrame principal de la malla
+    df_merged = pd.merge(df, cvm_summary, on=["grid_i", "grid_j"], how="left")
+    
+    # Imputar celdas sin cobertura directa con la mediana
+    for col in cvm_summary.columns:
+        if col not in ["grid_i", "grid_j"]:
+            df_merged[col] = df_merged[col].fillna(df_merged[col].median())
+
+    return df_merged
+    
+
 def add_new_scec_features(df_grid: pd.DataFrame, model_path: str = config.NEW_SCEC_MODEL_PATH) -> pd.DataFrame:
     """
     Integra las variables del nuevo modelo de SCEC (ej. distancia a fallas, Vs30, velocidades sísmicas)
