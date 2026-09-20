@@ -45,12 +45,13 @@ def main() -> None:
     vertices_df = pd.read_csv(CFM_VERTICES_FILE)
     metadata_df = pd.read_csv(CFM_METADATA_FILE)
 
-    # 1. Construcción de Arbol cKDTree 3D en Metros
+    # 1. Construcción de Árbol cKDTree 3D en Metros
     print("Construyendo árbol KDTree 3D...")
     cfm_coords_3d = vertices_df[["x_utm", "y_utm", "z_m"]].to_numpy()
     tree_3d = cKDTree(cfm_coords_3d)
 
     eq_coords_3d = eq_df[["x_utm", "y_utm", "z_m"]].to_numpy()
+    n_earthquakes = len(eq_df)
 
     # 2. Búsqueda del Vértice/Falla Más Cercana (Distancia 3D Exacta)
     print("Calculando distancias 3D...")
@@ -58,31 +59,40 @@ def main() -> None:
 
     eq_df["distance_to_nearest_fault_km"] = distances_m / 1000.0
     
-    # Asignar la falla más cercana usando el índice retornado por KDTree
     nearest_faults = vertices_df.iloc[nearest_indices]["fault_name"].values
     eq_df["nearest_fault_name"] = nearest_faults
     eq_df["nearest_fault_vertex_depth_km"] = vertices_df.iloc[nearest_indices]["depth_km"].values
 
-    # 3. Conteo de Fallas Únicas dentro de los radios (Densidad Geológica Real)
-    print("Calculando conteo y densidad de FALLAS ÚNICAS...")
+    # 3. Conteo Eficiente de Fallas Únicas por Batches
+    print("Calculando conteo de FALLAS ÚNICAS por lotes...")
+    fault_names_array = vertices_df["fault_name"].to_numpy()
+    batch_size = 50000  # Evita saturar la memoria RAM
+
     for r_km in RADII_KM:
         r_m = r_km * 1000.0
-        # Retorna lista de índices de vértices dentro del radio
-        neighbors_list = tree_3d.query_ball_point(eq_coords_3d, r=r_m)
+        unique_counts = np.zeros(n_earthquakes, dtype=np.int32)
         
-        # Mapear índices a nombres de fallas y obtener conteo único
-        unique_fault_counts = [
-            len(set(vertices_df.iloc[idxs]["fault_name"])) if idxs else 0
-            for idxs in neighbors_list
-        ]
-        
-        eq_df[f"fault_count_{int(r_km)}km"] = unique_fault_counts
+        print(f"  -> Procesando radio {int(r_km)} km...")
+        for start_idx in range(0, n_earthquakes, batch_size):
+            end_idx = min(start_idx + batch_size, n_earthquakes)
+            batch_coords = eq_coords_3d[start_idx:end_idx]
+            
+            # Consulta por lote
+            batch_neighbors = tree_3d.query_ball_point(batch_coords, r=r_m)
+            
+            # Conteo de fallas únicas en el lote
+            unique_counts[start_idx:end_idx] = [
+                len(set(fault_names_array[idxs])) if idxs else 0
+                for idxs in batch_neighbors
+            ]
 
-    # Densidad en el radio principal de 10km (Fallas únicas por km²)
+        eq_df[f"fault_count_{int(r_km)}km"] = unique_counts
+
+    # Densidad en el radio de 10km (Fallas únicas por km²)
     area_10km2 = np.pi * (10.0 ** 2)
     eq_df["fault_density_10km"] = eq_df["fault_count_10km"] / area_10km2
 
-    # 4. Merge de Metadata Geológica de la Falla Más Cercana
+    # 4. Merge de Metadata Geológica
     print("Uniendo metadata geológica...")
     metadata_sub = metadata_df[[
         "CFM6.0 Fault Object Name", "wAvgStrike", "wAvgDip", 
@@ -96,7 +106,6 @@ def main() -> None:
         how="left"
     )
 
-    # Renombrar columnas para formato limpio final
     eq_df.rename(columns={
         "wAvgStrike": "nearest_fault_strike",
         "wAvgDip": "nearest_fault_dip",
@@ -104,7 +113,6 @@ def main() -> None:
         "Slip Sense": "nearest_fault_slip_sense"
     }, inplace=True)
 
-    # Limpieza final de columnas
     features_to_keep = [
         "earthquake_id", "latitude", "longitude", "depth", "magnitude",
         "distance_to_nearest_fault_km", "nearest_fault_name",
@@ -114,11 +122,8 @@ def main() -> None:
     ]
     
     final_dataset = eq_df[[col for col in features_to_keep if col in eq_df.columns]]
-    
-    # Guardado Parquet
     final_dataset.to_parquet(OUTPUT_PARQUET, index=False)
-    print(f"\nDataset para XGBoost construido exitosamente en:\n{OUTPUT_PARQUET}")
-
+    print(f"\nProceso completado con éxito. Dataset guardado en:\n{OUTPUT_PARQUET}")
 if __name__ == "__main__":
     main()
   
