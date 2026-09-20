@@ -4,23 +4,22 @@ from pathlib import Path
 # config.py
 
 # --- SCEC INTEGRATION FLAGS ---
-USE_SCEC_CTM = True
+USE_SCEC_CTM = False
 USE_SCEC_CFM = True  # Activador de SCEC CVM
 
 # Rutas de datos SCEC
 CTM_DATA_PATH = "data/raw/scec_ctm_data.csv"
-CFM_DATA_PATH = "data/raw/scec_cfm_data.csv"
+
 CVM_DATA_PATH = "data/raw/scec_cvm_data.csv"
 
 
 
 # --- SCEC INTEGRATION FLAGS ---
-USE_SCEC_CTM = True
 USE_SCEC_NEW_MODEL = True  # Activador del nuevo modelo
 
 # Rutas a los datos
 CTM_DATA_PATH = "data/raw/scec_ctm_data.csv"
-NEW_SCEC_MODEL_PATH = "data/raw/scec_new_model_data.csv"
+CFM_DATA_PATH = "data/processed/cfm/xgboost_earthquakes_cfm_dataset.parquet
 
 
 # ============================================================
@@ -116,13 +115,13 @@ SCEC_DIR = DATA_DIR / "scec"
 
 # Rutas de los datasets SCEC
 #CTM_DATA_PATH = SCEC_DIR / "ctm_processed.parquet"
-CFM_DATA_PATH = SCEC_DIR / "cfm_processed.parquet"
+
 CGM_DATA_PATH = SCEC_DIR / "cgm_processed.parquet"
 CRM_DATA_PATH = SCEC_DIR / "crm_processed.parquet"
 CSM_DATA_PATH = SCEC_DIR / "csm_processed.parquet"
 
 # Switches para experimentos (Permite activar/desactivar en pruebas)
-USE_SCEC_CTM = True
+USE_SCEC_CTM = False
 USE_SCEC_CFM = True  # Activaremos en el siguiente paso
 USE_SCEC_CGM = False  # Activaremos en el siguiente paso
 USE_SCEC_CRM = False  # Activaremos en el siguiente paso
