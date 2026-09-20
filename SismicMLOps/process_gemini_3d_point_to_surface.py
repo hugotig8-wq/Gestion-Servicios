@@ -145,7 +145,7 @@ def process_3d_point_to_surface():
     eq_ecef = geodetic_to_ecef(
         earthquakes["latitude"].values,
         earthquakes["longitude"].values,
-        earthquakes["depth_km"].values
+        earthquakes["depth"].values
     )
 
     # 2. Cargar geometría de mallas triangulares CFM (.ts)
