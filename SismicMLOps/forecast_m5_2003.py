@@ -21,7 +21,7 @@ from features import (
     assign_grid_indices,
     build_grid_features,
     add_ctm_features,
-    add_cvm_features,
+    add_cfm_features,
     grid_to_latlon
 )
 
@@ -40,7 +40,7 @@ def run_forecast_pipeline():
         df_grid = add_ctm_features(df_grid, config.CTM_DATA_PATH)
 
     if getattr(config, "USE_SCEC_CFM", False):
-        df_grid = add_cfm_features(df_grid, config.NEW_SCEC_MODEL_PATH)
+        df_grid = add_cfm_features(df_grid, config.CFM_DATA_PATH)
      
  
     # 5. Separar X e y (Línea 106 protegida)
@@ -120,6 +120,7 @@ def run_forecast_pipeline():
         "model_type": config.MODEL_TYPE,
         "calibration_method": config.CALIBRATION_METHOD,
         "use_ctm": config.USE_SCEC_CTM,
+        "use_cfm": config.USE_SCEC_CFM,
         "roc_auc": round(auc_score, 4),
         "brier_score": round(brier_score, 4),
         "max_calibrated_probability": round(max_prob, 4),
