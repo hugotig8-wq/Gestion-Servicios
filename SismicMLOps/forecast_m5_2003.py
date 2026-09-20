@@ -11,8 +11,6 @@ from models import train_and_calibrate_model
 from features import (
     assign_grid_indices,
     build_grid_features,
-    add_ctm_features,
-    add_cvm_features,
     add_cfm_features,
     grid_to_latlon
 )
