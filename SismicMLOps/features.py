@@ -420,7 +420,7 @@ def add_ctm_features(features_df: pd.DataFrame, ctm_path: str = config.CTM_DATA_
     
     df = features_df.copy()
     
-    try:
+    if True:
         ctm_df = pd.read_csv(ctm_path)    
         merged_df = pd.merge(df, ctm_df, on=["grid_i", "grid_j"], how="left")
     else:
