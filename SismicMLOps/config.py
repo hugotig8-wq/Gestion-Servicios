@@ -1,40 +1,23 @@
 # config.py
 from pathlib import Path
 
-# config.py
-
-# --- SCEC INTEGRATION FLAGS ---
-USE_SCEC_CTM = False
-USE_SCEC_CFM = True  # Activador de SCEC CVM
-
-# Rutas de datos SCEC
-CTM_DATA_PATH = "data/raw/scec_ctm_data.csv"
-
-CVM_DATA_PATH = "data/raw/scec_cvm_data.csv"
-
-
-
-# --- SCEC INTEGRATION FLAGS ---
-USE_SCEC_NEW_MODEL = True  # Activador del nuevo modelo
-
-# Rutas a los datos
-CTM_DATA_PATH = "data/raw/scec_ctm_data.csv"
-
-
-
 # ============================================================
-# 1. PROJECT ROOT & PATHS (Rutas Dinámicas Robusta)
+# 1. RUTAS DEL PROYECTO
 # ============================================================
 PROJECT_ROOT = Path(__file__).resolve().parent
 
 DATA_DIR = PROJECT_ROOT / "data" 
 DATA_PATH = DATA_DIR / "raw" / "earthquakes.csv"
+
+# Dataset de CFM generado con distancias 3D y metadata geológica
 CFM_DATA_PATH = DATA_DIR / "processed" / "cfm" / "xgboost_earthquakes_cfm_dataset.parquet"
+CVM_DATA_PATH = DATA_DIR / "raw" / "scec_cvm_data.csv"
+CTM_DATA_PATH = DATA_DIR / "raw" / "scec_ctm_data.csv"
+
 PROCESSED_DIR = PROJECT_ROOT / "processed"
 METRICS_DIR = PROJECT_ROOT / "metrics"
 MODEL_DIR = PROJECT_ROOT / "training" / "models"
 
-# Crear directorios si no existen
 for directory in [PROCESSED_DIR, METRICS_DIR, MODEL_DIR]:
     directory.mkdir(parents=True, exist_ok=True)
 
@@ -54,26 +37,11 @@ GRID_COLS = 18
 CELL_KM = 10.0
 
 # ============================================================
-# 3. PARÁMETROS DE CATÁLOGO Y SISMOLOGÍA
+# 3. PARÁMETROS SISMOLÓGICOS Y MODELADO
 # ============================================================
-MIN_MAGNITUDE = 1.4     # Mmin para cálculo de b-value
+MIN_MAGNITUDE = 1.4     # Mmin para b-value
 TARGET_MAGNITUDE = 5.0  # Magnitud objetivo (M >= 5.0)
 
-# ============================================================
-# 4. VENTANAS TEMPORALES
-# ============================================================
-TRAIN_START = "1981-01-01"
-TRAIN_END = "2003-12-31"
-
-TEST_START = "2005-01-01"
-TEST_END = "2014-12-31"
-
-PREDICTION_HORIZON_YEARS = 10
-
-# ============================================================
-# 5. SELECCIÓN DE MODELO E HIPERPARÁMETROS
-# ============================================================
-# Opciones disponibles: "xgboost", "lightgbm", "random_forest"
 MODEL_TYPE = "xgboost"
 
 MODEL_CONFIGS = {
@@ -85,44 +53,15 @@ MODEL_CONFIGS = {
         "colsample_bytree": 0.8,
         "random_state": 42,
         "n_jobs": -1
-    },
-    "lightgbm": {
-        "n_estimators": 100,
-        "max_depth": 4,
-        "learning_rate": 0.05,
-        "subsample": 0.8,
-        "colsample_bytree": 0.8,
-        "random_state": 42,
-        "n_jobs": -1,
-        "verbose": -1
-    },
-    "random_forest": {
-        "n_estimators": 100,
-        "max_depth": 6,
-        "random_state": 42,
-        "n_jobs": -1
     }
 }
 
 SCALE_POS_WEIGHT = 10.0
-CALIBRATION_METHOD = "isotonic"  # 'isotonic' o 'sigmoid'
+CALIBRATION_METHOD = "isotonic"
 
 # ============================================================
-# 6. CONFIGURACIÓN DE MODELOS COMUNITARIOS SCEC
+# 4. SWITCHES DE MODELOS SCEC
 # ============================================================
-SCEC_DIR = DATA_DIR / "scec"
-
-# Rutas de los datasets SCEC
-#CTM_DATA_PATH = SCEC_DIR / "ctm_processed.parquet"
-
-CGM_DATA_PATH = SCEC_DIR / "cgm_processed.parquet"
-CRM_DATA_PATH = SCEC_DIR / "crm_processed.parquet"
-CSM_DATA_PATH = SCEC_DIR / "csm_processed.parquet"
-
-# Switches para experimentos (Permite activar/desactivar en pruebas)
+USE_SCEC_CFM = True
 USE_SCEC_CTM = False
-USE_SCEC_CFM = True  # Activaremos en el siguiente paso
-USE_SCEC_CGM = False  # Activaremos en el siguiente paso
-USE_SCEC_CRM = False  # Activaremos en el siguiente paso
-USE_SCEC_CSM = False  # Activaremos en el siguiente paso
-
+USE_SCEC_CVM = False
