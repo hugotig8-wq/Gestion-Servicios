@@ -419,22 +419,10 @@ def add_ctm_features(features_df: pd.DataFrame, ctm_path: str = config.CTM_DATA_
         features_df = assign_grid_indices(features_df)
     
     df = features_df.copy()
-    ctm_path_exists = False
     
     try:
-        ctm_df = pd.read_csv(ctm_path)
-        ctm_path_exists = True
-    except FileNotFoundError:
-        print(f"⚠️ Advertencia: No se encontró el archivo CTM en {cvm_path}. Se omite esta integración.")
-        return df
-    
-    if ctm_path is None:
-        ctm_path = config.PROCESSED_DIR / "scec_ctm_features.parquet"
-        ctm_path_exists = True
-        
-    if ctm_path_exists:
-        ctm_df = pd.read_parquet(ctm_path)
-        merged_df = pd.merge(features_df, ctm_df, on=["grid_i", "grid_j"], how="left")
+        ctm_df = pd.read_csv(ctm_path)    
+        merged_df = pd.merge(df, ctm_df, on=["grid_i", "grid_j"], how="left")
     else:
         # Si el dataset procesado de CTM no está presente, calculamos valores base
         merged_df = features_df.copy()
