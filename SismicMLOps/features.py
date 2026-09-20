@@ -410,44 +410,39 @@ def build_backtesting_dataset(
 
 # Añadimos para incorporar los CXSM
 
-def add_ctm_features(features_df: pd.DataFrame, ctm_path: str = config.CTM_DATA_PATH) -> pd.DataFrame:
-    """
-    Incorpora características térmicas del SCEC Community Thermal Model (CTM).
-    Si no existe el archivo procesado, genera una interpolación/estimación basada en la malla.
-    """
-    if "grid_i" not in features_df.columns or "grid_j" not in features_df.columns:
-        features_df = assign_grid_indices(features_df)
-    
-    df = features_df.copy()
-    
-    if True:
-        ctm_df = pd.read_csv(ctm_path)    
-        merged_df = pd.merge(df, ctm_df, on=["grid_i", "grid_j"], how="left")
-    else:
-        # Si el dataset procesado de CTM no está presente, calculamos valores base
-        merged_df = features_df.copy()
-        
-        # Gradiente térmico estándar de California con variaciones espaciales
-        # Estimación en función de coordenadas o distancia a la costa/cuencas
-        merged_df["ctm_temp_10km"] = 250.0 + (merged_df["grid_i"] * 3.5) - (merged_df["grid_j"] * 2.0)
-        
-        # Profundidad de la Transición Frágil-Dúctil (BDT) ~ Isoterma 300-350 °C
-        # Profundidad_BDT = 300 / (Gradiente por km)
-        merged_df["ctm_bdt_depth_km"] = 300.0 / (merged_df["ctm_temp_10km"] / 10.0)
-        
-        # Viscosidad en la corteza inferior (Pa·s)
-        merged_df["ctm_log_viscosity"] = 21.0 - (merged_df["ctm_temp_10km"] - 250.0) * 0.015
+def add_ctm_features(df_grid: pd.DataFrame, ctm_path=None) -> pd.DataFrame:
+    if ctm_path is None:
+        ctm_path = config.CTM_DATA_PATH
 
-    # Imputación de seguridad para evitar NaNs en el árbol
-    defaults = {
-        "ctm_temp_10km": 275.0,
-        "ctm_bdt_depth_km": 11.0,
-        "ctm_log_viscosity": 20.0
-    }
-    for col, val in defaults.items():
-        if col in merged_df.columns:
-            merged_df[col] = merged_df[col].fillna(val)
+    try:
+        # 1. Cargar el archivo CTM
+        if ctm_path.endswith('.parquet') or ctm_path.endswith('.pq'):
+            ctm_df = pd.read_parquet(ctm_path)
+        else:
+            ctm_df = pd.read_csv(ctm_path)
+    except Exception as e:
+        print(f"⚠️ No se pudo cargar CTM desde {ctm_path}: {e}")
+        return df_grid
+
+    # 2. Si ctm_df no tiene grid_i/grid_j, asignarlos usando las coordenadas lat/lon
+    if "grid_i" not in ctm_df.columns or "grid_j" not in ctm_df.columns:
+        from features import assign_grid_indices
+        ctm_df = assign_grid_indices(ctm_df)
+
+    # 3. Agrupar por celda para evitar duplicados al hacer el merge
+    ctm_summary = ctm_df.groupby(["grid_i", "grid_j"]).agg({
+        col: "mean" for col in ctm_df.columns if col not in ["grid_i", "grid_j", "latitude", "longitude"]
+    }).reset_index()
+
+    # 4. Unir con la malla principal
+    merged_df = pd.merge(df_grid, ctm_summary, on=["grid_i", "grid_j"], how="left")
+
+    # 5. Rellenar celdas sin cobertura con la mediana
+    feature_cols = [c for c in ctm_summary.columns if c not in ["grid_i", "grid_j"]]
+    for col in feature_cols:
+        merged_df[col] = merged_df[col].fillna(merged_df[col].median())
 
     return merged_df
+    
         
     
