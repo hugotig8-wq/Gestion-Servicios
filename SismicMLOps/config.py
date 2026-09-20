@@ -10,6 +10,8 @@ USE_SCEC_CFM = True  # Activador de SCEC CVM
 # Rutas de datos SCEC
 CTM_DATA_PATH = "data/raw/scec_ctm_data.csv"
 CFM_DATA_PATH = "data/raw/scec_cfm_data.csv"
+CVM_DATA_PATH = "data/raw/scec_cvm_data.csv"
+
 
 
 # --- SCEC INTEGRATION FLAGS ---
