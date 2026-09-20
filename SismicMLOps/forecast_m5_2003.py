@@ -36,12 +36,12 @@ def run_forecast_pipeline():
     # 3. Construir dataset agrupado por celda (AQUÍ SE GENERA 'target')
     df_grid = build_grid_features(df_mapped)
     
-    # 4. Unir modelo térmico CTM
-    if config.USE_SCEC_CTM:
-        df_grid = add_ctm_features(df_grid, config.CTM_DATA_PATH)
-
-    if getattr(config, "USE_SCEC_CFM", False):
+    # 4. Unir modelo de fallas CFM
+    if config.USE_SCEC_CFM:
         df_grid = add_cfm_features(df_grid, config.CFM_DATA_PATH)
+
+    #if getattr(config, "USE_SCEC_CFM", False):
+        #df_grid = add_cfm_features(df_grid, config.CFM_DATA_PATH)
      
  
     # 5. Separar X e y (Línea 106 protegida)
@@ -53,9 +53,7 @@ def run_forecast_pipeline():
     drop_cols = ["target", "grid_i", "grid_j", "max_magnitude"]
     X = df_grid.drop(columns=[c for c in drop_cols if c in df_grid.columns])
 
-    #drop_cols = ["target", "grid_i", "grid_j"]
     
-    #X = df_grid.drop(columns=[c for c in drop_cols if c in df_grid.columns])
     y = df_grid[target_col]
 
     # Continuar con la división train/val/test y entrenamiento con XGBoost/Calibración...
@@ -107,7 +105,7 @@ def run_forecast_pipeline():
 
     X_test_map.to_csv(config.RISK_MAP_SAVE_PATH, index=False)
 
-    '''
+    
     auc_score = roc_auc_score(y_test, y_probs)
     brier_score = brier_score_loss(y_test, y_probs)
     max_prob = float(y_probs.max())
@@ -115,7 +113,7 @@ def run_forecast_pipeline():
     logging.info(f"Test ROC-AUC: {auc_score:.4f}")
     logging.info(f"Test Brier Score: {brier_score:.4f}")
     logging.info(f"Max Calibrated Probability: {max_prob:.4f}")
-
+    
     # 7. Guardar Mapa de Riesgo y Métricas usando config.py
     metrics_payload = {
         "model_type": config.MODEL_TYPE,
@@ -138,7 +136,7 @@ def run_forecast_pipeline():
     X_test_map["risk_probability"] = y_probs
     X_test_map.to_csv(config.RISK_MAP_SAVE_PATH, index=False)
     logging.info(f"Calibrated risk map saved to {config.RISK_MAP_SAVE_PATH}")
-    '''
+    
 if __name__ == "__main__":
     run_forecast_pipeline()
     
