@@ -20,7 +20,7 @@ import config
 
 from scipy.spatial import cKDTree
 
-def add_cfm_features(df_grid: pd.DataFrame, cfm_path: str = "data/raw/scec_cfm_faults.csv") -> pd.DataFrame:
+def add_cfm_features(df_grid: pd.DataFrame, cfm_path: str = config.CFM_DATA_PATH) -> pd.DataFrame:
     """
     Integra la distancia a la falla activa más cercana según el SCEC CFM.
     No requiere GPU ni compilación pesada.
@@ -410,19 +410,30 @@ def build_backtesting_dataset(
 
 # Añadimos para incorporar los CXSM
 
-def add_ctm_features(features_df: pd.DataFrame, ctm_file_path: Path = None) -> pd.DataFrame:
+def add_ctm_features(features_df: pd.DataFrame, ctm_path: str = config.CTM_DATA_PATH) -> pd.DataFrame:
     """
     Incorpora características térmicas del SCEC Community Thermal Model (CTM).
     Si no existe el archivo procesado, genera una interpolación/estimación basada en la malla.
     """
     if "grid_i" not in features_df.columns or "grid_j" not in features_df.columns:
         features_df = assign_grid_indices(features_df)
-     
-    if ctm_file_path is None:
-        ctm_file_path = config.PROCESSED_DIR / "scec_ctm_features.parquet"
-
-    if ctm_file_path.exists():
-        ctm_df = pd.read_parquet(ctm_file_path)
+    
+    df = features_df.copy()
+    ctm_path_exists = False
+    
+    try:
+        ctm_df = pd.read_csv(ctm_path)
+        ctm_path_exists = True
+    except FileNotFoundError:
+        print(f"⚠️ Advertencia: No se encontró el archivo CTM en {cvm_path}. Se omite esta integración.")
+        return df
+    
+    if ctm_path is None:
+        ctm_path = config.PROCESSED_DIR / "scec_ctm_features.parquet"
+        ctm_path_exists = True
+        
+    if ctm_path_exists:
+        ctm_df = pd.read_parquet(ctm_path)
         merged_df = pd.merge(features_df, ctm_df, on=["grid_i", "grid_j"], how="left")
     else:
         # Si el dataset procesado de CTM no está presente, calculamos valores base
