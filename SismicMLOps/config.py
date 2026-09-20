@@ -19,7 +19,7 @@ USE_SCEC_NEW_MODEL = True  # Activador del nuevo modelo
 
 # Rutas a los datos
 CTM_DATA_PATH = "data/raw/scec_ctm_data.csv"
-CFM_DATA_PATH = "data/processed/cfm/xgboost_earthquakes_cfm_dataset.parquet
+
 
 
 # ============================================================
@@ -27,11 +27,10 @@ CFM_DATA_PATH = "data/processed/cfm/xgboost_earthquakes_cfm_dataset.parquet
 # ============================================================
 PROJECT_ROOT = Path(__file__).resolve().parent
 
-DATA_DIR = PROJECT_ROOT / "data" / "raw"
-DATA_PATH = DATA_DIR / "earthquakes.csv"
-ROCK_DATA_PATH = DATA_DIR / "rock_properties.parquet"
-
-PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
+DATA_DIR = PROJECT_ROOT / "data" 
+DATA_PATH = DATA_DIR / "raw" / "earthquakes.csv"
+CFM_DATA_PATH = DATA_DIR / "processed" / "cfm" / "xgboost_earthquakes_cfm_dataset.parquet"
+PROCESSED_DIR = PROJECT_ROOT / "processed"
 METRICS_DIR = PROJECT_ROOT / "metrics"
 MODEL_DIR = PROJECT_ROOT / "training" / "models"
 
