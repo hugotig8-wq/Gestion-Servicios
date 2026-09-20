@@ -2,173 +2,67 @@
 
 import math
 from typing import Optional
+from pathlib import Path
 import numpy as np
 import pandas as pd
-'''from config import (
-    CELL_KM,
-    GRID_COLS,
-    GRID_MIN_LAT,
-    GRID_MIN_LON,
-    GRID_ROWS,
-    MIN_MAGNITUDE_FEATURE,
-    TARGET_MAGNITUDE,
-)'''
-
-# features.py (Sección de Modelos SCEC)
-from pathlib import Path
 import config
 
-from scipy.spatial import cKDTree
-
-def add_cfm_features(df_grid: pd.DataFrame, cfm_path: str = config.CFM_DATA_PATH) -> pd.DataFrame:
+def add_cfm_features(df_grid: pd.DataFrame, cfm_path: str = None) -> pd.DataFrame:
     """
-    Integra la distancia a la falla activa más cercana según el SCEC CFM.
-    No requiere GPU ni compilación pesada.
+    Integra todas las características geométricas y geológicas 3D del CFM
+    a la malla espacial (grid_i, grid_j).
     """
+    if cfm_path is None:
+        cfm_path = config.CFM_DATA_PATH
+        
     df = df_grid.copy()
     
     try:
         df_cfm = pd.read_parquet(cfm_path)
-    except FileNotFoundError:
-        print(f"⚠️ No se encontró el archivo CFM en {cfm_path}. Se omite esta característica.")
+    except Exception as e:
+        print(f"⚠️ No se pudo cargar el dataset CFM desde {cfm_path}: {e}. Se omiten estas features.")
         return df
 
-    # Convertir coordenadas geográficas a radianes para KDTree
-    grid_coords = np.radians(df[["latitude", "longitude"]].values)
-    fault_coords = np.radians(df_cfm[["latitude", "longitude"]].values)
+    # Asignar índices de celda (grid_i, grid_j) al dataset de eventos con CFM
+    if "grid_i" not in df_cfm.columns or "grid_j" not in df_cfm.columns:
+        df_cfm = assign_grid_indices(df_cfm)
 
-    # Construir árbol de búsqueda espacial (en Milisegundos en CPU)
-    tree = cKDTree(fault_coords)
-    distances_rad, _ = tree.query(grid_coords)
+    # Convertir variables categóricas a numéricas mediante One-Hot Encoding
+    if "nearest_fault_slip_sense" in df_cfm.columns:
+        df_cfm = pd.get_dummies(df_cfm, columns=["nearest_fault_slip_sense"], prefix="slip_sense", dummy_na=False)
 
-    # Convertir distancia angular a kilómetros (Radio medio de la Tierra R ≈ 6371 km)
-    df["cfm_dist_min_fault_km"] = distances_rad * 6371.0
+    # Identificar todas las características numéricas a resumir
+    numeric_cols = [
+        "distance_to_nearest_fault_km",
+        "nearest_fault_vertex_depth_km",
+        "nearest_fault_strike",
+        "nearest_fault_dip",
+        "nearest_fault_area_km2",
+        "fault_count_5km",
+        "fault_count_10km",
+        "fault_count_20km",
+        "fault_density_10km"
+    ] + [c for c in df_cfm.columns if c.startswith("slip_sense_")]
 
-    return df
-    
+    # Filtrar solo columnas presentes
+    cols_to_agg = [c for c in numeric_cols if c in df_cfm.columns]
 
-def add_cvm_features(df_grid: pd.DataFrame, cvm_path: str = config.CVM_DATA_PATH) -> pd.DataFrame:
-    """
-    Integra las propiedades geofísicas del SCEC CVM (Community Velocity Model)
-    a la malla espacial (grid_i, grid_j).
-    Variables:
-      - vp_1km_km_s: Velocidad de Onda P a 1 km
-      - vs_1km_km_s: Velocidad de Onda S a 1 km
-      - vp_vs_ratio: Relación Vp/Vs (sensibilidad a la saturación de fluidos)
-      - z1_0_m: Profundidad del isovalor Vs = 1.0 km/s (profundidad de cuenca)
-    """
-    df = df_grid.copy()
-    
-    try:
-        df_cvm = pd.read_csv(cvm_path)
-    except FileNotFoundError:
-        print(f"⚠️ Advertencia: No se encontró el archivo CVM en {cvm_path}. Se omite esta integración.")
-        return df
+    # Agrupar por celda (grid_i, grid_j) promediando la influencia geológica
+    cfm_summary = df_cfm.groupby(["grid_i", "grid_j"])[cols_to_agg].mean().reset_index()
 
-    # Asignar índices de malla a las coordenadas del dataset CVM
-    from features import assign_grid_indices
-    df_cvm_mapped = assign_grid_indices(df_cvm)
-    
-    # Calcular Vp/Vs si no viene en el dataset
-    if "vp_vs_ratio" not in df_cvm_mapped.columns and "vp_1km_km_s" in df_cvm_mapped.columns and "vs_1km_km_s" in df_cvm_mapped.columns:
-        df_cvm_mapped["vp_vs_ratio"] = df_cvm_mapped["vp_1km_km_s"] / df_cvm_mapped["vs_1km_km_s"]
+    # Fusionar con el DataFrame de la malla
+    df_merged = pd.merge(df, cfm_summary, on=["grid_i", "grid_j"], how="left")
 
-    # Agrupar por celda (grid_i, grid_j) promediando las variables
-    agg_dict = {}
-    if "vp_1km_km_s" in df_cvm_mapped.columns: agg_dict["cvm_vp_1km"] = ("vp_1km_km_s", "mean")
-    if "vs_1km_km_s" in df_cvm_mapped.columns: agg_dict["cvm_vs_1km"] = ("vs_1km_km_s", "mean")
-    if "vp_vs_ratio" in df_cvm_mapped.columns: agg_dict["cvm_vp_vs_ratio"] = ("vp_vs_ratio", "mean")
-    if "z1_0_m" in df_cvm_mapped.columns: agg_dict["cvm_z1_0_basin_m"] = ("z1_0_m", "mean")
-
-    cvm_summary = df_cvm_mapped.groupby(["grid_i", "grid_j"]).agg(**agg_dict).reset_index()
-
-    # Fusionar con el DataFrame principal de la malla
-    df_merged = pd.merge(df, cvm_summary, on=["grid_i", "grid_j"], how="left")
-    
-    # Imputar celdas sin cobertura directa con la mediana
-    for col in cvm_summary.columns:
-        if col not in ["grid_i", "grid_j"]:
+    # Imputar celdas vacías utilizando la mediana regional
+    for col in cols_to_agg:
+        if col in df_merged.columns:
             df_merged[col] = df_merged[col].fillna(df_merged[col].median())
 
     return df_merged
-    
 
-def grid_to_latlon(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Convierte índices de malla (grid_i, grid_j) a coordenadas geográficas (latitude, longitude)
-    y genera el enlace directo a Google Maps.
-    """
-    df = df.copy()
-    
-    lat_step = (config.LAT_MAX - config.LAT_MIN) / config.GRID_ROWS
-    lon_step = (config.LON_MAX - config.LON_MIN) / config.GRID_COLS
-    
-    # Calcular centroide de la celda
-    df["latitude"] = config.LAT_MIN + (df["grid_i"] + 0.5) * lat_step
-    df["longitude"] = config.LON_MIN + (df["grid_j"] + 0.5) * lon_step
-    
-    # Generar URL cliqueable para Google Maps
-    df["google_maps_url"] = df.apply(
-        lambda r: f"https://www.google.com/maps?q={r['latitude']:.4f},{r['longitude']:.4f}", axis=1
-    )
-    
-    return df
-    
-
-def build_grid_features(df_events: pd.DataFrame) -> pd.DataFrame:
-    """
-    Agrupa el catálogo de eventos individuales por celda de la malla (grid_i, grid_j)
-    y calcula las características sismológicas junto con el target de la celda.
-    """
-    df = df_events.copy()
-    
-    # Asegurar que existan los índices de la malla y el indicador binario por evento
-    if "grid_i" not in df.columns or "grid_j" not in df.columns:
-        from features import assign_grid_indices
-        df = assign_grid_indices(df)
-        
-    df["is_m5"] = (df["magnitude"] >= config.TARGET_MAGNITUDE).astype(int)
-
-    # Agregación por celda (grid_i, grid_j)
-    grid_df = df.groupby(["grid_i", "grid_j"]).agg(
-        # Target de la celda: 1 si al menos un evento tuvo M >= 5.0
-        target=("is_m5", "max"),
-        # Características sismológicas
-        seismic_rate=("magnitude", "count"),
-        max_magnitude=("magnitude", "max"),
-        mean_magnitude=("magnitude", "mean")
-    ).reset_index()
-
-    return grid_df
-    
-
-def create_target_label(df: pd.DataFrame, target_mag: float = config.TARGET_MAGNITUDE) -> pd.DataFrame:
-    """
-    Crea la columna 'target' binaria:
-    1 si ocurrió un evento con magnitud >= TARGET_MAGNITUDE (ej. 5.0)
-    0 en caso contrario.
-    """
-    df = df.copy()
-    
-    # Identificar el nombre de la columna de magnitud en el DataFrame
-    mag_col = None
-    for col in ["magnitude", "mag", "Magnitude", "MAG"]:
-        if col in df.columns:
-            mag_col = col
-            break
-            
-    if mag_col is None:
-        raise KeyError("No se encontró una columna de magnitud ('magnitude' o 'mag') en el DataFrame.")
-        
-    df["target"] = (df[mag_col] >= target_mag).astype(int)
-    return df
-    
 
 def assign_grid_indices(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Asigna los índices de celda (grid_i, grid_j) a un DataFrame que contenga 
-    columnas 'latitude' y 'longitude' según los límites en config.py.
-    """
+    """Asigna los índices de celda (grid_i, grid_j) a las coordenadas del dataset."""
     df = df.copy()
     
     if "latitude" not in df.columns or "longitude" not in df.columns:
@@ -180,235 +74,44 @@ def assign_grid_indices(df: pd.DataFrame) -> pd.DataFrame:
     df["grid_i"] = ((df["latitude"] - config.LAT_MIN) / lat_step).astype(int)
     df["grid_j"] = ((df["longitude"] - config.LON_MIN) / lon_step).astype(int)
     
-    # Recortar valores por seguridad dentro de los límites de la malla [0, 17]
     df["grid_i"] = df["grid_i"].clip(0, config.GRID_ROWS - 1)
     df["grid_j"] = df["grid_j"].clip(0, config.GRID_COLS - 1)
     
     return df
+
+
+def build_grid_features(df_events: pd.DataFrame) -> pd.DataFrame:
+    """Agrupa el catálogo por celda calculando target e indicadores sismológicos."""
+    df = df_events.copy()
     
-
-
-def km_to_lat_degrees(km: float) -> float:
-    """Approximate conversion from km to latitude degrees."""
-    return km / 111.32
-
-
-def km_to_lon_degrees(km: float, latitude: float) -> float:
-    """Approximate conversion from km to longitude degrees given latitude."""
-    return km / (111.32 * math.cos(math.radians(latitude)))
-
-
-def assign_grid(df: pd.DataFrame) -> tuple[pd.DataFrame, float, float]:
-    """Map earthquake lat/lon to discrete 18x18 spatial grid cells."""
-    df = df.copy()
-
-    lat_step = km_to_lat_degrees(CELL_KM)
-    center_lat = GRID_MIN_LAT + (GRID_ROWS * lat_step / 2)
-    lon_step = km_to_lon_degrees(CELL_KM, center_lat)
-
-    df["grid_y"] = ((df["latitude"] - GRID_MIN_LAT) / lat_step).astype(int)
-    df["grid_x"] = ((df["longitude"] - GRID_MIN_LON) / lon_step).astype(int)
-
-    # Filter strictly inside defined grid bounds
-    inside = (
-        (df["grid_y"] >= 0)
-        & (df["grid_y"] < GRID_ROWS)
-        & (df["grid_x"] >= 0)
-        & (df["grid_x"] < GRID_COLS)
-    )
-    df = df[inside].copy()
-    df["cell_id"] = df["grid_y"] * GRID_COLS + df["grid_x"]
-
-    return df, lat_step, lon_step
-
-
-def calculate_energy(magnitude: np.ndarray) -> np.ndarray:
-    """Gutenberg-Richter relative seismic energy proxy: log10(E) ~= 1.5 * M."""
-    return np.power(10.0, 1.5 * magnitude)
-
-
-def calculate_b_value(magnitudes: np.ndarray) -> float:
-    """Maximum likelihood b-value approximation."""
-    mags = np.asarray(magnitudes, dtype=float)
-    mags = mags[mags >= MIN_MAGNITUDE_FEATURE]
-
-    if len(mags) < 5:
-        return np.nan
-
-    denominator = np.mean(mags) - MIN_MAGNITUDE_FEATURE
-    return (np.log10(np.e) / denominator) if denominator > 0 else np.nan
-
-
-def build_backtesting_dataset(
-    df: pd.DataFrame,
-    cutoff_dates: Optional[pd.DatetimeIndex] = None,
-    forecast_horizon_years: int = 10,
-) -> pd.DataFrame:
-    """Build temporal snapshots for historical backtesting.
-
-    No events after 'cutoff' are allowed in X features.
-    Target (y) checks for M >= TARGET_MAGNITUDE in the target horizon window.
-    """
-    print("\nBuilding temporal backtesting dataset...")
-
-    if cutoff_dates is None:
-        cutoff_dates = pd.date_range(
-            start="1994-12-31", end="2003-12-31", freq="YE", tz="UTC"
-        )
-
-    windows = {
-        "1y": pd.DateOffset(years=1),
-        "3y": pd.DateOffset(years=3),
-        "5y": pd.DateOffset(years=5),
-        "10y": pd.DateOffset(years=10),
-        "20y": pd.DateOffset(years=20),
-    }
-
-    lat_step = km_to_lat_degrees(CELL_KM)
-    rows = []
-
-    for cutoff in cutoff_dates:
-        historical = df[df["time"] <= cutoff].copy()
-
-        future_start = cutoff + pd.Timedelta(days=1)
-        future_end = cutoff + pd.DateOffset(years=forecast_horizon_years)
-
-        future = df[
-            (df["time"] >= future_start)
-            & (df["time"] <= future_end)
-            & (df["magnitude"] >= TARGET_MAGNITUDE)
-        ].copy()
-
-        for grid_y in range(GRID_ROWS):
-            for grid_x in range(GRID_COLS):
-                cell_id = grid_y * GRID_COLS + grid_x
-
-                hist_cell = historical[
-                    (historical["grid_y"] == grid_y)
-                    & (historical["grid_x"] == grid_x)
-                    & (historical["magnitude"] >= MIN_MAGNITUDE_FEATURE)
-                ]
-                future_cell = future[
-                    (future["grid_y"] == grid_y)
-                    & (future["grid_x"] == grid_x)
-                ]
-
-                center_lat = GRID_MIN_LAT + (grid_y + 0.5) * lat_step
-                lon_step = km_to_lon_degrees(CELL_KM, center_lat)
-                center_lon = GRID_MIN_LON + (grid_x + 0.5) * lon_step
-
-                row = {
-                    "forecast_date": cutoff,
-                    "cell_id": cell_id,
-                    "grid_x": grid_x,
-                    "grid_y": grid_y,
-                    "cell_lat": center_lat,
-                    "cell_lon": center_lon,
-                }
-
-                # Historical Feature Extraction
-                for w_name, offset in windows.items():
-                    w_events = hist_cell[hist_cell["time"] > (cutoff - offset)]
-                    mags = w_events["magnitude"].values
-                    depths = w_events["depth"].values
-                    prefix = f"eq_{w_name}"
-
-                    row[f"{prefix}_count"] = len(w_events)
-                    if len(w_events) > 0:
-                        row[f"{prefix}_max_mag"] = np.max(mags)
-                        row[f"{prefix}_mean_mag"] = np.mean(mags)
-                        row[f"{prefix}_std_mag"] = (
-                            np.std(mags) if len(mags) > 1 else 0.0
-                        )
-                        row[f"{prefix}_mean_depth"] = np.mean(depths)
-                        row[f"{prefix}_std_depth"] = (
-                            np.std(depths) if len(depths) > 1 else 0.0
-                        )
-                        row[f"{prefix}_energy"] = np.sum(calculate_energy(mags))
-                        row[f"{prefix}_b_value"] = calculate_b_value(mags)
-                    else:
-                        for metric in [
-                            "max_mag",
-                            "mean_mag",
-                            "std_mag",
-                            "mean_depth",
-                            "std_depth",
-                            "energy",
-                        ]:
-                            row[f"{prefix}_{metric}"] = 0.0
-                        row[f"{prefix}_b_value"] = np.nan
-
-                # Lifetime cell stats
-                row["eq_all_count"] = len(hist_cell)
-                row["eq_all_max_mag"] = (
-                    hist_cell["magnitude"].max() if len(hist_cell) > 0 else 0.0
-                )
-                row["eq_all_mean_mag"] = (
-                    hist_cell["magnitude"].mean() if len(hist_cell) > 0 else 0.0
-                )
-                row["eq_all_mean_depth"] = (
-                    hist_cell["depth"].mean() if len(hist_cell) > 0 else 0.0
-                )
-                row["eq_all_b_value"] = (
-                    calculate_b_value(hist_cell["magnitude"].values)
-                    if len(hist_cell) > 0
-                    else np.nan
-                )
-
-                # Target Definition (y)
-                row["n_m5_future"] = len(future_cell)
-                row["has_m5_future"] = int(len(future_cell) > 0)
-                row["max_m5_future"] = (
-                    future_cell["magnitude"].max()
-                    if len(future_cell) > 0
-                    else 0.0
-                )
-
-                rows.append(row)
-
-    backtest = (
-        pd.DataFrame(rows)
-        .sort_values(["forecast_date", "cell_id"])
-        .reset_index(drop=True)
-    )
-
-    return backtest
-
-# Añadimos para incorporar los CXSM
-
-def add_ctm_features(df_grid: pd.DataFrame, ctm_path=None) -> pd.DataFrame:
-    if ctm_path is None:
-        ctm_path = config.CTM_DATA_PATH
-
-    try:
-        # 1. Cargar el archivo CTM
-        if ctm_path.endswith('.parquet') or ctm_path.endswith('.pq'):
-            ctm_df = pd.read_parquet(ctm_path)
-        else:
-            ctm_df = pd.read_csv(ctm_path)
-    except Exception as e:
-        print(f"⚠️ No se pudo cargar CTM desde {ctm_path}: {e}")
-        return df_grid
-
-    # 2. Si ctm_df no tiene grid_i/grid_j, asignarlos usando las coordenadas lat/lon
-    if "grid_i" not in ctm_df.columns or "grid_j" not in ctm_df.columns:
-        from features import assign_grid_indices
-        ctm_df = assign_grid_indices(ctm_df)
-
-    # 3. Agrupar por celda para evitar duplicados al hacer el merge
-    ctm_summary = ctm_df.groupby(["grid_i", "grid_j"]).agg({
-        col: "mean" for col in ctm_df.columns if col not in ["grid_i", "grid_j", "latitude", "longitude"]
-    }).reset_index()
-
-    # 4. Unir con la malla principal
-    merged_df = pd.merge(df_grid, ctm_summary, on=["grid_i", "grid_j"], how="left")
-
-    # 5. Rellenar celdas sin cobertura con la mediana
-    feature_cols = [c for c in ctm_summary.columns if c not in ["grid_i", "grid_j"]]
-    for col in feature_cols:
-        merged_df[col] = merged_df[col].fillna(merged_df[col].median())
-
-    return merged_df
-    
+    if "grid_i" not in df.columns or "grid_j" not in df.columns:
+        df = assign_grid_indices(df)
         
+    df["is_m5"] = (df["magnitude"] >= config.TARGET_MAGNITUDE).astype(int)
+
+    grid_df = df.groupby(["grid_i", "grid_j"]).agg(
+        target=("is_m5", "max"),
+        seismic_rate=("magnitude", "count"),
+        max_magnitude=("magnitude", "max"),
+        mean_magnitude=("magnitude", "mean")
+    ).reset_index()
+
+    return grid_df
+
+
+def grid_to_latlon(df: pd.DataFrame) -> pd.DataFrame:
+    """Convierte los índices de la celda a coordenadas y genera la URL para Google Maps."""
+    df = df.copy()
+    
+    lat_step = (config.LAT_MAX - config.LAT_MIN) / config.GRID_ROWS
+    lon_step = (config.LON_MAX - config.LON_MIN) / config.GRID_COLS
+    
+    df["latitude"] = config.LAT_MIN + (df["grid_i"] + 0.5) * lat_step
+    df["longitude"] = config.LON_MIN + (df["grid_j"] + 0.5) * lon_step
+    
+    df["google_maps_url"] = df.apply(
+        lambda r: f"https://www.google.com/maps?q={r['latitude']:.4f},{r['longitude']:.4f}", axis=1
+    )
+    
+    return df
     
