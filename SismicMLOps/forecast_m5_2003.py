@@ -141,7 +141,7 @@ def run_forecast_pipeline():
         "roc_auc": round(auc_score, 4),
         "brier_score": round(brier_score, 4),
         "max_calibrated_probability": round(max_prob, 4),
-        "n_features": X.shape[1]
+        "n_features": X_test.shape[1]
     }
 
     with open(config.METRICS_SAVE_PATH, "w") as f:
