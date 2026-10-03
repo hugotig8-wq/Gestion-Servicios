@@ -1,3 +1,4 @@
+
 # config.py
 from pathlib import Path
 
@@ -30,15 +31,15 @@ CELL_KM = 10.0
 
 # PARÁMETROS SISMOLÓGICOS Y MODELADO
 MIN_MAGNITUDE = 1.4     # Mmin para b-value
-TARGET_MAGNITUDE = 4.5  # Ajustado a 4.5 para contar con suficientes muestras de test
+TARGET_MAGNITUDE = 4.5  # Magnitud objetivo ajustada a M>=4.5
 
 MODEL_TYPE = "xgboost"
 
 MODEL_CONFIGS = {
     "xgboost": {
-        "n_estimators": 120,
+        "n_estimators": 100,
         "max_depth": 3,
-        "learning_rate": 0.02,
+        "learning_rate": 0.03,
         "subsample": 0.8,
         "colsample_bytree": 0.8,
         "random_state": 42,
