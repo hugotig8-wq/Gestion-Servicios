@@ -1,7 +1,5 @@
 """Spatial binning and seismic feature engineering module."""
 
-import math
-from typing import Optional
 import numpy as np
 import pandas as pd
 import config
@@ -10,7 +8,7 @@ def calculate_b_value(magnitudes: pd.Series, mc: float = 1.4) -> float:
     """Calcula el valor b de Gutenberg-Richter mediante Máxima Verosimilitud (Aki, 1965)."""
     mags = magnitudes[magnitudes >= mc]
     if len(mags) < 5:
-        return 1.0  # Valor estándar por defecto
+        return 1.0  # Valor estándar por defecto para celdas con poca actividad
     mean_m = mags.mean()
     b = (1.0 / (mean_m - (mc - 0.05))) * np.log10(np.e)
     return float(b)
@@ -24,7 +22,7 @@ def add_cfm_features(df_grid: pd.DataFrame, cfm_path: str = None) -> pd.DataFram
     
     try:
         df_cfm = pd.read_parquet(cfm_path)
-    except Exception as e:
+    except Exception:
         return df
 
     if "grid_i" not in df_cfm.columns or "grid_j" not in df_cfm.columns:
@@ -71,8 +69,8 @@ def assign_grid_indices(df: pd.DataFrame) -> pd.DataFrame:
     
     return df
 
-def build_grid_features(df_events: pd.DataFrame, cutoff_year: Optional[int] = None) -> pd.DataFrame:
-    """Agrupa el catálogo por celda calculando indicadores sismológicos avanzados."""
+def build_grid_features(df_events: pd.DataFrame, cutoff_year: int = 2003) -> pd.DataFrame:
+    """Agrupa el catálogo por celda calculando indicadores sismológicos sin RuntimeWarnings."""
     df = df_events.copy()
     
     if "grid_i" not in df.columns or "grid_j" not in df.columns:
@@ -84,15 +82,17 @@ def build_grid_features(df_events: pd.DataFrame, cutoff_year: Optional[int] = No
     if cutoff_year is not None and "year" in df.columns:
         df = df[df["year"] <= cutoff_year]
 
-    # Agregaciones estándar
+    # Agregaciones controladas para evitar warnings en rebanadas vacías
     grid_df = df.groupby(["grid_i", "grid_j"]).agg(
         seismic_rate=("magnitude", "count"),
-        max_past_magnitude=("magnitude", "max"),
-        mean_magnitude=("magnitude", "mean"),
-        std_magnitude=("magnitude", "std")
+        max_past_magnitude=("magnitude", lambda x: x.max() if len(x) > 0 else 0.0),
+        mean_magnitude=("magnitude", lambda x: x.mean() if len(x) > 0 else 0.0),
+        std_magnitude=("magnitude", lambda x: x.std() if len(x) > 1 else 0.0)
     ).reset_index()
 
-    grid_df["std_magnitude"] = grid_df["std_magnitude"].fillna(0)
+    grid_df["max_past_magnitude"] = grid_df["max_past_magnitude"].fillna(0.0)
+    grid_df["mean_magnitude"] = grid_df["mean_magnitude"].fillna(0.0)
+    grid_df["std_magnitude"] = grid_df["std_magnitude"].fillna(0.0)
 
     # Cálculo del b-value por celda
     b_values = []
@@ -108,8 +108,8 @@ def build_grid_features(df_events: pd.DataFrame, cutoff_year: Optional[int] = No
 def create_temporal_split_datasets(df_mapped: pd.DataFrame, 
                                    train_cutoff_year: int = 2003, 
                                    val_cutoff_year: int = 2013, 
-                                   target_mag: float = 4.5):
-    """Crea matrices de Train y Test usando objetivo M>=4.5 para mayor estabilidad."""
+                                   target_mag: float = config.TARGET_MAGNITUDE):
+    """Crea matrices de Train y Test aplicando la magnitud objetivo configurada."""
     df = df_mapped.copy()
     if "year" not in df.columns and "time" in df.columns:
         df["year"] = pd.to_datetime(df["time"], format="mixed", errors="coerce").dt.year
@@ -150,4 +150,4 @@ def grid_to_latlon(df: pd.DataFrame) -> pd.DataFrame:
     )
     
     return df
-    
+                                   
