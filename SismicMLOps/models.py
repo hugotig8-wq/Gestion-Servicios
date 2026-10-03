@@ -3,94 +3,26 @@
 from typing import Tuple
 import numpy as np
 import pandas as pd
-from xgboost import XGBClassifier
-#from config import MODEL_PARAMS
-
 import joblib
-import config
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.ensemble import RandomForestClassifier
 
-# Para versiones de scikit-learn >= 1.6:
-try:
-    from sklearn.frozen import FrozenEstimator
-    def get_calibrated_model(base_model):
-        return CalibratedClassifierCV(estimator=FrozenEstimator(base_model), method="isotonic")
-except ImportError:
-    # Compatibilidad con versiones anteriores (< 1.6)
-    def get_calibrated_model(base_model):
-        return CalibratedClassifierCV(estimator=base_model, method="isotonic", cv="prefit")
-        
+import config
 
-def train_model(data: pd.DataFrame) -> Tuple[XGBClassifier, list[str]]:
-    """Train XGBoost spatial risk model on prepared feature set."""
-    print("\nTraining XGBoost Classifier...")
-
-    excluded = {
-        "forecast_date",
-        "cell_id",
-        "cell_lat",
-        "cell_lon",
-        "grid_x",
-        "grid_y",
-        "has_m5_future",
-        "n_m5_future",
-        "max_m5_future",
-    }
-    feature_columns = [col for col in data.columns if col not in excluded]
-
-    X = data[feature_columns].replace([np.inf, -np.inf], np.nan)
-    y = data["has_m5_future"].astype(int)
-
-    positive = int(y.sum())
-    negative = int(len(y) - positive)
-
-    if positive == 0:
-        raise RuntimeError(
-            "Training error: Zero positive instances found in target."
+def get_calibrated_model(base_model):
+    """Retorna el modelo de calibración asegurando compatibilidad de versiones de scikit-learn."""
+    try:
+        from sklearn.frozen import FrozenEstimator
+        return CalibratedClassifierCV(
+            estimator=FrozenEstimator(base_model), 
+            method=config.CALIBRATION_METHOD
         )
-
-    params = config.MODEL_PARAMS.copy()
-    params["scale_pos_weight"] = negative / positive
-
-    model = XGBClassifier(**params)
-    model.fit(X, y, verbose=False)
-
-    return model, feature_columns
-
-
-def generate_risk_map(
-    model: XGBClassifier, data: pd.DataFrame, feature_columns: list[str]
-) -> pd.DataFrame:
-    """Predict spatial earthquake probabilities and output risk rankings."""
-    X = data[feature_columns].replace([np.inf, -np.inf], np.nan)
-    probabilities = model.predict_proba(X)[:, 1]
-
-    cols = [
-        "cell_id",
-        "grid_x",
-        "grid_y",
-        "cell_lat",
-        "cell_lon",
-        "has_m5_future",
-        "n_m5_future",
-    ]
-    if "forecast_date" in data.columns:
-        cols.insert(0, "forecast_date")
-
-    result = data[cols].copy()
-    result["predicted_probability"] = probabilities
-    result = result.sort_values(
-        "predicted_probability", ascending=False
-    ).reset_index(drop=True)
-
-    result["risk_rank"] = np.arange(1, len(result) + 1)
-    result["risk_percentile"] = 1 - ((result["risk_rank"] - 1) / len(result))
-
-    return result
-
-
-# models.py
+    except ImportError:
+        return CalibratedClassifierCV(
+            estimator=base_model, 
+            method=config.CALIBRATION_METHOD, 
+            cv="prefit"
+        )
 
 def get_base_model(model_type: str = config.MODEL_TYPE, scale_pos_weight: float = config.SCALE_POS_WEIGHT):
     """Instancia el modelo según la configuración de config.py"""
@@ -110,16 +42,16 @@ def get_base_model(model_type: str = config.MODEL_TYPE, scale_pos_weight: float 
     else:
         raise ValueError(f"Modelo '{model_type}' no soportado.")
 
-def train_and_calibrate_model(X_train, y_train, X_val, y_val, scale_pos_weight: float = config.SCALE_POS_WEIGHT):
-    
+def train_and_calibrate_model(X_train, y_train, X_val, y_val, scale_pos_weight: float = None):
+    if scale_pos_weight is None:
+        # Calcular automáticamente según la proporción de negativos/positivos en Train
+        num_pos = max(int(y_train.sum()), 1)
+        num_neg = len(y_train) - num_pos
+        scale_pos_weight = float(num_neg / num_pos)
+
     base_model = get_base_model(config.MODEL_TYPE, scale_pos_weight=scale_pos_weight)
     base_model.fit(X_train, y_train)
     
-    '''calibrated_model = CalibratedClassifierCV(
-        estimator=base_model,
-        method=config.CALIBRATION_METHOD,
-        cv="prefit"
-    )'''
     calibrated_model = get_calibrated_model(base_model)
     calibrated_model.fit(X_val, y_val)
     
@@ -128,5 +60,4 @@ def train_and_calibrate_model(X_train, y_train, X_val, y_val, scale_pos_weight: 
     joblib.dump(calibrated_model, model_path)
     
     return calibrated_model
-    
     
