@@ -80,23 +80,31 @@ def assign_grid_indices(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def build_grid_features(df_events: pd.DataFrame) -> pd.DataFrame:
-    """Agrupa el catálogo por celda calculando target e indicadores sismológicos."""
+def build_grid_features(df_events: pd.DataFrame, cutoff_year: Optional[int] = None) -> pd.DataFrame:
+    """
+    Agrupa el catálogo por celda calculando indicadores sismológicos
+    hasta un año de corte para evitar data leakage.
+    """
     df = df_events.copy()
     
     if "grid_i" not in df.columns or "grid_j" not in df.columns:
         df = assign_grid_indices(df)
         
-    df["is_m5"] = (df["magnitude"] >= config.TARGET_MAGNITUDE).astype(int)
+    if "year" not in df.columns and "time" in df.columns:
+        df["year"] = pd.to_datetime(df["time"]).dt.year
+
+    # Filtrar solo la información histórica hasta el año límite (ej: 2003)
+    if cutoff_year is not None and "year" in df.columns:
+        df = df[df["year"] <= cutoff_year]
 
     grid_df = df.groupby(["grid_i", "grid_j"]).agg(
-        target=("is_m5", "max"),
         seismic_rate=("magnitude", "count"),
-        max_magnitude=("magnitude", "max"),
+        max_past_magnitude=("magnitude", "max"),
         mean_magnitude=("magnitude", "mean")
     ).reset_index()
 
     return grid_df
+    
 
 
 def grid_to_latlon(df: pd.DataFrame) -> pd.DataFrame:
@@ -114,4 +122,42 @@ def grid_to_latlon(df: pd.DataFrame) -> pd.DataFrame:
     )
     
     return df
+
+def create_temporal_split_datasets(df_mapped: pd.DataFrame, 
+                                   train_cutoff_year: int = 2003, 
+                                   val_cutoff_year: int = 2013, 
+                                   target_mag: float = 5.0):
+    """
+    Crea las matrices de Train y Test aplicando MultiIndex.isin vectorizado
+    y separación temporal estricta.
+    """
+    df = df_mapped.copy()
+    if "year" not in df.columns and "time" in df.columns:
+        df["year"] = pd.to_datetime(df["time"]).dt.year
+
+    # 1. Construir features basándose ÚNICAMENTE en el pasado histórico (<= 2003)
+    df_grid_features = build_grid_features(df, cutoff_year=train_cutoff_year)
+
+    # 2. Identificar celdas con eventos M>=5 en los periodos futuros
+    df_train_period = df[(df["year"] > train_cutoff_year) & (df["year"] <= val_cutoff_year)]
+    df_test_period = df[df["year"] > val_cutoff_year]
+
+    # Extraer pares (grid_i, grid_j) donde hubo terremoto M>=5
+    train_m5_pairs = df_train_period[df_train_period["magnitude"] >= target_mag][["grid_i", "grid_j"]].drop_duplicates()
+    test_m5_pairs = df_test_period[df_test_period["magnitude"] >= target_mag][["grid_i", "grid_j"]].drop_duplicates()
+
+    # 3. Asignación vectorizada de TARGET usando MultiIndex.isin
+    grid_index = pd.MultiIndex.from_frame(df_grid_features[["grid_i", "grid_j"]])
+    
+    train_index = pd.MultiIndex.from_frame(train_m5_pairs) if not train_m5_pairs.empty else pd.MultiIndex(levels=[[],[]], codes=[[],[]])
+    test_index = pd.MultiIndex.from_frame(test_m5_pairs) if not test_m5_pairs.empty else pd.MultiIndex(levels=[[],[]], codes=[[],[]])
+
+    df_train = df_grid_features.copy()
+    df_train["target"] = grid_index.isin(train_index).astype(int)
+
+    df_test = df_grid_features.copy()
+    df_test["target"] = grid_index.isin(test_index).astype(int)
+
+    return df_train, df_test
+                                       
     
