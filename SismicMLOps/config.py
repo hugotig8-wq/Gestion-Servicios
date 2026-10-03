@@ -1,13 +1,17 @@
-
 # config.py
 from pathlib import Path
 
+# ============================================================
+# 1. RUTAS DEL PROYECTO
+# ============================================================
 PROJECT_ROOT = Path(__file__).resolve().parent
 
 DATA_DIR = PROJECT_ROOT / "data" 
 DATA_PATH = DATA_DIR / "raw" / "earthquakes.csv"
 
 CFM_DATA_PATH = DATA_DIR / "processed" / "cfm" / "xgboost_earthquakes_cfm_dataset.parquet"
+CVM_DATA_PATH = DATA_DIR / "raw" / "scec_cvm_data.csv"
+CTM_DATA_PATH = DATA_DIR / "raw" / "scec_ctm_data.csv"
 
 PROCESSED_DIR = PROJECT_ROOT / "processed"
 METRICS_DIR = PROJECT_ROOT / "metrics"
@@ -19,7 +23,9 @@ for directory in [PROCESSED_DIR, METRICS_DIR, MODEL_DIR]:
 RISK_MAP_SAVE_PATH = PROCESSED_DIR / "risk_map_calibrated.csv"
 METRICS_SAVE_PATH = METRICS_DIR / "forecast_metrics.json"
 
-# PARÁMETROS GEOGRÁFICOS
+# ============================================================
+# 2. PARÁMETROS GEOGRÁFICOS Y DE LA MALLA
+# ============================================================
 LAT_MIN = 32.0
 LAT_MAX = 36.0
 LON_MIN = -120.0
@@ -29,25 +35,32 @@ GRID_ROWS = 18
 GRID_COLS = 18
 CELL_KM = 10.0
 
-# PARÁMETROS SISMOLÓGICOS Y MODELADO
+# ============================================================
+# 3. PARÁMETROS SISMOLÓGICOS Y MODELADO OPTIMIZADOS
+# ============================================================
 MIN_MAGNITUDE = 1.4     # Mmin para b-value
-TARGET_MAGNITUDE = 4.5  # Magnitud objetivo ajustada a M>=4.5
+TARGET_MAGNITUDE = 4.5  # Magnitud objetivo ajustada para estabilidad en Test
 
 MODEL_TYPE = "xgboost"
 
 MODEL_CONFIGS = {
     "xgboost": {
-        "n_estimators": 100,
-        "max_depth": 3,
-        "learning_rate": 0.03,
-        "subsample": 0.8,
-        "colsample_bytree": 0.8,
+        "n_estimators": 60,       # Reducido para evitar memorización
+        "max_depth": 2,          # Profundidad 2 para capturar solo reglas simples/generales
+        "learning_rate": 0.02,   # Aprendizaje suave
+        "subsample": 0.7,        # Submuestreo de filas para regularización
+        "colsample_bytree": 0.7, # Submuestreo de columnas
         "random_state": 42,
         "n_jobs": -1
     }
 }
 
-SCALE_POS_WEIGHT = 8.0
+SCALE_POS_WEIGHT = 3.0          # Balance suavizado para generalizar mejor en el ranking
 CALIBRATION_METHOD = "sigmoid"
 
+# ============================================================
+# 4. SWITCHES DE MODELOS SCEC
+# ============================================================
 USE_SCEC_CFM = True
+USE_SCEC_CTM = False
+USE_SCEC_CVM = False
