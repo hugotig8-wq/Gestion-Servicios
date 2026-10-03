@@ -117,8 +117,8 @@ def run_forecast_pipeline():
 
     # 8. Generar y Exportar Mapa de Riesgo
     X_test_map = X_test.copy()
-    X_test_map["grid_i"] = df_grid.loc[X_test.index, "grid_i"]
-    X_test_map["grid_j"] = df_grid.loc[X_test.index, "grid_j"]
+    X_test_map["grid_i"] = df_test_grid.loc[X_test.index, "grid_i"]
+    X_test_map["grid_j"] = df_test_grid.loc[X_test.index, "grid_j"]
     X_test_map["risk_probability"] = y_probs
 
     # Recuperar coordenadas geográficas y enlace a Google Maps
