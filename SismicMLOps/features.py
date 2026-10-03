@@ -91,7 +91,9 @@ def build_grid_features(df_events: pd.DataFrame, cutoff_year: Optional[int] = No
         df = assign_grid_indices(df)
         
     if "year" not in df.columns and "time" in df.columns:
-        df["year"] = pd.to_datetime(df["time"]).dt.year
+        #  Usa format="mixed" para inferir dinámicamente cada registro
+        df["year"] = pd.to_datetime(df["time"], format="mixed", errors="coerce").dt.year
+
 
     # Filtrar solo la información histórica hasta el año límite (ej: 2003)
     if cutoff_year is not None and "year" in df.columns:
@@ -132,8 +134,10 @@ def create_temporal_split_datasets(df_mapped: pd.DataFrame,
     y separación temporal estricta.
     """
     df = df_mapped.copy()
+    
     if "year" not in df.columns and "time" in df.columns:
-        df["year"] = pd.to_datetime(df["time"]).dt.year
+        # format="mixed" y errors="coerce" evitan que el script falle por formatos mixtos o nulos
+        df["year"] = pd.to_datetime(df["time"], format="mixed", errors="coerce").dt.year
 
     # 1. Construir features basándose ÚNICAMENTE en el pasado histórico (<= 2003)
     df_grid_features = build_grid_features(df, cutoff_year=train_cutoff_year)
@@ -160,4 +164,3 @@ def create_temporal_split_datasets(df_mapped: pd.DataFrame,
 
     return df_train, df_test
                                        
-    
