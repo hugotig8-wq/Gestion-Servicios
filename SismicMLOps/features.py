@@ -1,3 +1,4 @@
+
 """Spatial binning and seismic feature engineering module."""
 
 import numpy as np
@@ -8,7 +9,7 @@ def calculate_b_value(magnitudes: pd.Series, mc: float = 1.4) -> float:
     """Calcula el valor b de Gutenberg-Richter mediante Máxima Verosimilitud (Aki, 1965)."""
     mags = magnitudes[magnitudes >= mc]
     if len(mags) < 5:
-        return 1.0  # Valor estándar por defecto para celdas con poca actividad
+        return 1.0
     mean_m = mags.mean()
     b = (1.0 / (mean_m - (mc - 0.05))) * np.log10(np.e)
     return float(b)
@@ -70,7 +71,7 @@ def assign_grid_indices(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 def build_grid_features(df_events: pd.DataFrame, cutoff_year: int = 2003) -> pd.DataFrame:
-    """Agrupa el catálogo por celda calculando indicadores sismológicos sin RuntimeWarnings."""
+    """Agrupa el catálogo por celda e incluye la tasa de aceleración temporal."""
     df = df_events.copy()
     
     if "grid_i" not in df.columns or "grid_j" not in df.columns:
@@ -82,7 +83,7 @@ def build_grid_features(df_events: pd.DataFrame, cutoff_year: int = 2003) -> pd.
     if cutoff_year is not None and "year" in df.columns:
         df = df[df["year"] <= cutoff_year]
 
-    # Agregaciones controladas para evitar warnings en rebanadas vacías
+    # 1. Agregaciones estándar históricas
     grid_df = df.groupby(["grid_i", "grid_j"]).agg(
         seismic_rate=("magnitude", "count"),
         max_past_magnitude=("magnitude", lambda x: x.max() if len(x) > 0 else 0.0),
@@ -94,7 +95,16 @@ def build_grid_features(df_events: pd.DataFrame, cutoff_year: int = 2003) -> pd.
     grid_df["mean_magnitude"] = grid_df["mean_magnitude"].fillna(0.0)
     grid_df["std_magnitude"] = grid_df["std_magnitude"].fillna(0.0)
 
-    # Cálculo del b-value por celda
+    # 2. Tasa de aceleración reciente (últimos 5 años pre-corte)
+    recent_start_year = cutoff_year - 4
+    df_recent = df[df["year"] >= recent_start_year].groupby(["grid_i", "grid_j"])["magnitude"].count().reset_index()
+    df_recent.columns = ["grid_i", "grid_j", "recent_seismic_rate"]
+
+    grid_df = pd.merge(grid_df, df_recent, on=["grid_i", "grid_j"], how="left")
+    grid_df["recent_seismic_rate"] = grid_df["recent_seismic_rate"].fillna(0.0)
+    grid_df["seismic_acceleration"] = grid_df["recent_seismic_rate"] / (grid_df["seismic_rate"] + 1e-5)
+
+    # 3. Cálculo del b-value por celda
     b_values = []
     for _, row in grid_df.iterrows():
         cell_mags = df[(df["grid_i"] == row["grid_i"]) & (df["grid_j"] == row["grid_j"])]["magnitude"]
@@ -150,4 +160,4 @@ def grid_to_latlon(df: pd.DataFrame) -> pd.DataFrame:
     )
     
     return df
-                                   
+    
