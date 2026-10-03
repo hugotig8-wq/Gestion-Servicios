@@ -47,8 +47,8 @@ MODEL_TYPE = "xgboost"
 MODEL_CONFIGS = {
     "xgboost": {
         "n_estimators": 100,
-        "max_depth": 4,
-        "learning_rate": 0.05,
+        "max_depth": 3,           # Reducido para evitar overfitting
+        "learning_rate": 0.03,
         "subsample": 0.8,
         "colsample_bytree": 0.8,
         "random_state": 42,
@@ -56,8 +56,8 @@ MODEL_CONFIGS = {
     }
 }
 
-SCALE_POS_WEIGHT = 10.0
-CALIBRATION_METHOD = "isotonic"
+SCALE_POS_WEIGHT = 15.0          # Balance ponderado ajustado para desbalance
+CALIBRATION_METHOD = "sigmoid"    # Cambiado a sigmoide para suavizar probabilidades
 
 # ============================================================
 # 4. SWITCHES DE MODELOS SCEC
