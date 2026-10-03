@@ -40,7 +40,7 @@ CELL_KM = 10.0
 # 3. PARÁMETROS SISMOLÓGICOS Y MODELADO
 # ============================================================
 MIN_MAGNITUDE = 1.4     # Mmin para b-value
-TARGET_MAGNITUDE = 5.0  # Magnitud objetivo (M >= 5.0)
+TARGET_MAGNITUDE = 4.5  # Magnitud objetivo (M >= 5.0)
 
 MODEL_TYPE = "xgboost"
 
