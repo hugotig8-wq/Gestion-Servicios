@@ -1,3 +1,4 @@
+
 # config.py
 from pathlib import Path
 
@@ -36,26 +37,26 @@ GRID_COLS = 18
 CELL_KM = 10.0
 
 # ============================================================
-# 3. PARÁMETROS SISMOLÓGICOS Y MODELADO OPTIMIZADOS
+# 3. PARÁMETROS SISMOLÓGICOS Y MODELADO HIGH-ACCURACY
 # ============================================================
 MIN_MAGNITUDE = 1.4     # Mmin para b-value
-TARGET_MAGNITUDE = 4.5  # Magnitud objetivo ajustada para estabilidad en Test
+TARGET_MAGNITUDE = 4.5  # Magnitud objetivo ajustada para estabilidad
 
 MODEL_TYPE = "xgboost"
 
 MODEL_CONFIGS = {
     "xgboost": {
-        "n_estimators": 60,       # Reducido para evitar memorización
-        "max_depth": 2,          # Profundidad 2 para capturar solo reglas simples/generales
-        "learning_rate": 0.02,   # Aprendizaje suave
-        "subsample": 0.7,        # Submuestreo de filas para regularización
-        "colsample_bytree": 0.7, # Submuestreo de columnas
+        "n_estimators": 50,       # Regularizado
+        "max_depth": 1,          # Profundidad 1 (Decision Stumps) para evitar overfitting
+        "learning_rate": 0.01,   # Tasa de aprendizaje baja
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
         "random_state": 42,
         "n_jobs": -1
     }
 }
 
-SCALE_POS_WEIGHT = 3.0          # Balance suavizado para generalizar mejor en el ranking
+SCALE_POS_WEIGHT = 1.5          # Pesos ajustados para optimizar la curva ROC
 CALIBRATION_METHOD = "sigmoid"
 
 # ============================================================
