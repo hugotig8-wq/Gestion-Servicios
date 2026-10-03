@@ -25,7 +25,8 @@ def run_forecast_pipeline():
     
     # 2. Mapear celdas (grid_i, grid_j)
     df_mapped = assign_grid_indices(df_raw)
-    
+    """
+    ##ESTO GENERABA LEAKAGE.
     # 3. Construir dataset agrupado por celda (genera 'target')
     logging.info("Construyendo features de la malla espacial...")
     df_grid = build_grid_features(df_mapped)
@@ -58,7 +59,39 @@ def run_forecast_pipeline():
     )
 
     logging.info(f"Dataset Split completado: Train={X_train.shape[0]}, Val={X_val.shape[0]}, Test={X_test.shape[0]}")
+    """
 
+    # 3. Construcción de datasets de Train y Test con validación temporal estricta
+    logging.info("Construyendo features temporales y asignando targets con MultiIndex.isin...")
+    df_train_grid, df_test_grid = create_temporal_split_datasets(
+        df_mapped, 
+        train_cutoff_year=2003, 
+        val_cutoff_year=2013, 
+        target_mag=config.TARGET_MAGNITUDE
+    )
+
+    # 4. Unir modelo de fallas CFM a ambos conjuntos
+    if config.USE_SCEC_CFM:
+        logging.info("Enriqueciendo datasets con características geológicas de SCEC CFM...")
+        df_train_grid = add_cfm_features(df_train_grid, config.CFM_DATA_PATH)
+        df_test_grid = add_cfm_features(df_test_grid, config.CFM_DATA_PATH)
+
+    # 5. Separación de matrices X e y
+    drop_cols = ["target", "grid_i", "grid_j", "max_past_magnitude", "nearest_fault_name"]
+    
+    X_train_full = df_train_grid.drop(columns=[c for c in drop_cols if c in df_train_grid.columns])
+    y_train_full = df_train_grid["target"]
+
+    X_test = df_test_grid.drop(columns=[c for c in drop_cols if c in df_test_grid.columns])
+    y_test = df_test_grid["target"]
+
+    # Sub-split de Train/Validation dentro del periodo de entrenamiento para la calibración
+    X_train, X_val, y_train, y_val = train_test_split(
+        X_train_full, y_train_full, test_size=0.25, random_state=42, stratify=y_train_full
+    )
+
+    logging.info(f"Dataset Split completado: Train={X_train.shape[0]}, Val={X_val.shape[0]}, Test={X_test.shape[0]}")
+    
     # 6. Entrenamiento de XGBoost y Calibración
     logging.info("Entrenando modelo XGBoost y aplicando calibración isotónica...")
     calibrated_model = train_and_calibrate_model(
