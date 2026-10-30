@@ -7,12 +7,12 @@ from pathlib import Path
 # ============================================================
 PROJECT_ROOT = Path(__file__).resolve().parent
 
-DATA_DIR = PROJECT_ROOT / "home" / "humberto"
+DATA_DIR = "home" / "humberto"
 DATA_PATH = DATA_DIR / "earthquakes.csv"
 
 CFM_DATA_PATH = DATA_DIR / "xgboost_earthquakes_cfm_dataset.parquet"
-CVM_DATA_PATH = DATA_DIR / "raw" / "scec_cvm_data.csv"
-CTM_DATA_PATH = DATA_DIR / "raw" / "scec_ctm_data.csv"
+CVM_DATA_PATH = DATA_DIR / "scec_cvm_data.csv"
+CTM_DATA_PATH = DATA_DIR / "scec_ctm_data.csv"
 
 PROCESSED_DIR = PROJECT_ROOT / "processed"
 METRICS_DIR = PROJECT_ROOT / "metrics"
@@ -21,8 +21,8 @@ MODEL_DIR = PROJECT_ROOT / "training" / "models"
 for directory in [PROCESSED_DIR, METRICS_DIR, MODEL_DIR]:
     directory.mkdir(parents=True, exist_ok=True)
 
-RISK_MAP_SAVE_PATH = PROCESSED_DIR / "risk_map_calibrated.csv"
-METRICS_SAVE_PATH = METRICS_DIR / "forecast_metrics.json"
+RISK_MAP_SAVE_PATH = DATA_DIR / "risk_map_calibrated.csv"
+METRICS_SAVE_PATH = DATA_DIR / "forecast_metrics.json"
 
 # ============================================================
 # 2. PARÁMETROS GEOGRÁFICOS Y DE LA MALLA
