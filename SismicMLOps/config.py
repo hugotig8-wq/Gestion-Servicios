@@ -7,8 +7,8 @@ from pathlib import Path
 # ============================================================
 PROJECT_ROOT = Path(__file__).resolve().parent
 
-DATA_DIR = PROJECT_ROOT / "data" 
-DATA_PATH = DATA_DIR / "raw" / "earthquakes.csv"
+DATA_DIR = PROJECT_ROOT / "home" / "humberto"
+DATA_PATH = DATA_DIR / "earthquakes.csv"
 
 CFM_DATA_PATH = DATA_DIR / "processed" / "cfm" / "xgboost_earthquakes_cfm_dataset.parquet"
 CVM_DATA_PATH = DATA_DIR / "raw" / "scec_cvm_data.csv"
