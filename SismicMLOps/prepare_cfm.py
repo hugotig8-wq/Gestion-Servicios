@@ -55,7 +55,7 @@ except ImportError:
 # CONFIGURACIÓN
 # ============================================================
 
-PROJECT_ROOT = "home"
+PROJECT_ROOT = "home" 
 
 DATA_DIR = "home" / "humberto"
 
