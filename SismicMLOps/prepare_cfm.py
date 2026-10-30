@@ -55,15 +55,15 @@ except ImportError:
 # CONFIGURACIÓN
 # ============================================================
 
-PROJECT_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = "home"
 
-DATA_DIR = PROJECT_ROOT / "data"
+DATA_DIR = "home" / "humberto"
 
-CFM_DIR = DATA_DIR / "external" / "CFM6"
+CFM_DIR = "home / "humberto"
 
-CFM_EXTRACTED_DIR = CFM_DIR / "extracted"
+CFM_EXTRACTED_DIR = "home" / "humberto"
 
-OUTPUT_DIR = DATA_DIR / "processed" / "cfm"
+OUTPUT_DIR = "home" / "humberto"
 
 METADATA_OUTPUT = OUTPUT_DIR / "cfm_metadata_clean.csv"
 
