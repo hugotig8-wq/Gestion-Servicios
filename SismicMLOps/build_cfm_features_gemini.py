@@ -11,13 +11,13 @@ from pyproj import Transformer
 from scipy.spatial import cKDTree
 
 PROJECT_ROOT = Path(__file__).resolve().parent
-DATA_DIR = PROJECT_ROOT / "data"
+DATA_DIR = "home" / "humberto"
 
-EARTHQUAKES_FILE = DATA_DIR / "raw" / "earthquakes.csv"
-CFM_VERTICES_FILE = DATA_DIR / "processed" / "cfm" / "cfm_vertices_1000m.csv"
-CFM_METADATA_FILE = DATA_DIR / "processed" / "cfm" / "cfm_metadata_clean.csv"
+EARTHQUAKES_FILE = DATA_DIR / "earthquakes.csv"
+CFM_VERTICES_FILE = DATA_DIR / "cfm_vertices_1000m.csv"
+CFM_METADATA_FILE = DATA_DIR / "cfm_metadata_clean.csv"
 
-OUTPUT_DIR = DATA_DIR / "processed" / "cfm"
+OUTPUT_DIR = "home"/ "humberto"
 OUTPUT_PARQUET = OUTPUT_DIR / "xgboost_earthquakes_cfm_dataset.parquet"
 
 # Configuración Espacial
