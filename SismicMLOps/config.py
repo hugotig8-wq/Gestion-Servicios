@@ -1,13 +1,13 @@
-
 # config.py
 from pathlib import Path
 
 # ============================================================
-# 1. RUTAS DEL PROYECTO
+# 1. RUTAS DEL PROYECTO (CORREGIDAS)
 # ============================================================
 PROJECT_ROOT = Path(__file__).resolve().parent
 
-DATA_DIR = "home" / "humberto"
+# Definimos la carpeta base de datos (puedes cambiarla a la ruta absoluta de tu PC)
+DATA_DIR = PROJECT_ROOT / "data" 
 DATA_PATH = DATA_DIR / "earthquakes.csv"
 
 CFM_DATA_PATH = DATA_DIR / "xgboost_earthquakes_cfm_dataset.parquet"
@@ -18,7 +18,7 @@ PROCESSED_DIR = PROJECT_ROOT / "processed"
 METRICS_DIR = PROJECT_ROOT / "metrics"
 MODEL_DIR = PROJECT_ROOT / "training" / "models"
 
-for directory in [PROCESSED_DIR, METRICS_DIR, MODEL_DIR]:
+for directory in [DATA_DIR, PROCESSED_DIR, METRICS_DIR, MODEL_DIR]:
     directory.mkdir(parents=True, exist_ok=True)
 
 RISK_MAP_SAVE_PATH = DATA_DIR / "risk_map_calibrated.csv"
@@ -39,16 +39,16 @@ CELL_KM = 10.0
 # ============================================================
 # 3. PARÁMETROS SISMOLÓGICOS Y MODELADO HIGH-ACCURACY
 # ============================================================
-MIN_MAGNITUDE = 1.4     # Mmin para b-value
-TARGET_MAGNITUDE = 4.5  # Magnitud objetivo ajustada para estabilidad
+MIN_MAGNITUDE = 1.4
+TARGET_MAGNITUDE = 4.5
 
 MODEL_TYPE = "xgboost"
 
 MODEL_CONFIGS = {
     "xgboost": {
-        "n_estimators": 50,       # Regularizado
-        "max_depth": 1,          # Profundidad 1 (Decision Stumps) para evitar overfitting
-        "learning_rate": 0.01,   # Tasa de aprendizaje baja
+        "n_estimators": 50,
+        "max_depth": 1,
+        "learning_rate": 0.01,
         "subsample": 0.8,
         "colsample_bytree": 0.8,
         "random_state": 42,
@@ -56,7 +56,7 @@ MODEL_CONFIGS = {
     }
 }
 
-SCALE_POS_WEIGHT = 1.5          # Pesos ajustados para optimizar la curva ROC
+SCALE_POS_WEIGHT = 1.5
 CALIBRATION_METHOD = "sigmoid"
 
 # ============================================================
